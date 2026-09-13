@@ -20,7 +20,7 @@ const VesselDetailsPublic = () => {
       try {
         setLoading(true);
         const res = await fetch(
-          `http://192.168.41.199:5000/api/boats/public/${id}`
+          `http://10.17.58.85:5000/api/boats/public/${id}`
         );
         if (res.status === 404) { setError('not_found');    return; }
         if (!res.ok)            { setError('server_error'); return; }

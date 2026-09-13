@@ -46,7 +46,7 @@ const DetailRow = ({ icon, label, value, color = 'blue' }) => {
 // ─────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────
-const VesselQRCode = () => {
+const QRCode = () => {
   const user     = JSON.parse(localStorage.getItem('user'));
   const userRole = user?.role;
 
@@ -108,9 +108,9 @@ const VesselQRCode = () => {
   );
 
   // ── QR URL (encodes all boat data as JSON in URL) ──
-  const BASE_URL = 'http://192.168.41.199:5173';
+  const BASE_URL = 'http://10.17.58.85:5173'; // Replace with your actual base URL
   const qrValue = selectedBoat
-    ? `http://192.168.41.199:5173/vessel/${selectedBoat._id}`
+    ? `${BASE_URL}/api/boats/public/${selectedBoat._id}`
     : '';
 
 
@@ -622,4 +622,4 @@ const VesselQRCode = () => {
   );
 };
 
-export default VesselQRCode;
+export default QRCode;

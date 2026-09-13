@@ -10,7 +10,7 @@ import ForgotPassword from "./Pages/Public/ForgotPassword";
 import ResetPassword from "./Pages/Public/ResetPassword";
 import Features from './Pages/Public/Features';
 import FleetSupport from "./Pages/Public/FleetSupport";
-import QRCode from './Pages/Public/QRCode'
+import QRCode from './Pages/Public/QRcode';
 import VesselDetailsPublic from './Pages/Public/VesselDetailsPublic';
 
 // Owner Pages
