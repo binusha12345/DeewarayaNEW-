@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE } from '../services/api';
 import {
   HiOutlineSearch,
   HiOutlineTrash,
@@ -56,7 +57,7 @@ const AdminBoats = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/admin/boats`,
+        `${API_BASE}/admin/boats`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('adminToken')}`
@@ -75,7 +76,7 @@ const AdminBoats = () => {
   const approveBoat = async (boatId) => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/admin/boats/${boatId}/approve`,
+        `${API_BASE}/admin/boats/${boatId}/approve`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
@@ -91,7 +92,7 @@ const AdminBoats = () => {
   const handleSuspendBoat = async () => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/admin/boats/${actionBoatId}/suspend`,
+        `${API_BASE}/admin/boats/${actionBoatId}/suspend`,
         { reason: suspendReason },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
@@ -109,7 +110,7 @@ const AdminBoats = () => {
   const unsuspendBoat = async (boatId) => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/admin/boats/${boatId}/approve`,
+        `${API_BASE}/admin/boats/${boatId}/approve`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
@@ -127,7 +128,7 @@ const AdminBoats = () => {
     
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/api/admin/boats/${boatId}`,
+        `${API_BASE}/admin/boats/${boatId}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
         }

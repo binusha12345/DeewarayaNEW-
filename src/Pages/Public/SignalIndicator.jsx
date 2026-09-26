@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Activity, Radio, RefreshCw, Timer, Wifi } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Activity, MapPin, Radio, RefreshCw, Timer, Wifi } from "lucide-react";
 import DashboardNav from "../../components/DashboardNav";
 import DriverSidebar from "../../components/DriverSidebar";
 import OwnerSidebar from "../../components/OwnerSidebar";
@@ -15,6 +15,57 @@ const STATUS = {
   checking: { label: "Checking", icon: "◌", color: "text-slate-600", bg: "bg-slate-100", hint: "Measuring internet connection" },
 };
 
+const SIGNAL_SCORE = { good: 100, medium: 65, poor: 30, offline: 0 };
+
+async function getPlaceName(latitude, longitude) {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=18&addressdetails=1`,
+    { headers: { "Accept-Language": "en" } }
+  );
+  if (!response.ok) throw new Error("Place lookup failed");
+
+  const data = await response.json();
+  const address = data.address || {};
+  const locality = address.city || address.town || address.village || address.suburb || address.hamlet || address.county;
+  const street = address.road || address.pedestrian || address.residential;
+  const place = [locality, street].filter((part, index, parts) => part && parts.indexOf(part) === index);
+  return place.length ? place.join(", ") : data.display_name?.split(",").slice(0, 3).join(", ");
+}
+
+function requestDeviceLocation(onPosition, onPlaceName, onError) {
+  if (!navigator.geolocation) {
+    onError("unsupported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async ({ coords }) => {
+      onPosition(coords.accuracy);
+      try {
+        const name = await getPlaceName(coords.latitude, coords.longitude);
+        onPlaceName(name || "Current location");
+      } catch {
+        onPlaceName("Current location");
+      }
+    },
+    (error) => onError(error.code === 1 ? "denied" : "unavailable"),
+    { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+  );
+}
+
+function hourlyStrength(history, currentStatus) {
+  const now = Date.now();
+  return [3, 2, 1].map((hoursAgo) => {
+    const start = now - hoursAgo * 60 * 60 * 1000;
+    const end = start + 60 * 60 * 1000;
+    const hourSamples = history.filter((sample) => sample.checkedAt >= start && sample.checkedAt < end);
+    const score = hourSamples.length
+      ? Math.round(hourSamples.reduce((total, sample) => total + (SIGNAL_SCORE[sample.status] ?? 0), 0) / hourSamples.length)
+      : null;
+    return { label: hoursAgo === 0 ? "Now" : `${hoursAgo}h ago`, score };
+  }).concat({ label: "Now", score: SIGNAL_SCORE[currentStatus] ?? null });
+}
+
 export default function SignalIndicator() {
   const { user } = useAuth();
   const isDriver = user?.role === "driver";
@@ -22,6 +73,24 @@ export default function SignalIndicator() {
   const [boatId, setBoatId] = useState(localStorage.getItem("signalBoatId") || "");
   const connection = useInternetStatus({ boatId, report: isDriver });
   const details = STATUS[connection.status] || STATUS.checking;
+  const [placeName, setPlaceName] = useState("");
+  const [locationAccuracy, setLocationAccuracy] = useState(null);
+  const [locationStatus, setLocationStatus] = useState("requesting");
+  const chartPoints = useMemo(
+    () => hourlyStrength(connection.history, connection.status),
+    [connection.history, connection.status]
+  );
+
+  useEffect(() => {
+    requestDeviceLocation(
+      (accuracy) => {
+        setLocationAccuracy(Math.round(accuracy));
+        setLocationStatus("granted");
+      },
+      setPlaceName,
+      setLocationStatus
+    );
+  }, []);
 
   useEffect(() => {
     if (!isDriver) return;
@@ -33,6 +102,13 @@ export default function SignalIndicator() {
     setBoatId(value);
     localStorage.setItem("signalBoatId", value);
   };
+  const locationMessage = placeName || (locationStatus === "requesting"
+    ? "Waiting for the browser location permission..."
+    : locationStatus === "denied"
+      ? "Location access was denied in the browser"
+      : locationStatus === "unsupported"
+        ? "Location is not supported by this browser"
+        : "Could not read your current location");
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-100 text-slate-900">
@@ -70,7 +146,50 @@ export default function SignalIndicator() {
                   <div><p className="text-xs font-semibold uppercase text-slate-500">Service latency</p><p className="text-xl font-bold">{connection.latency == null ? "--" : `${connection.latency} ms`}</p></div>
                 </div>
               </div>
+              <div className="mt-5 flex items-start gap-3 border-t border-slate-300/60 pt-4">
+                <MapPin size={18} className="mt-0.5 shrink-0 text-cyan-900" />
+                <div>
+                  <p className="text-xs font-semibold uppercase text-slate-500">Current location</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-800">{locationMessage}</p>
+                  {locationAccuracy != null && <p className="mt-1 text-xs text-slate-500">GPS accuracy: about {locationAccuracy} m</p>}
+                </div>
+              </div>
               <p className="mt-6 border-t border-slate-300/60 pt-4 text-xs text-slate-500">{connection.checkedAt ? `Last checked ${connection.checkedAt.toLocaleTimeString()}` : "Waiting for first measurement"} · Refreshes every 10 seconds</p>
+            </section>
+            <section aria-label="Signal strength over the last three hours" className="mt-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <div>
+                  <p className="text-xs font-bold uppercase text-slate-500">Connection history</p>
+                  <h2 className="mt-1 text-lg font-bold text-slate-900">Signal strength · last 3 hours</h2>
+                </div>
+                <p className="text-xs text-slate-500">Higher line = stronger connection</p>
+              </div>
+              <div className="mt-4">
+                <svg viewBox="0 0 600 190" role="img" aria-label="Hourly signal strength from three hours ago to now" className="h-44 w-full overflow-visible">
+                  {[0, 50, 100].map((value) => {
+                    const y = 145 - value * 1.15;
+                    return <g key={value}>
+                      <line x1="48" x2="580" y1={y} y2={y} stroke="#e2e8f0" strokeDasharray={value === 0 ? "0" : "4 5"} />
+                      <text x="36" y={y + 4} textAnchor="end" fill="#64748b" fontSize="11">{value}%</text>
+                    </g>;
+                  })}
+                  {chartPoints.map((point, index) => {
+                    const x = 70 + index * 165;
+                    const y = point.score == null ? null : 145 - point.score * 1.15;
+                    const previous = chartPoints[index - 1];
+                    const previousY = previous?.score == null ? null : 145 - previous.score * 1.15;
+                    return <g key={point.label}>
+                      {y != null && previousY != null && <line x1={x - 165} y1={previousY} x2={x} y2={y} stroke="#0891b2" strokeWidth="4" strokeLinecap="round" />}
+                      {y != null && <>
+                        <circle cx={x} cy={y} r="8" fill="#fff" stroke="#0891b2" strokeWidth="4" />
+                        <text x={x} y={y - 15} textAnchor="middle" fill="#0e7490" fontSize="12" fontWeight="700">{point.score}%</text>
+                      </>}
+                      <text x={x} y="174" textAnchor="middle" fill="#475569" fontSize="12" fontWeight="600">{point.label}</text>
+                    </g>;
+                  })}
+                </svg>
+              </div>
+              {!connection.history.length && <p className="text-xs text-slate-500">Hourly history will build as connection checks run on this device.</p>}
             </section>
             <section aria-label="Recent connection performance" className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">

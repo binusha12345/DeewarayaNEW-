@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE } from '../services/api';
 import {
   HiOutlineUsers,
   HiOutlineSearch,
@@ -61,7 +62,7 @@ const AdminUsers = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/admin/users`,
+        `${API_BASE}/admin/users`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('adminToken')}`
@@ -81,7 +82,7 @@ const AdminUsers = () => {
   const handleBanUser = async () => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/admin/users/${actionUserId}/ban`,
+        `${API_BASE}/admin/users/${actionUserId}/ban`,
         { reason: banReason },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
@@ -100,7 +101,7 @@ const AdminUsers = () => {
   const unbanUser = async (userId) => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/unban`,
+        `${API_BASE}/admin/users/${userId}/unban`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
@@ -119,7 +120,7 @@ const AdminUsers = () => {
     
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`,
+        `${API_BASE}/admin/users/${userId}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
         }
@@ -146,7 +147,7 @@ const AdminUsers = () => {
     
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/admin/users/${actionUserId}/message`,
+        `${API_BASE}/admin/users/${actionUserId}/message`,
         messageData,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }

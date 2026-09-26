@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, QrCode, Eye, Loader2 } from "lucide-react";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
-import api from "../../../services/api";
+import api, { apiUrl } from "../../../services/api";
 
 const BoatOwnerBoats = () => {
   const navigate = useNavigate();
@@ -15,9 +15,7 @@ const BoatOwnerBoats = () => {
 const getBoatImageUrl = (boat) => {
   if (!boat.imageUrl) return "https://via.placeholder.com/400x250";
 
-  if (boat.imageUrl.startsWith("http")) return boat.imageUrl;
-
-  return `http://localhost:5000${boat.imageUrl}`;
+  return apiUrl(boat.imageUrl);
 };
 
   const fetchBoats = async () => {

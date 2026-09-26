@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../services/api";
 import {
   Loader2,
   MapPin,
@@ -19,8 +20,6 @@ import {
 } from "lucide-react";
 
 // Define API URL properly
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 const AdminWeather = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +39,7 @@ const AdminWeather = () => {
         return;
       }
 
-      const res = await axios.get(`${API_URL}/api/admin/weather/logs`, {
+      const res = await axios.get(`${API_BASE}/admin/weather/logs`, {
         headers: { Authorization: `Bearer ${adminToken}` },
       });
 

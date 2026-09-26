@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import HomeNavBar from "../../components/HomeNavBar";
-import api from "../../services/api";
+import api, { apiUrl } from "../../services/api";
 import { useTranslation } from "react-i18next";
 import {
   FaUser, FaEnvelope, FaPhone, FaIdCard, FaMapMarkerAlt,
@@ -11,8 +11,6 @@ import {
   FaCalendarAlt, FaAnchor, FaShip, FaCompass
 } from "react-icons/fa";
 
-
-const API_URL = "http://localhost:5000";
 
 const ROLE = {
   owner: { icon: <FaShip />, label: "Boat Owner", badge: "bg-green-100 text-green-700 border-green-200" },
@@ -124,7 +122,7 @@ const Profile = () => {
           {/* Cover */}
           <div className="h-44 relative group">
             {user.coverPhoto ? (
-              <img src={`${API_URL}${user.coverPhoto}`} alt="Cover" className="w-full h-full object-cover" />
+              <img src={apiUrl(user.coverPhoto)} alt="Cover" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-gradient-to-r from-sky-400 via-sky-500 to-blue-500 flex items-center justify-center gap-8">
                 <FaAnchor className="text-white/20 text-5xl" />
@@ -158,7 +156,7 @@ const Profile = () => {
               >
                 <div className="w-24 h-24 rounded-xl border-4 border-white shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                   {user.profilePicture ? (
-                    <img src={`${API_URL}${user.profilePicture}`} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={apiUrl(user.profilePicture)} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center">
                       <FaUser className="text-white text-3xl" />

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../../services/api";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
@@ -48,7 +49,7 @@ const ResetPassword = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/auth/reset-password/${token}`,
+        `${API_BASE}/auth/reset-password/${token}`,
         { password, confirmPassword }
       );
 

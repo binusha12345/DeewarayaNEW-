@@ -5,8 +5,7 @@ import { Ship, Moon, Sun, User, LayoutDashboard, LogOut, ChevronDown, Menu, X } 
 import { useThemeContext } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
-
-const API_URL = "http://localhost:5000";
+import { apiUrl } from "../services/api";
 
 const HomeNavBar = () => {
   const { t } = useTranslation();
@@ -150,7 +149,7 @@ const HomeNavBar = () => {
                 >
                   <div data-tour="profile-icon" className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-2 border-white/40">
                     {user?.profilePicture ? (
-                      <img src={`${API_URL}${user.profilePicture}`} alt={user.name} className="w-full h-full object-cover" />
+                      <img src={apiUrl(user.profilePicture)} alt={user.name} className="w-full h-full object-cover" />
                     ) : (
                       <User className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     )}
@@ -169,7 +168,7 @@ const HomeNavBar = () => {
                         <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border-2 border-white/30 overflow-hidden">
                           {user?.profilePicture ? (
                             <img
-                              src={`${API_URL}${user.profilePicture}`}
+                              src={apiUrl(user.profilePicture)}
                               alt={user.name}
                               className="w-full h-full object-cover"
                             />

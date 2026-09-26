@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api, { API_ORIGIN } from "../services/api";
 
-const API_ORIGIN = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const CONNECTION_CHECK_URL = `${API_ORIGIN}/api/market-prices`;
+const HISTORY_KEY = "internetConnectionHistory";
+const HISTORY_WINDOW_MS = 3 * 60 * 60 * 1000;
+
+const readHistory = () => {
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    return Array.isArray(history)
+      ? history.filter((sample) => Date.now() - sample.checkedAt <= HISTORY_WINDOW_MS)
+      : [];
+  } catch {
+    return [];
+  }
+};
 
 const classifyLatency = (latency) => {
   if (latency <= 300) return "good";
@@ -16,6 +29,15 @@ export default function useInternetStatus({ boatId = "", report = false } = {}) 
     checkedAt: null,
   });
   const [samples, setSamples] = useState([]);
+  const [history, setHistory] = useState(readHistory);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch {
+      // Connection checks continue to work if browser storage is unavailable.
+    }
+  }, [history]);
 
   useEffect(() => {
     let active = true;
@@ -33,7 +55,7 @@ export default function useInternetStatus({ boatId = "", report = false } = {}) 
         const timeout = setTimeout(() => controller.abort(), 4000);
         const startedAt = performance.now();
         try {
-          const response = await fetch(`${API_ORIGIN}/`, {
+          const response = await fetch(CONNECTION_CHECK_URL, {
             method: "GET",
             cache: "no-store",
             signal: controller.signal,
@@ -58,6 +80,13 @@ export default function useInternetStatus({ boatId = "", report = false } = {}) 
             checkedAt: nextConnection.checkedAt.getTime(),
           },
         ].slice(-30));
+        setHistory((current) => [
+          ...current,
+          {
+            status: nextConnection.status,
+            checkedAt: nextConnection.checkedAt.getTime(),
+          },
+        ].filter((sample) => Date.now() - sample.checkedAt <= HISTORY_WINDOW_MS));
         if (report && boatId) {
           const statusKey = `internetStatus:${boatId}`;
           try {
@@ -108,5 +137,6 @@ export default function useInternetStatus({ boatId = "", report = false } = {}) 
     stability,
     sampleCount: samples.length,
     latencySampleCount: successfulLatencies.length,
+    history,
   };
 }

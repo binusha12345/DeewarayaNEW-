@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../../services/api";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -30,7 +31,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
+        `${API_BASE}/auth/forgot-password`,
         { email: email.trim() }
       );
 

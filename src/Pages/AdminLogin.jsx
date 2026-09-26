@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { 
   HiOutlineMail, 
@@ -41,7 +42,7 @@ const AdminLogin = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/admin/login`,
+        `${API_BASE}/admin/login`,
         formData
       );
 

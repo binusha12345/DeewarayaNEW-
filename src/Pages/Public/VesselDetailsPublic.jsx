@@ -7,6 +7,7 @@ import {
   FaCalendarAlt, FaWrench, FaIdBadge, FaCopy, FaExclamationTriangle
 } from 'react-icons/fa';
 import { MdVerified, MdSecurity, MdFingerprint } from 'react-icons/md';
+import { API_BASE } from '../../services/api';
 
 const VesselDetailsPublic = () => {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ const VesselDetailsPublic = () => {
       try {
         setLoading(true);
         const res = await fetch(
-          `http://${window.location.hostname}:5000/api/boats/public/${id}`
+          `${API_BASE}/boats/public/${id}`
         );
         if (res.status === 404) { setError('not_found');    return; }
         if (!res.ok)            { setError('server_error'); return; }

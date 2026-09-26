@@ -3,9 +3,7 @@ import { Bell, Check, Radio } from "lucide-react";
 import { io } from "socket.io-client";
 import DashboardNav from "../../../components/DashboardNav";
 import OwnerSidebar from "../../../components/OwnerSidebar";
-import api from "../../../services/api";
-
-const SOCKET_ORIGIN = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import api, { API_ORIGIN } from "../../../services/api";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -17,7 +15,7 @@ export default function Notifications() {
       if (active) setNotifications(Array.isArray(data) ? data : []);
     }).catch(() => {});
 
-    const socket = io(SOCKET_ORIGIN, { auth: { token }, transports: ["websocket", "polling"] });
+    const socket = io(API_ORIGIN, { auth: { token }, transports: ["websocket", "polling"] });
     socket.on("notification:new", (notification) => {
       setNotifications((current) => [notification, ...current.filter((item) => item._id !== notification._id)]);
     });
