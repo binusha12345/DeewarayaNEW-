@@ -33,6 +33,8 @@ import WeatherDashboard from "./Pages/Public/WeatherDashboard";
 import Weather from "./Pages/Public/Weather";
 import SaveLocation from "./Pages/Public/SaveLocation";
 import Profile from "./Pages/Public/Profile";
+import SignalIndicator from "./Pages/Public/SignalIndicator";
+import Notifications from "./Pages/Public/owner/Notifications";
 
 // Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -167,6 +169,22 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["owner", "driver"]}>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/signal-indicator"
+          element={
+            <ProtectedRoute allowedRoles={["owner", "driver"]}>
+              <SignalIndicator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notification"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <Notifications />
             </ProtectedRoute>
           }
         />

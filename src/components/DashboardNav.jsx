@@ -10,7 +10,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
    ───────────────────────────────────────────── */
 const NAV_LINKS = [
   { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
+  { to: "/signal-indicator", label: "Signal Indicator" },
   { to: "/contact", label: "Contact" },
 ];
 

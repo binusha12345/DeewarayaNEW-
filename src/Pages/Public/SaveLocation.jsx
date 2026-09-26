@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import api from "../../services/api";
+import { flushLocationQueue, queueLocation } from "../../services/locationQueue";
 
 const SaveLocation = () => {
   const [boatId, setBoatId] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    const syncPendingLocations = () => flushLocationQueue().catch(() => {});
+    syncPendingLocations();
+    window.addEventListener("online", syncPendingLocations);
+    return () => window.removeEventListener("online", syncPendingLocations);
+  }, []);
 
   const saveCurrentLocation = () => {
     setStatus("");
@@ -29,13 +37,29 @@ const SaveLocation = () => {
 
           console.log("GPS Coordinates:", latitude, longitude);
 
-          const res = await api.post("/tracking/update", {
+          const location = {
             boatId,
             latitude,
             longitude,
             speed: 0,
             zone: "Unknown",
-          });
+          };
+
+          if (!navigator.onLine) {
+            await queueLocation(location);
+            setStatus("Internet unavailable. GPS location saved on this device and will sync when online.");
+            return;
+          }
+
+          let res;
+          try {
+            res = await api.post("/tracking/update", location);
+          } catch (error) {
+            if (error.response) throw error;
+            await queueLocation(location);
+            setStatus("Connection lost. GPS location saved on this device and will sync when online.");
+            return;
+          }
 
           console.log("Save Location Success:", res.data);
           setStatus(res.data.message || "Location saved successfully");

@@ -2,6 +2,7 @@ import React from 'react';
 import DriverSidebar from '../../../components/DriverSidebar';
 import DashboardNav from '../../../components/DashboardNav';
 import { useAuth } from '../../../context/AuthContext'; // ✅ ADD THIS
+import useInternetStatus from '../../../hooks/useInternetStatus';
 import { 
   Wind, 
   Thermometer, 
@@ -15,6 +16,7 @@ import {
 
 const BoatDriverDashboard = () => {
   const { user } = useAuth(); // ADD THIS
+  const connection = useInternetStatus({ boatId: localStorage.getItem('signalBoatId') || '', report: true });
 
   return (
     <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-800 overflow-hidden">
@@ -32,6 +34,12 @@ const BoatDriverDashboard = () => {
 
         {/* Dashboard area */}
         <main className="flex-1 overflow-y-auto p-8">
+          {(connection.status === 'poor' || connection.status === 'offline') && (
+            <div role="alert" className="mb-6 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">
+              <span>{connection.status === 'offline' ? 'Internet is offline. GPS updates will be queued until connection returns.' : 'Internet connection is poor. GPS updates may be delayed.'}</span>
+              <a href="/signal-indicator" className="underline underline-offset-2">View signal status</a>
+            </div>
+          )}
           
           {/* Dashboard Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
