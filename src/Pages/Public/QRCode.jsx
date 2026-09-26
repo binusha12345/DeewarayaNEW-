@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { QRCodeCanvas } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -47,6 +48,7 @@ const DetailRow = ({ icon, label, value, color = 'blue' }) => {
 // Main Component
 // ─────────────────────────────────────────────
 const QRCode = () => {
+  const { t } = useTranslation();
   const user     = JSON.parse(localStorage.getItem('user'));
   const userRole = user?.role;
 
@@ -108,9 +110,9 @@ const QRCode = () => {
   );
 
   // ── QR URL (encodes all boat data as JSON in URL) ──
-  const BASE_URL = 'http://10.17.58.85:5173'; // Replace with your actual base URL
+  const BASE_URL = 'http://172.25.29.85:5173'; // Replace with your actual base URL
   const qrValue = selectedBoat
-    ? `${BASE_URL}/api/boats/public/${selectedBoat._id}`
+    ? `${BASE_URL}/vessel/${selectedBoat._id}`
     : '';
 
 
@@ -207,13 +209,13 @@ const QRCode = () => {
             {/* ── Page Header ── */}
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-blue-500 mb-1">
-                Fleet / QR Codes
+                {t("qrCode.breadcrumb", "Fleet / QR Codes")}
               </p>
               <h1 className="text-2xl md:text-3xl font-black text-slate-900">
-                Vessel QR Code Generator
+                {t("qrCode.pageTitle", "Vessel QR Code Generator")}
               </h1>
               <p className="text-slate-500 text-sm mt-1">
-                Select a boat, generate its unique QR code, and share or download it.
+                {t("qrCode.pageSubtitle", "Select a boat, generate its unique QR code, and share or download it.")}
               </p>
             </div>
 
@@ -221,7 +223,7 @@ const QRCode = () => {
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">1</span>
-                <h2 className="text-base font-bold text-slate-800">Select a Boat</h2>
+                <h2 className="text-base font-bold text-slate-800">{t("qrCode.step1", "Select a Boat")}</h2>
               </div>
 
               {loadingBoats ? (
@@ -235,7 +237,7 @@ const QRCode = () => {
               ) : boats.length === 0 ? (
                 <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-yellow-700 text-sm">
                   <FaExclamationTriangle />
-                  No boats found. Please add boats first.
+                  {t("qrCode.noBoats", "No boats found. Please add boats first.")}
                 </div>
               ) : (
                 <div className="relative dropdown-wrapper max-w-md">
@@ -253,7 +255,7 @@ const QRCode = () => {
                         </div>
                       </div>
                     ) : (
-                      <span className="text-slate-400 text-sm">Choose a boat...</span>
+                      <span className="text-slate-400 text-sm">{t("qrCode.chooseBoat", "Choose a boat...")}</span>
                     )}
                     <FaChevronDown className={`text-slate-400 shrink-0 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
@@ -319,12 +321,12 @@ const QRCode = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                       </svg>
-                      Generating...
+                      {t("qrCode.generating", "Generating...")}
                     </>
                   ) : (
                     <>
                       <FaQrcode />
-                      {qrGenerated ? 'Regenerate QR Code' : 'Create QR Code'}
+                      {qrGenerated ? t("qrCode.regenerate", 'Regenerate QR Code') : t("qrCode.create", 'Create QR Code')}
                     </>
                   )}
                 </button>
@@ -339,7 +341,7 @@ const QRCode = () => {
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                   <div className="flex items-center gap-2 mb-5">
                     <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">2</span>
-                    <h2 className="text-base font-bold text-slate-800">Your QR Code</h2>
+                    <h2 className="text-base font-bold text-slate-800">{t("qrCode.step2", "Your QR Code")}</h2>
                   </div>
 
                   {/* Printable area */}
@@ -377,17 +379,17 @@ const QRCode = () => {
                         level="H"
                         includeMargin
                       />
-                      <p className="text-xs text-slate-400 mt-3 font-medium">📱 Scan to verify vessel</p>
+                      <p className="text-xs text-slate-400 mt-3 font-medium">📱 {t("qrCode.scanToVerify", "Scan to verify vessel")}</p>
                     </div>
 
                     {/* Mini info strip */}
                     <div className="mt-4 grid grid-cols-2 gap-2">
                       <div className="bg-blue-50 rounded-lg p-2.5 text-center">
-                        <p className="text-[10px] text-blue-500 font-bold uppercase">Registration</p>
+                        <p className="text-[10px] text-blue-500 font-bold uppercase">{t("qrCode.registration", "Registration")}</p>
                         <p className="text-xs font-bold text-slate-800 mt-0.5 truncate">{selectedBoat.registrationNumber}</p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-2.5 text-center">
-                        <p className="text-[10px] text-slate-500 font-bold uppercase">Status</p>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase">{t("qrCode.status", "Status")}</p>
                         <p className={`text-xs font-bold mt-0.5 ${selectedBoat.boatStatus === 'ACTIVE' ? 'text-green-600' : 'text-red-500'}`}>
                           {selectedBoat.boatStatus || '—'}
                         </p>
@@ -397,7 +399,7 @@ const QRCode = () => {
 
                   {/* ── Color Picker ── */}
                   <div className="mt-5 pt-4 border-t border-slate-100">
-                    <p className="text-xs font-semibold text-slate-500 uppercase mb-2">QR Color</p>
+                    <p className="text-xs font-semibold text-slate-500 uppercase mb-2">{t("qrCode.qrColor", "QR Color")}</p>
                     <div className="flex items-center gap-2">
                       {['#1e40af','#0891b2','#059669','#7c3aed','#dc2626','#000000'].map(c => (
                         <button
@@ -426,7 +428,7 @@ const QRCode = () => {
                         onClick={() => { setShowDownload(v => !v); setShowShare(false); }}
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition"
                       >
-                        <FaDownload /> Download
+                        <FaDownload /> {t("qrCode.download", "Download")}
                       </button>
                       {showDownload && (
                         <div className="absolute top-full mt-1 left-0 bg-white border border-slate-200 rounded-xl shadow-xl z-30 py-1 min-w-[160px]">
@@ -446,7 +448,7 @@ const QRCode = () => {
                         onClick={() => { setShowShare(v => !v); setShowDownload(false); }}
                         className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-bold px-4 py-2 rounded-xl transition"
                       >
-                        <FaShareAlt /> Share
+                        <FaShareAlt /> {t("qrCode.share", "Share")}
                       </button>
                       {showShare && (
                         <div className="absolute top-full mt-1 left-0 bg-white border border-slate-200 rounded-xl shadow-xl z-30 py-1 min-w-[160px]">
@@ -461,7 +463,7 @@ const QRCode = () => {
                           </button>
                           <button onClick={copyLink} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 text-sm text-slate-700">
                             <FaLink className="text-slate-500" />
-                            {copied ? '✓ Copied!' : 'Copy Link'}
+                            {copied ? `✓ ${t("qrCode.copiedLink", "Copied!")}` : t("qrCode.copyLink", "Copy Link")}
                           </button>
                         </div>
                       )}
@@ -472,14 +474,14 @@ const QRCode = () => {
                       onClick={handlePrint}
                       className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-bold px-4 py-2 rounded-xl transition"
                     >
-                      <FaPrint /> Print
+                      <FaPrint /> {t("qrCode.print", "Print")}
                     </button>
                   </div>
 
                   {/* Copied toast */}
                   {copied && (
                     <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-sm font-semibold">
-                      <FaCheckCircle /> Link copied to clipboard!
+                      <FaCheckCircle /> {t("qrCode.linkCopied", "Link copied to clipboard!")}
                     </div>
                   )}
                 </div>
@@ -488,7 +490,7 @@ const QRCode = () => {
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                   <div className="flex items-center gap-2 mb-5">
                     <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">3</span>
-                    <h2 className="text-base font-bold text-slate-800">Boat Details</h2>
+                    <h2 className="text-base font-bold text-slate-800">{t("qrCode.step3", "Boat Details")}</h2>
                     {selectedBoat.boatStatus === 'ACTIVE' && (
                       <span className="ml-auto text-[10px] font-bold bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1">
                         <MdVerified /> ACTIVE
@@ -511,49 +513,49 @@ const QRCode = () => {
                   <div className="space-y-0">
                     <DetailRow
                       icon={<MdVerified />}
-                      label="Registration Number"
+                      label={t("qrCode.fields.regNumber", "Registration Number")}
                       value={selectedBoat.registrationNumber}
                       color="blue"
                     />
                     <DetailRow
                       icon={<MdEngineering />}
-                      label="Engine Number"
+                      label={t("qrCode.fields.engineNumber", "Engine Number")}
                       value={selectedBoat.engineNumber}
                       color="purple"
                     />
                     <DetailRow
                       icon={<FaShip />}
-                      label="Boat Type"
+                      label={t("qrCode.fields.boatType", "Boat Type")}
                       value={selectedBoat.boatType}
                       color="cyan"
                     />
                     <DetailRow
                       icon={<FaMapMarkerAlt />}
-                      label="Home Port / Harbour"
+                      label={t("qrCode.fields.homePort", "Home Port / Harbour")}
                       value={selectedBoat.homePort || selectedBoat.harbour}
                       color="red"
                     />
                     <DetailRow
                       icon={<FaPhoneAlt />}
-                      label="Emergency Contact"
+                      label={t("qrCode.fields.emergencyContact", "Emergency Contact")}
                       value={selectedBoat.emergencyContact}
                       color="orange"
                     />
                     <DetailRow
                       icon={<FaShieldAlt />}
-                      label="License Status"
+                      label={t("qrCode.fields.licenseStatus", "License Status")}
                       value={selectedBoat.licenseStatus || selectedBoat.boatStatus}
                       color="green"
                     />
                     <DetailRow
                       icon={<FaShieldAlt />}
-                      label="Model Year"
+                      label={t("qrCode.fields.modelYear", "Model Year")}
                       value={selectedBoat.modelYear}
                       color="slate"
                     />
                     <DetailRow
                       icon={<FaShieldAlt />}
-                      label="Horsepower"
+                      label={t("qrCode.fields.horsepower", "Horsepower")}
                       value={selectedBoat.horsepower ? `${selectedBoat.horsepower} HP` : undefined}
                       color="slate"
                     />
@@ -585,7 +587,7 @@ const QRCode = () => {
 
                   {/* QR link preview */}
                   <div className="mt-4 pt-4 border-t border-slate-100">
-                    <p className="text-[10px] text-slate-400 font-semibold uppercase mb-1">QR Code Points To</p>
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase mb-1">{t("qrCode.qrPointsTo", "QR Code Points To")}</p>
                     <p className="text-xs text-blue-600 font-mono break-all bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
                       {qrValue}
                     </p>
@@ -597,12 +599,12 @@ const QRCode = () => {
 
             {/* ── How It Works ── */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <h2 className="text-base font-bold text-slate-800 mb-4">How It Works</h2>
+              <h2 className="text-base font-bold text-slate-800 mb-4">{t("qrCode.howItWorks", "How It Works")}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  { step: '01', title: 'Select Boat', desc: 'Choose any boat you have added to the system.' },
-                  { step: '02', title: 'Generate QR',  desc: 'Click "Create QR Code" to generate a unique code with all boat details.' },
-                  { step: '03', title: 'Download & Share', desc: 'Download as PNG/PDF or share via WhatsApp, Email, or SMS.' },
+                  { step: '01', title: t("qrCode.hiw1Title", 'Select Boat'), desc: t("qrCode.hiw1Desc", 'Choose any boat you have added to the system.') },
+                  { step: '02', title: t("qrCode.hiw2Title", 'Generate QR'),  desc: t("qrCode.hiw2Desc", 'Click "Create QR Code" to generate a unique code with all boat details.') },
+                  { step: '03', title: t("qrCode.hiw3Title", 'Download & Share'), desc: t("qrCode.hiw3Desc", 'Download as PNG/PDF or share via WhatsApp, Email, or SMS.') },
                 ].map(item => (
                   <div key={item.step} className="flex gap-3">
                     <span className="text-2xl font-black text-blue-100 shrink-0">{item.step}</span>

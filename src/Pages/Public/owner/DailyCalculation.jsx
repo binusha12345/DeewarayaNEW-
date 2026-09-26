@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import SuccessNotice from "../../../components/SuccessNotice";
 import {
   FaPlus,
   FaTrash,
@@ -44,6 +45,7 @@ const DailyCalculation = () => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [loading, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [dailySaveSuccess, setDailySaveSuccess] = useState(false);
 
   const [fishEntries, setFishEntries] = useState([
     { fishName: "", quantity: "", pricePerUnit: "", unit: "kg" },
@@ -169,6 +171,7 @@ const DailyCalculation = () => {
       });
 
       setSaved(true);
+      setDailySaveSuccess(true);
 
       // Refresh past entries so new one shows
       await fetchPastEntries();
@@ -182,6 +185,7 @@ const DailyCalculation = () => {
       ]);
 
       setTimeout(() => setSaved(false), 3000);
+      setTimeout(() => setDailySaveSuccess(false), 3000);
     } catch (err) {
       alert(err.response?.data?.message || "Failed to save entry");
     } finally {
@@ -731,6 +735,15 @@ const DailyCalculation = () => {
             </div>
           </div>
         </main>
+        {dailySaveSuccess && (
+          <SuccessNotice
+            type="daily"
+            label="Save complete"
+            title="Daily entry saved successfully"
+            message="Your fish catch and expense details have been added to the finance records."
+            onClose={() => setDailySaveSuccess(false)}
+          />
+        )}
       </div>
     </div>
   );

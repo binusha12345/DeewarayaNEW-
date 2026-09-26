@@ -100,162 +100,205 @@
       "contactBtn": "Contact Sales"
     }
   },
-
-"about": {
-  "hero": {
-    "badge": "Precision Maritime Systems",
-    "title1": "ABOUT",
-    "title2": "US",
-    "description": "DEEWARAYA delivers an advanced Fishing Boat Management System designed to modernize maritime operations through intelligent automation, real-time monitoring, and comprehensive fleet oversight.",
-    "learnMoreBtn": "Learn More",
-    "liveTracking": "Live Tracking",
-    "knots": "KNOTS",
-    "trusted": "Trusted"
-  },
-  "excellence": {
-    "badge": "Our Capabilities",
-    "titlePart1": "Operational",
-    "titlePart2": "Excellence",
-    "monitor": {
-      "title": "Monitor Boats",
-      "desc": "Real-time health diagnostics for every vessel in your fleet. Monitor engine performance, fuel efficiency, and structural integrity from a single command center."
+  "about": {
+    "hero": {
+      "badge": "ABOUT US",
+      "title1": "Empowering Smarter",
+      "title2": "Safer",
+      "title3": "Fishing",
+      "desc": "DEEWARAYA delivers an advanced Fishing Boat Management System designed to modernize maritime operations through intelligent automation, real-time monitoring, and comprehensive fleet oversight.",
+      "btn": "Learn More"
     },
-    "track": {
-      "title": "Track Locations",
-      "desc": "Precise GPS positioning and historical route analysis to optimize fishing lanes and ensure territorial compliance."
+    "cards": {
+      "tracking": {
+        "title": "Real-time Tracking",
+        "desc": "Monitor your fleet in real-time with accurate location data."
+      },
+      "alerts": {
+        "title": "Smart Alerts",
+        "desc": "Get instant alerts for safety, zones, and critical updates."
+      },
+      "fleet": {
+        "title": "Fleet Management",
+        "desc": "Manage vessels, crew, and operations from one platform."
+      },
+      "live": {
+        "badge": "LIVE",
+        "knots": "KNOTS",
+        "speed": "Speed:",
+        "good": "Good"
+      }
     },
-    "crew": {
-      "title": "Manage Crew",
-      "desc": "Streamlined shift scheduling, certification tracking, and communication tools to keep your teams synchronized at sea."
+    "capabilities": {
+      "badge": "OUR CAPABILITIES",
+      "title": "Operational Excellence",
+      "desc": "Smart tools and real-time insights to help you operate safer, smarter, and more efficiently."
     },
-    "safety": {
-      "title": "Safety & Compliance",
-      "desc": "Integrated emergency protocols and automatic compliance reporting to meet international maritime safety standards effortlessly.",
-      "safetyLabel": "Safety",
-      "ratingLabel": "Rating"
+    "featureCards": {
+      "track": {
+        "title": "Track Locations",
+        "desc": "Real-time GPS tracking and route history to help you stay on course and ensure compliance in every fishing zone.",
+        "btn": "View Live Map"
+      },
+      "monitor": {
+        "title": "Monitor Vessels",
+        "desc": "Live engine data, performance alerts, and system diagnostics from a single command center.",
+        "btn": "Open Monitor",
+        "stats": {
+          "engineStatus": "Engine Status",
+          "online": "Online",
+          "fuelEfficiency": "Fuel Efficiency",
+          "engineLoad": "Engine Load"
+        }
+      },
+      "crew": {
+        "title": "Manage Crew",
+        "desc": "Shift planning, certifications, and onboard communication tools to keep your crew connected and productive.",
+        "btn": "Manage Crew",
+        "activeCrew": "Active Crew",
+        "viewAll": "View All Crew",
+        "roles": {
+          "deckhand": "Deckhand",
+          "engineer": "Engineer",
+          "navigator": "Navigator"
+        },
+        "status": {
+          "onDuty": "On Duty",
+          "resting": "Resting"
+        }
+      }
+    },
+    "modernizing": {
+      "badge": "ABOUT OUR SYSTEM",
+      "title1": "Modernizing",
+      "title2": "the",
+      "title3": "High Seas",
+      "desc": "We bridge the gap between legacy operations and future-proof digital infrastructure—providing actionable intelligence that reduces costs and maximizes yield.",
+      "features": {
+        "ai": {
+          "title": "AI-Powered Predictive Maintenance",
+          "desc": "Monitor engine and system health to prevent failures."
+        },
+        "dashboard": {
+          "title": "Unified Fleet Dashboard",
+          "desc": "Real-time visibility across all vessels for smarter decisions."
+        },
+        "gps": {
+          "title": "Secure GPS Communication",
+          "desc": "Encrypted, tamper-proof communication that keeps data safe."
+        }
+      },
+      "efficiency": {
+        "title": "Efficiency Gained",
+        "desc1": "Smarter operations.",
+        "desc2": "Lower costs. Higher yield."
+      }
     }
   },
-  "highseas": {
-    "badge": "Innovation at Sea",
-    "titlePart1": "Modernizing the",
-    "titlePart2": "High Seas",
-    "description": "The traditional fishing industry is evolving. We bridge the gap between legacy operations and future-proof digital infrastructure. Our system doesn't just track data—it provides actionable intelligence that reduces costs and maximizes yield.",
-    "globalSupport": "Global Support",
-    "efficiencyGained": "Efficiency Gained",
-    "feature1": "Intelligent AI-driven predictive maintenance",
-    "feature2": "Unified dashboard for multi-fleet management",
-    "feature3": "Encrypted simulated-GPS-linked communication"
-  }
-},
-"login": {
-  "heading1": "Navigate The Digital",
-  "heading2": "Horizon",
-  "subtext": "Experience the precision of modern maritime ledgering and intelligence with Deewaraya.",
-  "title": "Login..!",
-  "subtitle": "Access your maritime dashboard",
-  "emailLabel": "EMAIL",
-  "emailPlaceholder": "Enter your email",
-  "passwordLabel": "PASSWORD",
-  "passwordPlaceholder": "Enter your password",
-  "loginBtn": "Login",
-  "loggingIn": "Logging in...",
-  "loginFailed": "Login failed",
-  "forgotPassword": "Forgot Password?",
-  "noAccount": "Don't have an account?",
-  "signUp": "Sign Up"
-}
-,
-
-"register": {
-  "welcomeTo": "WelCome To",
-  "description": "Real Fishing Boat Management and Tracking System for Sri Lanka's Coastal Communities. Empowering boat owners and drivers with real-time insights, fleet management, and advanced analytics to navigate the seas with confidence.",
-  "feature1Title": "Fleet Command",
-  "feature1Desc": "Real-time tracking and logistics management.",
-  "feature2Title": "Advanced Analytics",
-  "feature2Desc": "Actionable insights from your vessel's telemetry.",
-  "title": "Register Now..!",
-  "subtitle": "Begin your maritime journey today.",
-  "selectRole": "Select User Role",
-  "boatOwner": "Boat Owner",
-  "boatDriver": "Boat Driver",
-  "nameLabel": "Name",
-  "namePlaceholder": "Enter your name",
-  "emailLabel": "Email",
-  "emailPlaceholder": "Enter your email",
-  "phoneLabel": "Phone",
-  "phonePlaceholder": "Enter phone number",
-  "nicLabel": "NIC",
-  "nicPlaceholder": "Enter NIC number",
-  "addressLabel": "Address",
-  "addressPlaceholder": "Enter your address",
-  "passwordLabel": "Password",
-  "confirmPasswordLabel": "Confirm Password",
-  "registerBtn": "Register",
-  "registering": "Registering...",
-  "haveAccount": "Already have an account?",
-  "signIn": "Sign In",
-  "passwordMismatch": "Passwords do not match",
-  "successMsg": "Registration successful!",
-  "failedMsg": "Registration failed",
-  "copyright": "— HORIZON PERSPECTIVE © 2024"
-}
-,
-"navbar": {
-  "home": "Home",
-  "about": "About",
-  "features": "Features",
-  "contact": "Contact",
-  "login": "Login",
-  "register": "Register",
-  "logout": "Logout",
-  "myProfile": "My Profile",
-  "dashboard": "Dashboard",
-  "boatOwner": "Boat Owner",
-  "boatDriver": "Boat Driver",
-  "darkMode": "Dark Mode",
-  "lightMode": "Light Mode",
-  "toggleTheme": "Toggle Theme",
-  "toggleMobileMenu": "Toggle Mobile Menu"
-}
-,
-"footer": {
-  "newsletter": {
-    "title": "Stay Updated",
-    "subtitle": "Subscribe to get maritime updates and safety alerts",
-    "placeholder": "Enter your email",
-    "subscribeBtn": "Subscribe"
+  "login": {
+    "heading1": "Navigate The Digital",
+    "heading2": "Horizon",
+    "subtext": "Experience the precision of modern maritime ledgering and intelligence with Deewaraya.",
+    "title": "Login..!",
+    "subtitle": "Access your maritime dashboard",
+    "emailLabel": "EMAIL",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "PASSWORD",
+    "passwordPlaceholder": "Enter your password",
+    "loginBtn": "Login",
+    "loggingIn": "Logging in...",
+    "loginFailed": "Login failed",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign Up"
   },
-  "brand": {
-    "description": "Leading the digital transformation of maritime and fishing fleet management worldwide. Sail smart, sail safe.",
-    "trusted": "Trusted by 10,000+ Sailors"
+  "register": {
+    "welcomeTo": "WelCome To",
+    "description": "Real Fishing Boat Management and Tracking System for Sri Lanka's Coastal Communities. Empowering boat owners and drivers with real-time insights, fleet management, and advanced analytics to navigate the seas with confidence.",
+    "feature1Title": "Fleet Command",
+    "feature1Desc": "Real-time tracking and logistics management.",
+    "feature2Title": "Advanced Analytics",
+    "feature2Desc": "Actionable insights from your vessel's telemetry.",
+    "title": "Register Now..!",
+    "subtitle": "Begin your maritime journey today.",
+    "selectRole": "Select User Role",
+    "boatOwner": "Boat Owner",
+    "boatDriver": "Boat Driver",
+    "nameLabel": "Name",
+    "namePlaceholder": "Enter your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "Enter phone number",
+    "nicLabel": "NIC",
+    "nicPlaceholder": "Enter NIC number",
+    "addressLabel": "Address",
+    "addressPlaceholder": "Enter your address",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "registerBtn": "Register",
+    "registering": "Registering...",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "passwordMismatch": "Passwords do not match",
+    "successMsg": "Registration successful!",
+    "failedMsg": "Registration failed",
+    "copyright": "— HORIZON PERSPECTIVE © 2024"
   },
-  "productTitle": "Product",
-  "productLinks": {
-    "liveTracking": "Live Tracking",
-    "analytics": "Analytics",
-    "safetyNotices": "Safety Notices",
-    "weatherAlerts": "Weather Alerts"
+  "navbar": {
+    "home": "Home",
+    "about": "About",
+    "features": "Features",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "myProfile": "My Profile",
+    "dashboard": "Dashboard",
+    "boatOwner": "Boat Owner",
+    "boatDriver": "Boat Driver",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "toggleTheme": "Toggle Theme",
+    "toggleMobileMenu": "Toggle Mobile Menu"
   },
-  "companyTitle": "Company",
-  "companyLinks": {
-    "aboutUs": "About Us",
-    "fleetLogin": "Fleet Login",
-    "privacyPolicy": "Privacy Policy",
-    "careers": "Careers"
+  "footer": {
+    "newsletter": {
+      "title": "Stay Updated",
+      "subtitle": "Subscribe to get maritime updates and safety alerts",
+      "placeholder": "Enter your email",
+      "subscribeBtn": "Subscribe"
+    },
+    "brand": {
+      "description": "Leading the digital transformation of maritime and fishing fleet management worldwide. Sail smart, sail safe.",
+      "trusted": "Trusted by 10,000+ Sailors"
+    },
+    "productTitle": "Product",
+    "productLinks": {
+      "liveTracking": "Live Tracking",
+      "analytics": "Analytics",
+      "safetyNotices": "Safety Notices",
+      "weatherAlerts": "Weather Alerts"
+    },
+    "companyTitle": "Company",
+    "companyLinks": {
+      "aboutUs": "About Us",
+      "fleetLogin": "Fleet Login",
+      "privacyPolicy": "Privacy Policy",
+      "careers": "Careers"
+    },
+    "contactTitle": "Contact Us",
+    "contact": {
+      "address": "No. 123, Hiriketiya, Sri Lanka"
+    },
+    "rightsReserved": "All Rights Reserved.",
+    "legal": {
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "cookies": "Cookies"
+    },
+    "backToTop": "Back to Top"
   },
-  "contactTitle": "Contact Us",
-  "contact": {
-    "address": "No. 123, Hiriketiya, Sri Lanka"
-  },
-  "rightsReserved": "All Rights Reserved.",
-  "legal": {
-    "terms": "Terms",
-    "privacy": "Privacy",
-    "cookies": "Cookies"
-  },
-  "backToTop": "Back to Top"
-}
-,
   "forgotPassword": {
     "title": "🔑 Forgot Password?",
     "subtitle": "No worries! Enter your email and we'll send you a reset link.",
@@ -271,9 +314,8 @@
     "linkExpires": "Link expires in {{minutes}} minutes",
     "checkSpam": "Check your spam/junk folder if you don't see it",
     "backToLogin": "← Back to Login"
-  }
-,
-"resetPassword": {
+  },
+  "resetPassword": {
     "title": "🔒 Reset Your Password",
     "subtitle": "Enter a new password for your account below.",
     "newPasswordLabel": "New Password",
@@ -291,9 +333,8 @@
     "successTitle": "Password Reset!",
     "redirecting": "Redirecting to login page...",
     "goToLogin": "🔐 Go to Login"
-  }
-,
- "profile": {
+  },
+  "profile": {
     "roles": {
       "owner": "Boat Owner",
       "driver": "Boat Driver"
@@ -326,9 +367,8 @@
       "address": "Address"
     },
     "footer": "Deewaraya · Fishing Boat Management & Tracking"
-  }
-,
- "ownerDashboard": {
+  },
+  "ownerDashboard": {
     "overview": "Overview",
     "welcome": "Welcome back, {{name}}",
     "manageFleet": "Manage and monitor your fleet operations.",
@@ -366,8 +406,7 @@
         "thu": "THU"
       }
     }
-  }
-,
+  },
   "sidebar": {
     "fleetManagement": "Fleet Management",
     "dashboard": "Dashboard",
@@ -380,23 +419,34 @@
     "qrCode": "QR Code",
     "settings": "Settings",
     "footer": "© 2026 Deewaraya"
-  }
-,
+  },
   "features": {
     "hero": {
       "subtitle": "Fleet Management",
       "tagline": "Safety. Tracking. Profit. 🌊",
       "stats": {
-        "features": { "count": "7",   "label": "Features" },
-        "safety":   { "count": "6",   "label": "Safety"   },
-        "coming":   { "count": "4",   "label": "Coming"   },
-        "live":     { "count": "24/7","label": "Live"     }
+        "features": {
+          "count": "7",
+          "label": "Features"
+        },
+        "safety": {
+          "count": "6",
+          "label": "Safety"
+        },
+        "coming": {
+          "count": "4",
+          "label": "Coming"
+        },
+        "live": {
+          "count": "24/7",
+          "label": "Live"
+        }
       }
     },
     "core": {
       "badge": "CORE",
       "title": "Platform Features",
-      "hint":  "👆 Tap to expand"
+      "hint": "👆 Tap to expand"
     },
     "special": {
       "badge": "SPECIAL",
@@ -407,10 +457,384 @@
       "title": "Coming Soon 🔮"
     },
     "cta": {
-      "title":  "Protect Your Fleet Today",
+      "title": "Protect Your Fleet Today",
       "button": "Get Started Free →"
+    }
+  },
+  "fleetSupport": {
+    "hero": {
+      "badge": "Fleet Support",
+      "title1": "Reliable Connectivity",
+      "title2": "for Every Fleet.",
+      "description": "Streamline your marine operations with our tactical management system. Expert support available 24/7 across the globe.",
+      "sendMessage": "Send us a message",
+      "whatsapp": "Chat on WhatsApp",
+      "features": {
+        "0": "Real-time GPS tracking",
+        "1": "Weather & tide monitoring",
+        "2": "Emergency SOS system",
+        "3": "Fleet analytics dashboard"
+      }
+    },
+    "cards": {
+      "phone": {
+        "title": "Phone Support",
+        "desc": "24/7 technical assistance for critical connectivity issues.",
+        "linkText": "Call Now"
+      },
+      "email": {
+        "title": "Email Support",
+        "desc": "Detailed troubleshooting and non-urgent inquiries.",
+        "linkText": "Email Us"
+      },
+      "whatsapp": {
+        "title": "WhatsApp Help",
+        "desc": "Quick messaging for fast resolution on the go.",
+        "linkText": "Message"
+      },
+      "global": {
+        "title": "Global Offices",
+        "desc": "Locate and contact our international support centers.",
+        "linkText": "Find Offices"
+      }
+    },
+    "operations": {
+      "badge": "Operations Live",
+      "title1": "Monitoring 500+ vessels",
+      "title2": "across the ocean",
+      "desc": "Our command center operates around the clock to ensure your fleet stays connected, safe, and efficient.",
+      "getInTouch": "Get in Touch"
+    },
+    "stats": {
+      "activeVessels": "Active Vessels",
+      "liveSupport": "Live Support",
+      "uptime": "System Uptime",
+      "responseTime": "Response Time"
+    },
+    "contact": {
+      "badge": "Contact Form",
+      "title": "Let's discuss your fleet",
+      "desc": "Fill out the form below and our marine experts will get back to you within 24 hours."
+    },
+    "contactInfo": {
+      "title": "Contact Information",
+      "desc": "Reach out through any of these channels",
+      "callUs": "Call us",
+      "emailUs": "Email us",
+      "visitUs": "Visit us",
+      "address1": "Ambalangoda Harbour",
+      "address2": "Balapitiya, Sri Lanka",
+      "workingHours": "Working hours",
+      "workingHoursValue": "24/7 Available",
+      "followUs": "Follow us"
+    },
+    "form": {
+      "name": "Full Name *",
+      "namePlaceholder": "John Smith",
+      "email": "Email Address *",
+      "emailPlaceholder": "you@example.com",
+      "subjectLabel": "Subject *",
+      "subjectPlaceholder": "Choose a subject...",
+      "messageLabel": "Message *",
+      "messagePlaceholder": "Tell us how we can help you...",
+      "sendBtn": "Send Message",
+      "sending": "Sending...",
+      "sent": "Message Sent Successfully!",
+      "secureInfo": "Your information is secure and encrypted",
+      "subjects": {
+        "technical": "Technical Support",
+        "gps": "GPS / Tracking Issue",
+        "vessel": "Vessel Management",
+        "billing": "Billing & Plans",
+        "demo": "Request a Demo",
+        "feedback": "General Feedback"
+      }
+    },
+    "faqSection": {
+      "badge": "FAQ",
+      "title": "Frequently Asked Questions",
+      "desc": "Quick answers to common questions"
+    },
+    "faq": {
+      "q1": {
+        "question": "Why is my vessel showing as offline?",
+        "answer": "Vessels may show offline due to poor satellite coverage, device battery issues, or antenna obstructions. Check the device power indicator and ensure clear sky visibility."
+      },
+      "q2": {
+        "question": "How often does the GPS location update?",
+        "answer": "GPS updates every 30 seconds when moving, and every 5 minutes when anchored to conserve battery life."
+      },
+      "q3": {
+        "question": "How do I add a new boat to my fleet?",
+        "answer": "Navigate to Dashboard > Fleet Management > Add Vessel. Enter vessel details and tracking device ID to activate."
+      },
+      "q4": {
+        "question": "Can I track my fleet from mobile?",
+        "answer": "Yes! Download our mobile app on iOS and Android to monitor vessels in real-time with instant alerts."
+      }
+    },
+    "location": {
+      "badge": "Our Location",
+      "title": "Visit Our Office",
+      "desc": "Located at Ambalangoda Fishery Harbour",
+      "hqName": "Deewaraya Headquarters",
+      "hqAddress": "No.102/4 Heenatiya, Balapitiya, Sri Lanka",
+      "getDirections": "Get Directions"
+    },
+    "cta": {
+      "title": "Ready to modernize your fleet?",
+      "desc": "Join hundreds of fleet operators who trust our marine management platform. Get started today.",
+      "getStarted": "Get Started",
+      "whatsappBtn": "WhatsApp"
+    },
+    "floating": {
+      "needHelp": "Need Help?"
+    }
+  },
+  "features": {
+    "hero": {
+      "badge": "Deewaraya Platform",
+      "title1": "Everything your fleet needs,",
+      "title2": "in one platform.",
+      "tagline": "Real-time tracking, safety alerts, and fleet analytics — purpose-built for fishing operations.",
+      "exploreBtn": "Explore features"
+    },
+    "sections": {
+      "core": "Core features",
+      "safety": "Safety features",
+      "upcoming": "Coming soon"
+    },
+    "why": {
+      "badge": "Why Deewaraya",
+      "title": "Purpose-built for Sri Lankan fishing operations.",
+      "description": "Every feature is designed with input from fleet operators in Ambalangoda and beyond. From offline SMS alerts to navy zone warnings, we build what fishing communities actually need.",
+      "points": {
+        "0": "Works offline with SMS fallback",
+        "1": "Available in Sinhala, Tamil, and English",
+        "2": "Designed for daily use at sea"
+      }
+    },
+    "coreSection": {
+      "eyebrow": "Core features",
+      "title": "Built for daily fleet operations.",
+      "description": "Every capability designed around the workflows fishing operators use every day — from tracking vessels at sea to managing crews on shore."
+    },
+    "safetySection": {
+      "eyebrow": "Safety features",
+      "title": "Keep every crew member safe.",
+      "description": "Dedicated safety capabilities to help operators monitor conditions, respond to emergencies, and stay compliant."
+    },
+    "upcomingSection": {
+      "eyebrow": "Coming soon",
+      "title": "What we're building next.",
+      "description": "A preview of features currently in development, prioritized based on feedback from active fleet operators."
+    },
+    "mission": {
+      "badge": "Our purpose",
+      "mainTitle": "Building for the future of fishing.",
+      "missionEyebrow": "Our mission",
+      "missionTitle": "Empower fishing communities with reliable technology.",
+      "missionDesc": "We build tools that improve safety, efficiency, and daily decision-making for fishing operators across Sri Lanka.",
+      "visionEyebrow": "Our vision",
+      "visionTitle": "Set the standard for marine fleet operations.",
+      "visionDesc": "To become the trusted platform that fishing fleets rely on — from small operators to large commercial fleets."
+    },
+    "core": {
+      "tracking": {
+        "title": "Real-time vessel tracking",
+        "description": "Monitor the exact location, speed, and heading of every boat in your fleet, updated live from the sea.",
+        "points": {
+          "0": "GPS position refresh every 30 seconds",
+          "1": "Historical route playback for the last 90 days",
+          "2": "Speed, heading, and idle time analytics",
+          "3": "Multi-vessel view on a single dashboard"
+        }
+      },
+      "coverage": {
+        "title": "Network coverage map",
+        "description": "Plan every trip with confidence using our detailed offshore network coverage overlays.",
+        "points": {
+          "0": "Live cellular and satellite coverage layers",
+          "1": "Signal strength indicators along common fishing routes",
+          "2": "Offline-ready map tiles for low-connectivity zones"
+        }
+      },
+      "fleet": {
+        "title": "Fleet management dashboard",
+        "description": "Manage vessels, crew, and equipment records from a single unified interface.",
+        "points": {
+          "0": "Vessel registration and document management",
+          "1": "Crew assignment and shift scheduling",
+          "2": "Maintenance logs and service reminders"
+        }
+      },
+      "weather": {
+        "title": "Weather & sea conditions",
+        "description": "Access accurate marine forecasts and receive alerts before conditions change.",
+        "points": {
+          "0": "Wind, wave, and swell forecasts up to 7 days ahead",
+          "1": "Storm and rough-sea advisories",
+          "2": "Sunrise, sunset, and tide information"
+        }
+      }
+    },
+    "special": {
+      "sms": {
+        "title": "SMS safety alerts",
+        "description": "Critical danger warnings delivered by SMS — no internet required on the vessel.",
+        "points": {
+          "0": "Wind, visibility, and wave-height warnings",
+          "1": "Storm and cyclone advisories",
+          "2": "Delivered even in offline coverage zones"
+        },
+        "badge": "Life saving"
+      },
+      "navy": {
+        "title": "Navy barrier zones",
+        "description": "Restricted maritime zones mapped clearly with proximity alerts before crossing.",
+        "points": {
+          "0": "All official restricted zones pre-mapped",
+          "1": "Alert triggered 2 km before boundary",
+          "2": "SMS backup for offline devices"
+        },
+        "badge": "Compliance"
+      },
+      "signal": {
+        "title": "Signal strength indicators",
+        "description": "A simple traffic-light system that shows network signal reliability at sea.",
+        "points": {
+          "0": "Green, yellow, and red status indicators",
+          "1": "Historical signal patterns per route",
+          "2": "Helps plan check-in timing with shore"
+        },
+        "badge": "Smart"
+      },
+      "anchor": {
+        "title": "Anchor detection",
+        "description": "Automatically detect when a vessel drops anchor and notify the fleet owner.",
+        "points": {
+          "0": "Precise anchor location logged on the map",
+          "1": "Distance-from-shore calculation",
+          "2": "Drift alert if vessel moves unexpectedly"
+        },
+        "badge": "Tracking"
+      }
+    },
+    "upcoming": {
+      "analytics": {
+        "title": "Advanced fleet analytics",
+        "description": "In-depth reports on fuel efficiency, catch performance, and vessel utilization.",
+        "eta": "Q2 2025"
+      },
+      "crew": {
+        "title": "Dedicated crew mobile app",
+        "description": "A companion app for crew members with schedules, check-ins, and emergency tools.",
+        "eta": "Q3 2025"
+      },
+      "weatherAI": {
+        "title": "AI weather predictions",
+        "description": "Machine-learning models trained on local sea conditions for hyperlocal forecasts.",
+        "eta": "Q4 2025"
+      }
+    },
+    "common": {
+      "section": "SECTION",
+      "comingSoon": "Coming soon",
+      "keyCapabilities": "Key capabilities",
+      "expectedRelease": "Expected release"
+    }
+  },
+  "boats": {
+    "list": {
+      "breadcrumb": {
+        "fleet": "Fleet",
+        "vesselList": "Vessel List"
+      },
+      "title": "Boats Management",
+      "addNewBoat": "Add New Boat",
+      "loading": "Loading boats...",
+      "noBoats": "No boats found. Click",
+      "noBoatsAction": "Add New Boat",
+      "noBoatsEnd": "to register your first boat.",
+      "loadError": "Failed to load boats",
+      "card": {
+        "boat": "Boat",
+        "registrationNo": "Registration No",
+        "manufactureYear": "Boat Manufacture Year",
+        "engineType": "Engine Type",
+        "viewDetails": "View Details"
+      },
+      "status": {
+        "active": "ACTIVE",
+        "maintenance": "MAINTENANCE",
+        "nonActive": "NON-ACTIVE"
+      }
+    },
+    "add": {
+      "breadcrumb": "Fleet Expansion",
+      "title": "Register New Boat",
+      "description": "Complete the technical specifications to induct a new vessel into the Authority's monitoring network.",
+      "sections": {
+        "boatInfo": "Boat Information",
+        "engineDetails": "Engine & Technical Details",
+        "vesselImagery": "Vessel Imagery",
+        "compliance": "Regulatory Compliance"
+      },
+      "fields": {
+        "boatName": "BOAT NAME",
+        "boatNamePlaceholder": "e.g. Sea Guardian II",
+        "registrationNumber": "REGISTRATION NUMBER",
+        "registrationPlaceholder": "MAR-990-234X",
+        "boatType": "BOAT TYPE",
+        "selectCategory": "Select Category",
+        "manufactureYear": "BOAT MANUFACTURE YEAR",
+        "manufactureYearPlaceholder": "2024",
+        "engineSerial": "ENGINE SERIAL",
+        "engineSerialPlaceholder": "S/N 8839120",
+        "boatStatus": "BOAT STATUS",
+        "fuelCapacity": "FUEL CAPACITY (L) OF THE BOAT",
+        "fuelCapacityPlaceholder": "500",
+        "liters": "Liters",
+        "horsepower": "HORSEPOWER (HP)",
+        "horsepowerPlaceholder": "350",
+        "hp": "HP",
+        "engineType": "ENGINE TYPE",
+        "engineTypePlaceholder": "Yamaha"
+      },
+      "boatTypes": {
+        "ruvala": "Ruvala",
+        "oneDay": "One-day Boat",
+        "tanker": "Tanker Boat"
+      },
+      "status": {
+        "nonActive": "NON-ACTIVE",
+        "active": "ACTIVE",
+        "maintenance": "MAINTENANCE"
+      },
+      "upload": {
+        "chooseImage": "Choose Boat Image",
+        "helperText": "Select an image from your computer",
+        "previewFrame": "Preview Frame"
+      },
+      "compliance": {
+        "description": "Registration details will be verified against the IMO Global Integrated Shipping Information System. Ensure all technical fields match manufacturer documentation.",
+        "authCode": "Auth Code"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "saveDraft": "Save Draft",
+        "register": "Register Boat",
+        "saving": "Saving..."
+      },
+      "messages": {
+        "notLoggedIn": "❌ You are not logged in. Please login first.",
+        "requiredFields": "Boat Name, Registration Number, Boat Type, Model/Year needed.",
+        "modelYearInvalid": "Model year must be exactly 4 digits.",
+        "fuelCapacityInvalid": "Fuel capacity must be greater than 0.",
+        "successRegistered": "Boat registered successfully",
+        "draftSaved": "Draft saved locally.",
+        "registrationFailed": "Boat registration failed"
+      }
     }
   }
 }
-
-

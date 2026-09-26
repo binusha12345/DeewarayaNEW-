@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import HomeNavBar from "../../components/HomeNavBar";
 import HomeFooter from '../../components/HomeFooter';
 
 const AboutPage = () => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState({});
   const sectionRefs = useRef({});
 
@@ -56,7 +58,7 @@ const AboutPage = () => {
               isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            ABOUT US
+            {t("about.hero.badge", "ABOUT US")}
           </p>
 
           <h1
@@ -64,9 +66,9 @@ const AboutPage = () => {
               isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            Empowering Smarter
+            {t("about.hero.title1", "Empowering Smarter")}
             <br />
-            Safer <span className="text-cyan-400">Fishing</span>
+            {t("about.hero.title2", "Safer")} <span className="text-cyan-400">{t("about.hero.title3", "Fishing")}</span>
           </h1>
 
           {/* Blue underline */}
@@ -81,9 +83,7 @@ const AboutPage = () => {
               isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            DEEWARAYA delivers an advanced Fishing Boat Management System
-            designed to modernize maritime operations through intelligent
-            automation, real-time monitoring, and comprehensive fleet oversight.
+            {t("about.hero.desc", "DEEWARAYA delivers an advanced Fishing Boat Management System designed to modernize maritime operations through intelligent automation, real-time monitoring, and comprehensive fleet oversight.")}
           </p>
 
           <div
@@ -92,7 +92,7 @@ const AboutPage = () => {
             }`}
           >
             <button className="group flex items-center gap-3 bg-blue-600/80 border border-cyan-800/80 text-white px-6 py-2 rounded-lg hover:bg-cyan-500 hover:border-cyan-500 transition-all duration-300 backdrop-blur-sm mt-[-20px]">
-              <span className="font-medium">Learn More</span>
+              <span className="font-medium">{t("about.hero.btn", "Learn More")}</span>
               <svg
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                 fill="none"
@@ -125,9 +125,9 @@ const AboutPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-[16px]">Real-time Tracking</h3>
+                    <h3 className="font-bold text-gray-900 text-[16px]">{t("about.cards.tracking.title", "Real-time Tracking")}</h3>
                     <p className="text-gray-500 text-[13px] mt-0.5 leading-relaxed">
-                      Monitor your fleet in real-time with accurate location data.
+                      {t("about.cards.tracking.desc", "Monitor your fleet in real-time with accurate location data.")}
                     </p>
                   </div>
                 </div>
@@ -140,9 +140,9 @@ const AboutPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-[16px]">Smart Alerts</h3>
+                    <h3 className="font-bold text-gray-900 text-[16px]">{t("about.cards.alerts.title", "Smart Alerts")}</h3>
                     <p className="text-gray-500 text-[13px] mt-0.5 leading-relaxed">
-                      Get instant alerts for safety, zones, and critical updates.
+                      {t("about.cards.alerts.desc", "Get instant alerts for safety, zones, and critical updates.")}
                     </p>
                   </div>
                 </div>
@@ -155,9 +155,9 @@ const AboutPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-[16px]">Fleet Management</h3>
+                    <h3 className="font-bold text-gray-900 text-[16px]">{t("about.cards.fleet.title", "Fleet Management")}</h3>
                     <p className="text-gray-500 text-[13px] mt-0.5 leading-relaxed">
-                      Manage vessels, crew, and operations from one platform.
+                      {t("about.cards.fleet.desc", "Manage vessels, crew, and operations from one platform.")}
                     </p>
                   </div>
                 </div>
@@ -166,13 +166,13 @@ const AboutPage = () => {
                 <div className="py-3 px-5 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center gap-4 group">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
-                    <span className="text-white/80 text-[11px] font-semibold tracking-wider">LIVE</span>
+                    <span className="text-white/80 text-[11px] font-semibold tracking-wider">{t("about.cards.live.badge", "LIVE")}</span>
                   </div>
                   <div className="flex items-center justify-between flex-1">
                     <div>
-                      <p className="text-lg font-bold text-white leading-tight">24.5 KNOTS</p>
+                      <p className="text-lg font-bold text-white leading-tight">24.5 {t("about.cards.live.knots", "KNOTS")}</p>
                       <p className="text-white/70 text-[11px]">
-                        Speed: <span className="text-green-400 font-medium">Good</span>
+                        {t("about.cards.live.speed", "Speed:")} <span className="text-green-400 font-medium">{t("about.cards.live.good", "Good")}</span>
                       </p>
                     </div>
                     <svg className="w-12 h-8 text-white/30" viewBox="0 0 80 40" fill="none" stroke="currentColor">
@@ -206,14 +206,14 @@ const AboutPage = () => {
                 isVisible['capabilities-hero'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
               }`}
             >
-              OUR CAPABILITIES
+              {t("about.capabilities.badge", "OUR CAPABILITIES")}
             </p>
             <h2
               className={`text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-[550] text-white leading-tight mb-4 transition-all duration-700 delay-200 ${
                 isVisible['capabilities-hero'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
             >
-              Operational Excellence
+              {t("about.capabilities.title", "Operational Excellence")}
             </h2>
             <div
               className={`w-16 h-1 bg-cyan-500 rounded mb-6 transition-all duration-700 delay-300 ${
@@ -225,7 +225,7 @@ const AboutPage = () => {
                 isVisible['capabilities-hero'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
               }`}
             >
-              Smart tools and real-time insights to help you operate safer, smarter, and more efficiently.
+              {t("about.capabilities.desc", "Smart tools and real-time insights to help you operate safer, smarter, and more efficiently.")}
             </p>
           </div>
         </div>
@@ -255,13 +255,13 @@ const AboutPage = () => {
                     </svg>
                   </div>
 
-                  <h3 className="text-base font-bold text-gray-900 mb-1.5">Track Locations</h3>
+                  <h3 className="text-base font-bold text-gray-900 mb-1.5">{t("about.featureCards.track.title", "Track Locations")}</h3>
                   <p className="text-gray-500 text-xs leading-relaxed mb-4">
-                    Real-time GPS tracking and route history to help you stay on course and ensure compliance in every fishing zone.
+                    {t("about.featureCards.track.desc", "Real-time GPS tracking and route history to help you stay on course and ensure compliance in every fishing zone.")}
                   </p>
 
                   <button className="mt-auto flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-medium hover:bg-blue-700 transition-colors group/btn w-fit">
-                    View Live Map
+                    {t("about.featureCards.track.btn", "View Live Map")}
                     <svg className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -295,13 +295,13 @@ const AboutPage = () => {
                     </svg>
                   </div>
 
-                  <h3 className="text-base font-bold text-gray-900 mb-1.5">Monitor Vessels</h3>
+                  <h3 className="text-base font-bold text-gray-900 mb-1.5">{t("about.featureCards.monitor.title", "Monitor Vessels")}</h3>
                   <p className="text-gray-500 text-xs leading-relaxed mb-4">
-                    Live engine data, performance alerts, and system diagnostics from a single command center.
+                    {t("about.featureCards.monitor.desc", "Live engine data, performance alerts, and system diagnostics from a single command center.")}
                   </p>
 
                   <button className="mt-auto flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-medium hover:bg-blue-700 transition-colors group/btn w-fit">
-                    Open Monitor
+                    {t("about.featureCards.monitor.btn", "Open Monitor")}
                     <svg className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -311,15 +311,15 @@ const AboutPage = () => {
                 {/* Right Mini Dashboard */}
                 <div className="w-28 sm:w-32 bg-white rounded-xl p-2.5 border border-gray-200 flex-shrink-0">
                   <div className="mb-2">
-                    <p className="text-[9px] text-gray-500">Engine Status</p>
-                    <p className="text-[11px] font-bold text-green-500">Online</p>
+                    <p className="text-[9px] text-gray-500">{t("about.featureCards.monitor.stats.engineStatus", "Engine Status")}</p>
+                    <p className="text-[11px] font-bold text-green-500">{t("about.featureCards.monitor.stats.online", "Online")}</p>
                   </div>
                   <div className="mb-2">
-                    <p className="text-[9px] text-gray-500">Fuel Efficiency</p>
+                    <p className="text-[9px] text-gray-500">{t("about.featureCards.monitor.stats.fuelEfficiency", "Fuel Efficiency")}</p>
                     <p className="text-[11px] font-bold text-gray-900">87%</p>
                   </div>
                   <div className="mb-2">
-                    <p className="text-[9px] text-gray-500">Engine Load</p>
+                    <p className="text-[9px] text-gray-500">{t("about.featureCards.monitor.stats.engineLoad", "Engine Load")}</p>
                     <p className="text-[11px] font-bold text-gray-900">72%</p>
                   </div>
                   <svg className="w-full h-6 text-blue-400" viewBox="0 0 80 20" fill="none" stroke="currentColor">
@@ -345,13 +345,13 @@ const AboutPage = () => {
                     </svg>
                   </div>
 
-                  <h3 className="text-base font-bold text-gray-900 mb-1.5">Manage Crew</h3>
+                  <h3 className="text-base font-bold text-gray-900 mb-1.5">{t("about.featureCards.crew.title", "Manage Crew")}</h3>
                   <p className="text-gray-500 text-xs leading-relaxed mb-4">
-                    Shift planning, certifications, and onboard communication tools to keep your crew connected and productive.
+                    {t("about.featureCards.crew.desc", "Shift planning, certifications, and onboard communication tools to keep your crew connected and productive.")}
                   </p>
 
                   <button className="mt-auto flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-full text-xs font-medium hover:bg-teal-700 transition-colors group/btn w-fit">
-                    Manage Crew
+                    {t("about.featureCards.crew.btn", "Manage Crew")}
                     <svg className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -360,12 +360,12 @@ const AboutPage = () => {
 
                 {/* Right Crew List */}
                 <div className="w-32 sm:w-36 bg-white rounded-xl p-2.5 border border-gray-200 flex-shrink-0">
-                  <p className="text-[10px] font-bold text-gray-700 mb-2">Active Crew</p>
+                  <p className="text-[10px] font-bold text-gray-700 mb-2">{t("about.featureCards.crew.activeCrew", "Active Crew")}</p>
                   <div className="space-y-2">
                     {[
-                      { name: 'A. Rahman', role: 'Deckhand', status: 'On Duty', color: 'text-green-500' },
-                      { name: 'M. Hasan', role: 'Engineer', status: 'On Duty', color: 'text-green-500' },
-                      { name: 'S. Karim', role: 'Navigator', status: 'Resting', color: 'text-yellow-500' },
+                      { name: 'A. Rahman', role: t("about.featureCards.crew.roles.deckhand", "Deckhand"), status: t("about.featureCards.crew.status.onDuty", "On Duty"), color: 'text-green-500' },
+                      { name: 'M. Hasan', role: t("about.featureCards.crew.roles.engineer", "Engineer"), status: t("about.featureCards.crew.status.onDuty", "On Duty"), color: 'text-green-500' },
+                      { name: 'S. Karim', role: t("about.featureCards.crew.roles.navigator", "Navigator"), status: t("about.featureCards.crew.status.resting", "Resting"), color: 'text-yellow-500' },
                     ].map((crew, i) => (
                       <div key={i} className="flex items-center gap-1.5">
                         <div className="w-5 h-5 rounded-full bg-blue-200 flex items-center justify-center text-[8px] font-bold text-blue-700 flex-shrink-0">
@@ -380,7 +380,7 @@ const AboutPage = () => {
                     ))}
                   </div>
                   <button className="mt-2 text-[9px] text-blue-600 font-medium flex items-center gap-0.5 hover:text-blue-700">
-                    View All Crew
+                    {t("about.featureCards.crew.viewAll", "View All Crew")}
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -478,7 +478,7 @@ const AboutPage = () => {
                 }`}
               >
                 <div className="w-10 h-[2px] bg-gray-300" />
-                <p className="text-cyan-700 font-semibold tracking-[3px] text-sm">ABOUT OUR SYSTEM</p>
+                <p className="text-cyan-700 font-semibold tracking-[3px] text-sm">{t("about.modernizing.badge", "ABOUT OUR SYSTEM")}</p>
               </div>
 
               <h2
@@ -486,9 +486,9 @@ const AboutPage = () => {
                   isVisible.modernizing ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
               >
-                Modernizing
+                {t("about.modernizing.title1", "Modernizing")}
                 <br />
-                the <span className="text-blue-500">High Seas</span>
+                {t("about.modernizing.title2", "the")} <span className="text-blue-500">{t("about.modernizing.title3", "High Seas")}</span>
               </h2>
 
               <p
@@ -496,8 +496,7 @@ const AboutPage = () => {
                   isVisible.modernizing ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
                 }`}
               >
-                We bridge the gap between legacy operations and future-proof digital infrastructure—providing actionable
-                intelligence that reduces costs and maximizes yield.
+                {t("about.modernizing.desc", "We bridge the gap between legacy operations and future-proof digital infrastructure—providing actionable intelligence that reduces costs and maximizes yield.")}
               </p>
 
               <div
@@ -510,8 +509,8 @@ const AboutPage = () => {
               <div className="space-y-8">
                 {[
                   {
-                    title: 'AI-Powered Predictive Maintenance',
-                    desc: 'Monitor engine and system health to prevent failures.',
+                    title: t("about.modernizing.features.ai.title", "AI-Powered Predictive Maintenance"),
+                    desc: t("about.modernizing.features.ai.desc", "Monitor engine and system health to prevent failures."),
                     icon: (
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -520,8 +519,8 @@ const AboutPage = () => {
                     delay: 500,
                   },
                   {
-                    title: 'Unified Fleet Dashboard',
-                    desc: 'Real-time visibility across all vessels for smarter decisions.',
+                    title: t("about.modernizing.features.dashboard.title", "Unified Fleet Dashboard"),
+                    desc: t("about.modernizing.features.dashboard.desc", "Real-time visibility across all vessels for smarter decisions."),
                     icon: (
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -530,8 +529,8 @@ const AboutPage = () => {
                     delay: 600,
                   },
                   {
-                    title: 'Secure GPS Communication',
-                    desc: 'Encrypted, tamper-proof communication that keeps data safe.',
+                    title: t("about.modernizing.features.gps.title", "Secure GPS Communication"),
+                    desc: t("about.modernizing.features.gps.desc", "Encrypted, tamper-proof communication that keeps data safe."),
                     icon: (
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -587,12 +586,12 @@ const AboutPage = () => {
                   </svg>
                   <div>
                     <p className="text-4xl font-bold text-blue-500">98%</p>
-                    <p className="text-gray-500 text-sm">Efficiency Gained</p>
+                    <p className="text-gray-500 text-sm">{t("about.modernizing.efficiency.title", "Efficiency Gained")}</p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-gray-700 font-medium">Smarter operations.</p>
-                  <p className="text-gray-700 font-medium">Lower costs. Higher yield.</p>
+                  <p className="text-gray-700 font-medium">{t("about.modernizing.efficiency.desc1", "Smarter operations.")}</p>
+                  <p className="text-gray-700 font-medium">{t("about.modernizing.efficiency.desc2", "Lower costs. Higher yield.")}</p>
                 </div>
               </div>
             </div>

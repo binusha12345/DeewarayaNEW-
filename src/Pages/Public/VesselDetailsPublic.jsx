@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   FaShip, FaCheckCircle, FaTimesCircle, FaAnchor,
   FaPrint, FaShieldAlt, FaCog, FaGasPump, FaBolt,
@@ -8,6 +9,7 @@ import {
 import { MdVerified, MdSecurity, MdFingerprint } from 'react-icons/md';
 
 const VesselDetailsPublic = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [boat, setBoat]       = useState(null);
@@ -20,7 +22,7 @@ const VesselDetailsPublic = () => {
       try {
         setLoading(true);
         const res = await fetch(
-          `http://10.17.58.85:5000/api/boats/public/${id}`
+          `http://${window.location.hostname}:5000/api/boats/public/${id}`
         );
         if (res.status === 404) { setError('not_found');    return; }
         if (!res.ok)            { setError('server_error'); return; }
@@ -63,8 +65,8 @@ const VesselDetailsPublic = () => {
           <div className="absolute inset-0 border-4 border-transparent border-t-blue-900 rounded-full animate-spin" />
           <FaAnchor className="absolute inset-0 m-auto text-blue-900 text-xl" />
         </div>
-        <p className="text-slate-900 font-bold text-sm uppercase tracking-widest">Verifying Vessel</p>
-        <p className="text-xs text-slate-500 mt-2 tracking-wider">DEEWARAYA MARITIME DATABASE</p>
+        <p className="text-slate-900 font-bold text-sm uppercase tracking-widest">{t("vesselPublic.loading", "Verifying Vessel")}</p>
+        <p className="text-xs text-slate-500 mt-2 tracking-wider">{t("vesselPublic.database", "DEEWARAYA MARITIME DATABASE")}</p>
       </div>
     </div>
   );
@@ -78,16 +80,16 @@ const VesselDetailsPublic = () => {
             <FaTimesCircle className="text-3xl text-red-700" />
           </div>
           <h2 className="text-center text-lg font-bold text-slate-900 uppercase tracking-wider mb-2">
-            {error === 'not_found' ? 'Vessel Not Registered' : 'Connection Failed'}
+            {error === 'not_found' ? t("vesselPublic.notFound", 'Vessel Not Registered') : t("vesselPublic.connFailed", 'Connection Failed')}
           </h2>
           <div className="w-16 h-0.5 bg-red-700 mx-auto mb-4" />
           <p className="text-center text-sm text-slate-600 mb-4">
             {error === 'not_found'
-              ? 'This QR code does not correspond to any registered vessel in the national maritime database.'
-              : 'Unable to connect to the verification server.'}
+              ? t("vesselPublic.notFoundDesc", 'This QR code does not correspond to any registered vessel in the national maritime database.')
+              : t("vesselPublic.connFailedDesc", 'Unable to connect to the verification server.')}
           </p>
           <div className="bg-slate-50 border border-slate-200 p-3 text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Reference ID</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">{t("vesselPublic.referenceId", "Reference ID")}</p>
             <p className="font-mono text-xs text-slate-700 break-all">{id}</p>
           </div>
         </div>
@@ -164,13 +166,13 @@ const VesselDetailsPublic = () => {
             <div className="text-center">
               <p className="font-black text-sm uppercase tracking-widest">
                 {isActive
-                  ? 'CERTIFIED VESSEL · CLEARED FOR OPERATION'
+                  ? t("vesselPublic.status.certified", 'CERTIFIED VESSEL · CLEARED FOR OPERATION')
                   : boat.boatStatus === 'MAINTENANCE'
-                  ? 'VESSEL UNDER MAINTENANCE'
-                  : 'VESSEL NOT AUTHORIZED'}
+                  ? t("vesselPublic.status.maintenance", + 'VESSEL UNDER MAINTENANCE')
+                  : t("vesselPublic.status.notAuthorized", 'VESSEL NOT AUTHORIZED')}
               </p>
               <p className="text-[10px] opacity-80 tracking-wider mt-0.5">
-                Verified {formatDateTime(scanTime)} LKT
+                {t("vesselPublic.verifiedAt", "Verified")} {formatDateTime(scanTime)} LKT
               </p>
             </div>
           </div>
@@ -188,7 +190,7 @@ const VesselDetailsPublic = () => {
             <div className="flex items-center gap-2">
               <div className="w-1 h-5 bg-blue-900" />
               <h2 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
-                Vessel Identification
+                {t("vesselPublic.sections.identification", "Vessel Identification")}
               </h2>
             </div>
             <span className="text-[10px] text-slate-500 font-mono">SEC-01</span>
@@ -202,7 +204,7 @@ const VesselDetailsPublic = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mb-1">
-                  Registered Vessel Name
+                  {t("vesselPublic.fields.registeredName", "Registered Vessel Name")}
                 </p>
                 <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none">
                   {boat.boatName}
@@ -222,12 +224,12 @@ const VesselDetailsPublic = () => {
 
           {/* Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
-            <DataField label="Registration Number" value={boat.registrationNumber} mono />
-            <DataField label="Vessel ID"           value={id.slice(-12).toUpperCase()} mono onCopy={copyId} copied={copied} />
-            <DataField label="Vessel Type"         value={boat.boatType} />
-            <DataField label="Manufacture Year"    value={boat.modelYear} />
-            <DataField label="Registered Date"     value={formatDate(boat.createdAt)} />
-            <DataField label="Flag State"          value="🇱🇰 Sri Lanka" />
+            <DataField label={t("vesselPublic.fields.regNumber", "Registration Number")} value={boat.registrationNumber} mono />
+            <DataField label={t("vesselPublic.fields.vesselId", "Vessel ID")}           value={id.slice(-12).toUpperCase()} mono onCopy={copyId} copied={copied} />
+            <DataField label={t("vesselPublic.fields.vesselType", "Vessel Type")}         value={boat.boatType} />
+            <DataField label={t("vesselPublic.fields.mfgYear", "Manufacture Year")}    value={boat.modelYear} />
+            <DataField label={t("vesselPublic.fields.regDate", "Registered Date")}     value={formatDate(boat.createdAt)} />
+            <DataField label={t("vesselPublic.fields.flagState", "Flag State")}          value="🇱🇰 Sri Lanka" />
           </div>
         </section>
 
@@ -237,7 +239,7 @@ const VesselDetailsPublic = () => {
             <div className="flex items-center gap-2">
               <div className="w-1 h-5 bg-blue-900" />
               <h2 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
-                Technical Specifications
+                {t("vesselPublic.sections.techSpecs", "Technical Specifications")}
               </h2>
             </div>
             <span className="text-[10px] text-slate-500 font-mono">SEC-02</span>
@@ -246,12 +248,12 @@ const VesselDetailsPublic = () => {
           <div className="grid grid-cols-2 divide-x divide-slate-100 border-b border-slate-100">
             <SpecTile
               icon={<FaWrench />}
-              label="Engine Serial"
+              label={t("vesselPublic.fields.engineSerial", "Engine Serial")}
               value={boat.engineSerial}
             />
             <SpecTile
               icon={<FaCog />}
-              label="Engine Type"
+              label={t("vesselPublic.fields.engineType", "Engine Type")}
               value={boat.engineType}
             />
           </div>
@@ -259,12 +261,12 @@ const VesselDetailsPublic = () => {
           <div className="grid grid-cols-2 divide-x divide-slate-100">
             <SpecTile
               icon={<FaBolt />}
-              label="Horsepower"
+              label={t("vesselPublic.fields.horsepower", "Horsepower")}
               value={boat.horsepower ? `${boat.horsepower} HP` : '—'}
             />
             <SpecTile
               icon={<FaGasPump />}
-              label="Fuel Capacity"
+              label={t("vesselPublic.fields.fuelCapacity", "Fuel Capacity")}
               value={boat.fuelCapacity ? `${boat.fuelCapacity} L` : '—'}
             />
           </div>
@@ -276,7 +278,7 @@ const VesselDetailsPublic = () => {
             <div className="flex items-center gap-2">
               <div className="w-1 h-5 bg-blue-900" />
               <h2 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
-                Operational Status
+                {t("vesselPublic.sections.operationalStatus", "Operational Status")}
               </h2>
             </div>
             <span className="text-[10px] text-slate-500 font-mono">SEC-03</span>
@@ -295,17 +297,17 @@ const VesselDetailsPublic = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-1">
-                    Current Status
+                    {t("vesselPublic.fields.currentStatus", "Current Status")}
                   </p>
                   <p className={`text-xl font-black ${clr.text} uppercase tracking-tight leading-none`}>
                     {boat.boatStatus}
                   </p>
                   <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
                     {isActive
-                      ? 'This vessel holds valid certification and is authorized for maritime operations.'
+                      ? t("vesselPublic.statusDesc.active", 'This vessel holds valid certification and is authorized for maritime operations.')
                       : boat.boatStatus === 'MAINTENANCE'
-                      ? 'This vessel is temporarily withdrawn from service for maintenance.'
-                      : 'This vessel is not currently authorized for maritime operations.'}
+                      ? t("vesselPublic.statusDesc.maintenance", 'This vessel is temporarily withdrawn from service for maintenance.')
+                      : t("vesselPublic.statusDesc.inactive", 'This vessel is not currently authorized for maritime operations.')}
                   </p>
                 </div>
               </div>
@@ -319,21 +321,20 @@ const VesselDetailsPublic = () => {
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-700">
               <MdFingerprint className="text-blue-400 text-lg" />
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                Verification Metadata
+                {t("vesselPublic.sections.verificationMetadata", "Verification Metadata")}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-xs">
-              <MetaRow label="Verified At"       value={formatDateTime(scanTime)} />
-              <MetaRow label="Verification ID"   value={`VER-${Date.now().toString().slice(-10)}`} mono />
-              <MetaRow label="Database Source"   value="Deewaraya MMS" />
-              <MetaRow label="Authentication"    value="✓ Certified" color="green" />
+              <MetaRow label={t("vesselPublic.meta.verifiedAt", "Verified At")}       value={formatDateTime(scanTime)} />
+              <MetaRow label={t("vesselPublic.meta.verificationId", "Verification ID")}   value={`VER-${Date.now().toString().slice(-10)}`} mono />
+              <MetaRow label={t("vesselPublic.meta.dbSource", "Database Source")}   value="Deewaraya MMS" />
+              <MetaRow label={t("vesselPublic.meta.authentication", "Authentication")}    value={`✓ ${t("vesselPublic.meta.certified", "Certified")}`} color="green" />
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-700">
               <p className="text-[10px] text-slate-500 leading-relaxed">
-                This verification report is generated in real-time from official records maintained
-                by the Deewaraya Maritime Fleet Management System. Data integrity is cryptographically verified.
+                {t("vesselPublic.meta.disclaimer", "This verification report is generated in real-time from official records maintained by the Deewaraya Maritime Fleet Management System. Data integrity is cryptographically verified.")}
               </p>
             </div>
           </div>
@@ -345,14 +346,14 @@ const VesselDetailsPublic = () => {
             onClick={() => window.print()}
             className="bg-blue-900 hover:bg-blue-800 text-white py-3 font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-sm"
           >
-            <FaPrint className="text-sm" /> Print Report
+            <FaPrint className="text-sm" /> {t("vesselPublic.actions.printReport", "Print Report")}
           </button>
           <button
             onClick={copyId}
             className="bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 py-3 font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-sm"
           >
             <FaCopy className="text-sm" />
-            {copied ? 'Copied!' : 'Copy ID'}
+            {copied ? t("vesselPublic.actions.copied", 'Copied!') : t("vesselPublic.actions.copyId", 'Copy ID')}
           </button>
         </div>
 
@@ -362,17 +363,16 @@ const VesselDetailsPublic = () => {
             <FaExclamationTriangle className="text-amber-600 shrink-0 mt-0.5" />
             <div>
               <p className="text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">
-                Advisory Notice
+                {t("vesselPublic.advisory.title", "Advisory Notice")}
               </p>
               <p className="text-xs text-amber-800 leading-relaxed">
-                If any vessel information appears incorrect or suspicious, please report immediately to the
-                Sri Lanka Navy or Department of Fisheries.
+                {t("vesselPublic.advisory.desc", "If any vessel information appears incorrect or suspicious, please report immediately to the Sri Lanka Navy or Department of Fisheries.")}
               </p>
               <a
                 href={`mailto:report@deewaraya.lk?subject=Vessel Report - ${boat.registrationNumber}`}
                 className="inline-block mt-2 text-[10px] font-bold text-amber-900 underline uppercase tracking-wider"
               >
-                Report to Authorities →
+                {t("vesselPublic.advisory.reportLink", "Report to Authorities →")}
               </a>
             </div>
           </div>
