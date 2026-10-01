@@ -110,7 +110,7 @@ const QRCode = () => {
   );
 
   // ── QR URL (encodes all boat data as JSON in URL) ──
-  const BASE_URL = 'http://172.25.29.85:5173'; // Replace with your actual base URL
+  const BASE_URL = 'https://10.57.89.85:5173'; // Replace with your actual base URL
   const qrValue = selectedBoat
     ? `${BASE_URL}/vessel/${selectedBoat._id}`
     : '';
