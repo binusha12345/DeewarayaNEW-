@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DriverSidebar from '../../../components/DriverSidebar';
 import DashboardNav from '../../../components/DashboardNav';
 import { useAuth } from '../../../context/AuthContext'; // ✅ ADD THIS
 import useInternetStatus from '../../../hooks/useInternetStatus';
+import api from '../../../services/api';
 import { 
   Wind, 
   Thermometer, 
@@ -16,7 +17,20 @@ import {
 
 const BoatDriverDashboard = () => {
   const { user } = useAuth(); // ADD THIS
-  const connection = useInternetStatus({ boatId: localStorage.getItem('signalBoatId') || '', report: true });
+  const [signalBoatId, setSignalBoatId] = useState(() => localStorage.getItem('signalBoatId:driver') || '');
+  const connection = useInternetStatus({ boatId: signalBoatId, report: Boolean(signalBoatId) });
+
+  useEffect(() => {
+    api.get('/boats/assigned').then(({ data }) => {
+      const boats = Array.isArray(data) ? data : [];
+      const savedId = localStorage.getItem('signalBoatId:driver');
+      const selectedBoat = boats.find((boat) => boat._id === savedId) || boats[0];
+      if (selectedBoat) {
+        setSignalBoatId(selectedBoat._id);
+        localStorage.setItem('signalBoatId:driver', selectedBoat._id);
+      }
+    }).catch(() => setSignalBoatId(''));
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-800 overflow-hidden">

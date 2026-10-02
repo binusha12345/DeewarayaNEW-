@@ -9,6 +9,9 @@ const BoatOwnerBoats = () => {
   const navigate = useNavigate();
 
   const [boats, setBoats] = useState([]);
+  const [drivers, setDrivers] = useState([]);
+  const [savingDriver, setSavingDriver] = useState({});
+  const [assignmentErrors, setAssignmentErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -40,7 +43,26 @@ const getBoatImageUrl = (boat) => {
 
   useEffect(() => {
     fetchBoats();
+    api.get("/boats/drivers")
+      .then(({ data }) => setDrivers(Array.isArray(data) ? data : []))
+      .catch(() => setDrivers([]));
   }, []);
+
+  const handleAssignDriver = async (boatId, driverId) => {
+    setSavingDriver((current) => ({ ...current, [boatId]: true }));
+    setAssignmentErrors((current) => ({ ...current, [boatId]: "" }));
+    try {
+      const { data } = await api.patch(`/boats/${boatId}/driver`, { driverId });
+      setBoats((current) => current.map((boat) => boat._id === boatId ? data.boat : boat));
+    } catch (err) {
+      setAssignmentErrors((current) => ({
+        ...current,
+        [boatId]: err.response?.data?.message || "Could not update driver assignment",
+      }));
+    } finally {
+      setSavingDriver((current) => ({ ...current, [boatId]: false }));
+    }
+  };
 
   const handleAddBoat = () => {
     navigate("/addnewboat");
@@ -155,6 +177,25 @@ const getBoatImageUrl = (boat) => {
                       <p className="text-[14px] text-slate-600 mt-2">
                         Engine Type: {boat.engineType}
                       </p>
+                      <label className="mt-5 block border-t border-slate-200 pt-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                        Assigned driver
+                        <select
+                          value={boat.driver?._id || ""}
+                          onChange={(event) => handleAssignDriver(boat._id, event.target.value)}
+                          disabled={savingDriver[boat._id]}
+                          className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium normal-case tracking-normal text-slate-800 outline-none focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100 disabled:opacity-60"
+                        >
+                          <option value="">No driver assigned</option>
+                          {drivers.map((driver) => (
+                            <option key={driver._id} value={driver._id}>
+                              {driver.name} · {driver.email}
+                            </option>
+                          ))}
+                        </select>
+                        {savingDriver[boat._id] && <span className="mt-1 block normal-case tracking-normal">Saving assignment…</span>}
+                        {assignmentErrors[boat._id] && <span role="alert" className="mt-1 block normal-case tracking-normal text-red-700">{assignmentErrors[boat._id]}</span>}
+                        {!drivers.length && <span className="mt-1 block normal-case tracking-normal">No drivers are registered yet.</span>}
+                      </label>
                     </div>
 
                     <div className="flex gap-2">
