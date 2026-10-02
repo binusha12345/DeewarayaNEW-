@@ -1,21 +1,32 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Ship, Moon, Sun, User, LayoutDashboard, LogOut, ChevronDown, Menu, X } from "lucide-react";
+import { Ship, Moon, Sun, Signal, User, LayoutDashboard, LogOut, ChevronDown, Menu, X } from "lucide-react";
 import { useThemeContext } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { apiUrl } from "../services/api";
+import useBoatSignalMonitor from "../hooks/useBoatSignalMonitor";
 
 const HomeNavBar = () => {
   const { t } = useTranslation();
   const { mode, toggleTheme } = useThemeContext();
   const { user, isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const signalStatus = useBoatSignalMonitor(user, { includeOwnerStatus: true });
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const signalIndicator = {
+    good: { label: "Good connection", color: "bg-emerald-500" },
+    medium: { label: "Weak connection", color: "bg-amber-400" },
+    poor: { label: "Poor connection", color: "bg-red-600" },
+    offline: { label: "Offline or no recent check", color: "bg-red-600" },
+    checking: { label: "No boat signal yet", color: "bg-slate-400" },
+  }[signalStatus] || { label: "No boat signal yet", color: "bg-slate-400" };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -103,6 +114,18 @@ const HomeNavBar = () => {
           {/* Right Side */}
           {/* Right Side */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
+
+            {location.pathname === "/" && isLoggedIn() && ["owner", "driver"].includes(user?.role) && (
+              <Link
+                to="/signal-indicator"
+                aria-label={`Open signal coverage. ${signalIndicator.label}`}
+                title={signalIndicator.label}
+                className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+              >
+                <Signal className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <span className={`absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 ${signalIndicator.color}`} />
+              </Link>
+            )}
 
             {/* Theme toggle - desktop only */}
             <button

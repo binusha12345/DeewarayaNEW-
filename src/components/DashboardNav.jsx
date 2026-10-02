@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useAuth } from "../context/AuthContext";
+import useBoatSignalMonitor from "../hooks/useBoatSignalMonitor";
 
 /* ─────────────────────────────────────────────
    NAV LINKS DATA
    ───────────────────────────────────────────── */
 const NAV_LINKS = [
   { to: "/", label: "Home" },
-  { to: "/signal-indicator", label: "Signal Indicator" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -60,7 +61,9 @@ const MobileNavLink = ({ to, label, onNavigate }) => (
    MAIN NAVBAR
    ───────────────────────────────────────────── */
 const DashboardNav = () => {
+  const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  useBoatSignalMonitor(user);
 
   const openMobileMenu = () => setIsMobileMenuOpen(true);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);

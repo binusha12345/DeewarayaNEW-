@@ -89,20 +89,23 @@ export default function useInternetStatus({ boatId = "", report = false } = {}) 
         ].filter((sample) => Date.now() - sample.checkedAt <= HISTORY_WINDOW_MS));
         if (report && boatId) {
           const statusKey = `internetStatus:${boatId}`;
-          try {
-            const previous = localStorage.getItem(statusKey);
-            if (previous !== nextConnection.status) {
+          const reportedAtKey = `internetStatusReportedAt:${boatId}`;
+          const previous = localStorage.getItem(statusKey);
+          const lastReportedAt = Number(localStorage.getItem(reportedAtKey)) || 0;
+          if (previous !== nextConnection.status || Date.now() - lastReportedAt >= 60000) {
+            try {
               await api.post("/notifications/connection-status", {
                 boatId,
                 status: nextConnection.status,
                 previousStatus: previous,
                 latency: nextConnection.latency,
               });
+              localStorage.setItem(statusKey, nextConnection.status);
+            } catch {
+              // Status remains available locally while the reporting API is unreachable.
+            } finally {
+              localStorage.setItem(reportedAtKey, String(Date.now()));
             }
-          } catch {
-            // Status remains available locally while the reporting API is unreachable.
-          } finally {
-            localStorage.setItem(statusKey, nextConnection.status);
           }
         }
       }
