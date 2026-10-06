@@ -10,7 +10,7 @@ import ForgotPassword from "./Pages/Public/ForgotPassword";
 import ResetPassword from "./Pages/Public/ResetPassword";
 import Features from './Pages/Public/Features';
 import FleetSupport from "./Pages/Public/FleetSupport";
-import QRCode from './Pages/Public/QRcode';
+import QRCode from './Pages/Public/QRCode';
 import VesselDetailsPublic from './Pages/Public/VesselDetailsPublic';
 
 // Owner Pages
@@ -27,6 +27,9 @@ import MonthlyReports from "./Pages/Public/owner/MonthlyReports";
 
 // Driver Pages
 import BoatDriverDashboard from "./Pages/Public/driver/BoatDriverDashboard";
+import AssignedBoatQR from "./Pages/Public/driver/AssignedBoatQR";
+import DriverTrips from "./Pages/Public/driver/DriverTrips";
+import Emergency from "./Pages/Public/driver/Emergency";
 
 // Shared
 import WeatherDashboard from "./Pages/Public/WeatherDashboard";
@@ -65,7 +68,14 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/features" element={<Features />} />
         <Route path="/contact" element={<FleetSupport />} />
-        <Route path="/qr-code" element={<QRCode />} />
+        <Route
+          path="/qr-code"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <QRCode />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/vessel/:id" element={<VesselDetailsPublic />} />
 
         {/* ============ OWNER PROTECTED ROUTES ============ */}
@@ -139,10 +149,34 @@ function App() {
           }
         />
         <Route
+          path="/driver/qr-code"
+          element={
+            <ProtectedRoute allowedRoles={["driver"]}>
+              <AssignedBoatQR />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/trips"
+          element={
+            <ProtectedRoute allowedRoles={["driver"]}>
+              <DriverTrips />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/gps-save"
           element={
             <ProtectedRoute allowedRoles={["driver"]}>
               <SaveLocation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/emergency"
+          element={
+            <ProtectedRoute allowedRoles={["driver"]}>
+              <Emergency />
             </ProtectedRoute>
           }
         />

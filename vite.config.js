@@ -15,5 +15,17 @@ export default defineConfig({
       key: fs.readFileSync('./10.57.89.85+2-key.pem'),
       cert: fs.readFileSync('./10.57.89.85+2.pem'),
     },
+    proxy: {
+      '/api': {
+        target: 'https://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/uploads': {
+        target: 'https://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   }
 })
