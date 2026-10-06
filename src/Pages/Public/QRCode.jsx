@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { QRCodeCanvas } from 'qrcode.react';
 import html2canvas from 'html2canvas';
@@ -8,37 +9,28 @@ import {
   FaShip, FaQrcode, FaDownload, FaShareAlt, FaPrint,
   FaWhatsapp, FaEnvelope, FaMobile, FaLink, FaCheckCircle,
   FaChevronDown, FaSearch, FaFileImage, FaFilePdf,
-  FaSyncAlt, FaShieldAlt, FaMapMarkerAlt, FaPhoneAlt,
-  FaExclamationTriangle
+  FaSyncAlt, FaMapMarkerAlt, FaCalendarAlt, FaBolt, FaGasPump, FaUserTie,
+  FaExclamationTriangle, FaAnchor
 } from 'react-icons/fa';
 import { MdVerified, MdEngineering } from 'react-icons/md';
-import { GiFishingBoat } from 'react-icons/gi';
 import OwnerSidebar from "../../components/OwnerSidebar";
 import DashboardNav from "../../components/DashboardNav";
-import DriverSidebar from "../../components/DriverSidebar";
-import api from "../../services/api";
+import api, { apiUrl } from "../../services/api";
+import { getPublicVesselUrl } from "../../services/vesselQr";
 
 // ─────────────────────────────────────────────
 // Helper: Detail Row
 // ─────────────────────────────────────────────
 const DetailRow = ({ icon, label, value, color = 'blue' }) => {
-  const colors = {
-    blue:   'bg-blue-50   text-blue-600',
-    green:  'bg-green-50  text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-    orange: 'bg-orange-50 text-orange-600',
-    red:    'bg-red-50    text-red-600',
-    cyan:   'bg-cyan-50   text-cyan-600',
-    slate:  'bg-slate-100 text-slate-600',
-  };
+  const iconColor = color === 'green' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-900';
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-slate-100 last:border-0">
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-sm ${colors[color]}`}>
+    <div className="flex min-w-0 items-center gap-3 border-b border-slate-100 py-3 last:border-0">
+      <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm ${iconColor}`}>
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
-        <p className="text-sm font-semibold text-slate-800 truncate">{value || '—'}</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
+        <p className="break-words text-sm font-bold text-slate-800">{value || '—'}</p>
       </div>
     </div>
   );
@@ -49,38 +41,31 @@ const DetailRow = ({ icon, label, value, color = 'blue' }) => {
 // ─────────────────────────────────────────────
 const QRCode = () => {
   const { t } = useTranslation();
-  const user     = JSON.parse(localStorage.getItem('user'));
-  const userRole = user?.role;
+  const location = useLocation();
+  const requestedBoatId = location.state?.boatId;
 
-  // ── Refs ──
-  const qrRef    = useRef(null);
+  const qrRef = useRef(null);
   const printRef = useRef(null);
 
-  // ── Boats from API ──
-  const [boats,          setBoats]          = useState([]);
-  const [loadingBoats,   setLoadingBoats]   = useState(true);
-  const [selectedBoat,   setSelectedBoat]   = useState(null);
-  const [searchQuery,    setSearchQuery]     = useState('');
-  const [dropdownOpen,   setDropdownOpen]    = useState(false);
+  const [boats, setBoats] = useState([]);
+  const [loadingBoats, setLoadingBoats] = useState(true);
+  const [selectedBoat, setSelectedBoat] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // ── QR state ──
-  const [qrGenerated,    setQrGenerated]    = useState(false);
-  const [qrColor,        setQrColor]        = useState('#1e40af');
+  const [copied, setCopied] = useState(false);
+  const [showDownload, setShowDownload] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
-  // ── UI state ──
-  const [copied,         setCopied]         = useState(false);
-  const [showDownload,   setShowDownload]   = useState(false);
-  const [showShare,      setShowShare]      = useState(false);
-  const [generating,     setGenerating]     = useState(false);
-
-  // ── Fetch boats ──
   useEffect(() => {
     const fetchBoats = async () => {
       try {
         setLoadingBoats(true);
-        const endpoint = userRole === 'driver' ? '/boats/all' : '/boats';
-        const res      = await api.get(endpoint);
-        setBoats(Array.isArray(res.data) ? res.data : []);
+        const res = await api.get('/boats');
+        const nextBoats = Array.isArray(res.data) ? res.data : [];
+        setBoats(nextBoats);
+        const requestedBoat = nextBoats.find((boat) => boat._id === requestedBoatId);
+        if (requestedBoat) setSelectedBoat(requestedBoat);
       } catch (err) {
         console.error('Failed to fetch boats:', err);
       } finally {
@@ -88,9 +73,8 @@ const QRCode = () => {
       }
     };
     fetchBoats();
-  }, [userRole]);
+  }, [requestedBoatId]);
 
-  // ── Close dropdowns on outside click ──
   useEffect(() => {
     const handler = (e) => {
       if (!e.target.closest('.dropdown-wrapper')) {
@@ -103,520 +87,476 @@ const QRCode = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // ── Filtered boats for search ──
   const filteredBoats = boats.filter(b =>
     b.boatName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     b.registrationNumber?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ── QR URL (encodes all boat data as JSON in URL) ──
-  const BASE_URL = 'https://10.57.89.85:5173'; // Replace with your actual base URL
-  const qrValue = selectedBoat
-    ? `${BASE_URL}/vessel/${selectedBoat._id}`
-    : '';
+  const getSafePublicUrl = (boatId) => {
+    try {
+      if (typeof getPublicVesselUrl === 'function') {
+        const url = getPublicVesselUrl(boatId);
+        if (url) return url;
+      }
+    } catch (e) {
+      console.warn('vesselQr helper error, falling back:', e);
+    }
+    const origin = window.location.origin.includes('ngrok')
+      ? window.location.origin
+      : 'https://dry-hyphen-grinning.ngrok-free.dev';
+    return `${origin}/vessel/${boatId}`;
+  };
 
-
-  // ─── Handlers ───────────────────────────────
+  const qrValue = selectedBoat ? getSafePublicUrl(selectedBoat._id) : '';
 
   const handleSelectBoat = (boat) => {
     setSelectedBoat(boat);
     setDropdownOpen(false);
     setSearchQuery('');
-    setQrGenerated(false); // reset QR when new boat selected
   };
 
-  const handleGenerateQR = () => {
-    if (!selectedBoat) return;
-    setGenerating(true);
-    setTimeout(() => {
-      setQrGenerated(true);
-      setGenerating(false);
-    }, 800);
-  };
-
-  // Download PNG
   const downloadPNG = () => {
     const canvas = qrRef.current?.querySelector('canvas');
     if (!canvas) return;
-    canvas.toBlob((blob) => {
-      saveAs(blob, `${selectedBoat?.boatName || 'vessel'}-QR.png`);
-    });
+    canvas.toBlob((blob) => saveAs(blob, `${selectedBoat?.boatName || 'vessel'}-QR.png`));
     setShowDownload(false);
   };
 
-  // Download PDF
   const downloadPDF = async () => {
     const el = printRef.current;
     if (!el) return;
-    const canvas  = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
+    const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
     const imgData = canvas.toDataURL('image/png');
-    const pdf     = new jsPDF('portrait', 'mm', 'a4');
-    const w       = pdf.internal.pageSize.getWidth();
-    const h       = (canvas.height * w) / canvas.width;
+    const pdf = new jsPDF('portrait', 'mm', 'a4');
+    const w = pdf.internal.pageSize.getWidth();
+    const h = (canvas.height * w) / canvas.width;
     pdf.addImage(imgData, 'PNG', 0, 0, w, h);
     pdf.save(`${selectedBoat?.boatName || 'vessel'}-QR-Certificate.pdf`);
     setShowDownload(false);
   };
 
-  // Print
   const handlePrint = () => window.print();
 
-  // Copy link
   const copyLink = () => {
+    if (!qrValue) return;
     navigator.clipboard.writeText(qrValue);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
     setShowShare(false);
   };
 
-  // WhatsApp share
   const shareWhatsApp = () => {
     const msg = `🚢 *${selectedBoat?.boatName}*\n📋 Reg: ${selectedBoat?.registrationNumber}\n🔗 ${qrValue}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     setShowShare(false);
   };
 
-  // Email share
   const shareEmail = () => {
-    const sub  = `Vessel QR – ${selectedBoat?.boatName}`;
+    const sub = `Vessel QR – ${selectedBoat?.boatName}`;
     const body = `Vessel: ${selectedBoat?.boatName}\nReg: ${selectedBoat?.registrationNumber}\nLink: ${qrValue}`;
     window.location.href = `mailto:?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
     setShowShare(false);
   };
 
-  // SMS share
   const shareSMS = () => {
     window.location.href = `sms:?body=${encodeURIComponent(`🚢 ${selectedBoat?.boatName} – ${qrValue}`)}`;
     setShowShare(false);
   };
 
-  // ─────────────────────────────────────────────
-  // RENDER
-  // ─────────────────────────────────────────────
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900 font-sans">
+      <OwnerSidebar />
 
-      {/* Sidebar */}
-      {userRole === 'owner' ? <OwnerSidebar /> : <DriverSidebar />}
-
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <DashboardNav />
 
-        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6">
-          <div className="max-w-5xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
+          <div className="mx-auto max-w-7xl space-y-6">
 
-            {/* ── Page Header ── */}
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-blue-500 mb-1">
-                {t("qrCode.breadcrumb", "Fleet / QR Codes")}
-              </p>
-              <h1 className="text-2xl md:text-3xl font-black text-slate-900">
-                {t("qrCode.pageTitle", "Vessel QR Code Generator")}
-              </h1>
-              <p className="text-slate-500 text-sm mt-1">
-                {t("qrCode.pageSubtitle", "Select a boat, generate its unique QR code, and share or download it.")}
-              </p>
+            {/* ── Clean Page Header (Title + Icon + Subtitle only) ── */}
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+                <FaQrcode className="text-xl" />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-blue-600">
+                  {t('qrCode.breadcrumb', 'Fleet / QR Codes')}
+                </p>
+                <h1 className="mt-1 text-2xl font-black text-slate-900 md:text-3xl">
+                  {t('qrCode.pageTitle', 'Vessel QR Code Generator')}
+                </h1>
+                <p className="mt-1 max-w-2xl text-sm text-slate-500">
+                  {t(
+                    'qrCode.pageSubtitle',
+                    'Select a boat, generate its unique QR code, and share or download it.'
+                  )}
+                </p>
+              </div>
             </div>
 
             {/* ── Step 1: Select Boat ── */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">1</span>
-                <h2 className="text-base font-bold text-slate-800">{t("qrCode.step1", "Select a Boat")}</h2>
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                  1
+                </span>
+                <h2 className="text-base font-bold text-slate-800">
+                  {t('qrCode.step1', 'Select a Boat')}
+                </h2>
               </div>
 
               {loadingBoats ? (
-                <div className="flex items-center gap-2 text-slate-500 text-sm">
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                <div className="flex items-center gap-2 text-sm text-slate-500">
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                   </svg>
                   Loading boats...
                 </div>
               ) : boats.length === 0 ? (
-                <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-yellow-700 text-sm">
+                <div className="flex items-center gap-2 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-700">
                   <FaExclamationTriangle />
-                  {t("qrCode.noBoats", "No boats found. Please add boats first.")}
+                  {t('qrCode.noBoats', 'No boats found. Please add boats first.')}
                 </div>
               ) : (
-                <div className="relative dropdown-wrapper max-w-md">
-                  {/* Trigger */}
+                <div className="dropdown-wrapper relative max-w-md">
                   <button
-                    onClick={() => setDropdownOpen(v => !v)}
-                    className="w-full flex items-center justify-between gap-3 border border-slate-300 rounded-xl px-4 py-3 bg-white hover:border-blue-400 transition text-left"
+                    onClick={() => setDropdownOpen((v) => !v)}
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-left transition hover:border-blue-500"
                   >
                     {selectedBoat ? (
-                      <div className="flex items-center gap-2 min-w-0">
-                        <FaShip className="text-blue-500 shrink-0" />
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                          <FaShip className="text-sm text-blue-600" />
+                        </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 truncate">{selectedBoat.boatName}</p>
-                          <p className="text-xs text-slate-400 truncate">{selectedBoat.registrationNumber}</p>
+                          <p className="truncate text-sm font-bold text-slate-800">{selectedBoat.boatName}</p>
+                          <p className="truncate text-[11px] font-semibold text-slate-400">
+                            {selectedBoat.registrationNumber}
+                          </p>
                         </div>
                       </div>
                     ) : (
-                      <span className="text-slate-400 text-sm">{t("qrCode.chooseBoat", "Choose a boat...")}</span>
+                      <span className="text-sm text-slate-400">
+                        {t('qrCode.chooseBoat', 'Choose a boat...')}
+                      </span>
                     )}
-                    <FaChevronDown className={`text-slate-400 shrink-0 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                    <FaChevronDown
+                      className={`shrink-0 text-slate-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+                    />
                   </button>
 
-                  {/* Dropdown */}
                   {dropdownOpen && (
-                    <div className="absolute top-full mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
-                      {/* Search */}
-                      <div className="p-2 border-b border-slate-100">
+                    <div className="absolute top-full z-50 mt-1 w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+                      <div className="border-b border-slate-100 p-2">
                         <div className="relative">
-                          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
+                          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400" />
                           <input
                             type="text"
                             value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search boats..."
-                            className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg outline-none focus:border-blue-400"
+                            className="w-full rounded-lg border border-slate-200 py-2 pl-8 pr-3 text-sm outline-none focus:border-blue-500"
                             autoFocus
                           />
                         </div>
                       </div>
-
-                      {/* List */}
-                      <div className="max-h-56 overflow-y-auto">
+                      <div className="max-h-56 overflow-y-auto p-1">
                         {filteredBoats.length === 0 ? (
-                          <p className="text-center text-sm text-slate-400 py-4">No boats found</p>
-                        ) : filteredBoats.map(boat => (
-                          <button
-                            key={boat._id}
-                            onClick={() => handleSelectBoat(boat)}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition text-left border-b border-slate-50 last:border-0"
-                          >
-                            <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                              <FaShip className="text-blue-600 text-sm" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-slate-800 truncate">{boat.boatName}</p>
-                              <p className="text-xs text-slate-400 truncate">{boat.registrationNumber}</p>
-                            </div>
-                            {boat.boatStatus === 'ACTIVE' && (
-                              <span className="ml-auto shrink-0 text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                ACTIVE
-                              </span>
-                            )}
-                          </button>
-                        ))}
+                          <p className="py-4 text-center text-sm text-slate-400">No boats found</p>
+                        ) : (
+                          filteredBoats.map((boat) => (
+                            <button
+                              key={boat._id}
+                              onClick={() => handleSelectBoat(boat)}
+                              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition hover:bg-blue-50"
+                            >
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-100 text-blue-600">
+                                <FaShip className="text-sm" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-bold text-slate-800">{boat.boatName}</p>
+                                <p className="truncate text-[10px] font-semibold text-slate-400">
+                                  {boat.registrationNumber}
+                                </p>
+                              </div>
+                              {boat.boatStatus === 'ACTIVE' && (
+                                <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+                                  ACTIVE
+                                </span>
+                              )}
+                            </button>
+                          ))
+                        )}
                       </div>
                     </div>
                   )}
                 </div>
-              )}
-
-              {/* Generate Button */}
-              {selectedBoat && (
-                <button
-                  onClick={handleGenerateQR}
-                  disabled={generating}
-                  className="mt-4 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-6 py-2.5 rounded-xl transition"
-                >
-                  {generating ? (
-                    <>
-                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                      </svg>
-                      {t("qrCode.generating", "Generating...")}
-                    </>
-                  ) : (
-                    <>
-                      <FaQrcode />
-                      {qrGenerated ? t("qrCode.regenerate", 'Regenerate QR Code') : t("qrCode.create", 'Create QR Code')}
-                    </>
-                  )}
-                </button>
               )}
             </div>
 
-            {/* ── Step 2: QR + Boat Details ── */}
-            {qrGenerated && selectedBoat && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                {/* ── LEFT: QR Card ── */}
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">2</span>
-                    <h2 className="text-base font-bold text-slate-800">{t("qrCode.step2", "Your QR Code")}</h2>
-                  </div>
-
-                  {/* Printable area */}
-                  <div ref={printRef} className="bg-white">
-                    {/* Header */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
-                        <FaShip className="text-white text-base" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Deewaraya</p>
-                        <p className="text-xs text-slate-400">Fleet Management</p>
-                      </div>
-                    </div>
-
-                    <h3 className="text-lg font-black text-slate-900 mb-0.5">{selectedBoat.boatName}</h3>
-                    <p className="text-xs text-slate-400 mb-4">{selectedBoat.registrationNumber}</p>
-
-                    {/* QR Code */}
-                    <div
-                      ref={qrRef}
-                      className="relative bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center"
-                    >
-                      {/* Corner accents */}
-                      <div className="absolute top-2 left-2  w-5 h-5 border-t-2 border-l-2 border-blue-500 rounded-tl-md" />
-                      <div className="absolute top-2 right-2 w-5 h-5 border-t-2 border-r-2 border-blue-500 rounded-tr-md" />
-                      <div className="absolute bottom-2 left-2  w-5 h-5 border-b-2 border-l-2 border-blue-500 rounded-bl-md" />
-                      <div className="absolute bottom-2 right-2 w-5 h-5 border-b-2 border-r-2 border-blue-500 rounded-br-md" />
-
-                      <QRCodeCanvas
-                        value={qrValue}
-                        size={200}
-                        fgColor={qrColor}
-                        bgColor="#ffffff"
-                        level="H"
-                        includeMargin
-                      />
-                      <p className="text-xs text-slate-400 mt-3 font-medium">📱 {t("qrCode.scanToVerify", "Scan to verify vessel")}</p>
-                    </div>
-
-                    {/* Mini info strip */}
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      <div className="bg-blue-50 rounded-lg p-2.5 text-center">
-                        <p className="text-[10px] text-blue-500 font-bold uppercase">{t("qrCode.registration", "Registration")}</p>
-                        <p className="text-xs font-bold text-slate-800 mt-0.5 truncate">{selectedBoat.registrationNumber}</p>
-                      </div>
-                      <div className="bg-slate-50 rounded-lg p-2.5 text-center">
-                        <p className="text-[10px] text-slate-500 font-bold uppercase">{t("qrCode.status", "Status")}</p>
-                        <p className={`text-xs font-bold mt-0.5 ${selectedBoat.boatStatus === 'ACTIVE' ? 'text-green-600' : 'text-red-500'}`}>
-                          {selectedBoat.boatStatus || '—'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ── Color Picker ── */}
-                  <div className="mt-5 pt-4 border-t border-slate-100">
-                    <p className="text-xs font-semibold text-slate-500 uppercase mb-2">{t("qrCode.qrColor", "QR Color")}</p>
-                    <div className="flex items-center gap-2">
-                      {['#1e40af','#0891b2','#059669','#7c3aed','#dc2626','#000000'].map(c => (
-                        <button
-                          key={c}
-                          onClick={() => setQrColor(c)}
-                          className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 ${qrColor === c ? 'border-slate-700 scale-110' : 'border-transparent'}`}
-                          style={{ backgroundColor: c }}
-                        />
-                      ))}
-                      <input
-                        type="color"
-                        value={qrColor}
-                        onChange={e => setQrColor(e.target.value)}
-                        className="w-7 h-7 rounded-full border border-slate-200 cursor-pointer"
-                        title="Custom color"
-                      />
-                    </div>
-                  </div>
-
-                  {/* ── Action Buttons ── */}
-                  <div className="mt-5 flex flex-wrap gap-2">
-
-                    {/* Download */}
-                    <div className="relative dropdown-wrapper">
-                      <button
-                        onClick={() => { setShowDownload(v => !v); setShowShare(false); }}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition"
-                      >
-                        <FaDownload /> {t("qrCode.download", "Download")}
-                      </button>
-                      {showDownload && (
-                        <div className="absolute top-full mt-1 left-0 bg-white border border-slate-200 rounded-xl shadow-xl z-30 py-1 min-w-[160px]">
-                          <button onClick={downloadPNG} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-blue-50 text-sm text-slate-700">
-                            <FaFileImage className="text-blue-500" /> PNG Image
-                          </button>
-                          <button onClick={downloadPDF} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-blue-50 text-sm text-slate-700">
-                            <FaFilePdf className="text-red-500" /> PDF Certificate
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Share */}
-                    <div className="relative dropdown-wrapper">
-                      <button
-                        onClick={() => { setShowShare(v => !v); setShowDownload(false); }}
-                        className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-bold px-4 py-2 rounded-xl transition"
-                      >
-                        <FaShareAlt /> {t("qrCode.share", "Share")}
-                      </button>
-                      {showShare && (
-                        <div className="absolute top-full mt-1 left-0 bg-white border border-slate-200 rounded-xl shadow-xl z-30 py-1 min-w-[160px]">
-                          <button onClick={shareWhatsApp} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-green-50 text-sm text-slate-700">
-                            <FaWhatsapp className="text-green-500" /> WhatsApp
-                          </button>
-                          <button onClick={shareEmail} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-blue-50 text-sm text-slate-700">
-                            <FaEnvelope className="text-blue-500" /> Email
-                          </button>
-                          <button onClick={shareSMS} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-purple-50 text-sm text-slate-700">
-                            <FaMobile className="text-purple-500" /> SMS
-                          </button>
-                          <button onClick={copyLink} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 text-sm text-slate-700">
-                            <FaLink className="text-slate-500" />
-                            {copied ? `✓ ${t("qrCode.copiedLink", "Copied!")}` : t("qrCode.copyLink", "Copy Link")}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Print */}
-                    <button
-                      onClick={handlePrint}
-                      className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-bold px-4 py-2 rounded-xl transition"
-                    >
-                      <FaPrint /> {t("qrCode.print", "Print")}
-                    </button>
-                  </div>
-
-                  {/* Copied toast */}
-                  {copied && (
-                    <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-sm font-semibold">
-                      <FaCheckCircle /> {t("qrCode.linkCopied", "Link copied to clipboard!")}
-                    </div>
-                  )}
+            {/* ── Empty State ── */}
+            {!selectedBoat && !loadingBoats && boats.length > 0 && (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center shadow-sm">
+                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-blue-50">
+                  <FaShip className="text-3xl text-blue-300" />
                 </div>
-
-                {/* ── RIGHT: Boat Details ── */}
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">3</span>
-                    <h2 className="text-base font-bold text-slate-800">{t("qrCode.step3", "Boat Details")}</h2>
-                    {selectedBoat.boatStatus === 'ACTIVE' && (
-                      <span className="ml-auto text-[10px] font-bold bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1">
-                        <MdVerified /> ACTIVE
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Boat name hero */}
-                  <div className="flex items-center gap-3 mb-5 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                    <div className="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
-                      <GiFishingBoat className="text-white text-xl" />
-                    </div>
-                    <div>
-                      <p className="font-black text-slate-900 text-base">{selectedBoat.boatName}</p>
-                      <p className="text-xs text-blue-600 font-semibold">{selectedBoat.boatType || 'Fishing Vessel'}</p>
-                    </div>
-                  </div>
-
-                  {/* Details */}
-                  <div className="space-y-0">
-                    <DetailRow
-                      icon={<MdVerified />}
-                      label={t("qrCode.fields.regNumber", "Registration Number")}
-                      value={selectedBoat.registrationNumber}
-                      color="blue"
-                    />
-                    <DetailRow
-                      icon={<MdEngineering />}
-                      label={t("qrCode.fields.engineNumber", "Engine Number")}
-                      value={selectedBoat.engineNumber}
-                      color="purple"
-                    />
-                    <DetailRow
-                      icon={<FaShip />}
-                      label={t("qrCode.fields.boatType", "Boat Type")}
-                      value={selectedBoat.boatType}
-                      color="cyan"
-                    />
-                    <DetailRow
-                      icon={<FaMapMarkerAlt />}
-                      label={t("qrCode.fields.homePort", "Home Port / Harbour")}
-                      value={selectedBoat.homePort || selectedBoat.harbour}
-                      color="red"
-                    />
-                    <DetailRow
-                      icon={<FaPhoneAlt />}
-                      label={t("qrCode.fields.emergencyContact", "Emergency Contact")}
-                      value={selectedBoat.emergencyContact}
-                      color="orange"
-                    />
-                    <DetailRow
-                      icon={<FaShieldAlt />}
-                      label={t("qrCode.fields.licenseStatus", "License Status")}
-                      value={selectedBoat.licenseStatus || selectedBoat.boatStatus}
-                      color="green"
-                    />
-                    <DetailRow
-                      icon={<FaShieldAlt />}
-                      label={t("qrCode.fields.modelYear", "Model Year")}
-                      value={selectedBoat.modelYear}
-                      color="slate"
-                    />
-                    <DetailRow
-                      icon={<FaShieldAlt />}
-                      label={t("qrCode.fields.horsepower", "Horsepower")}
-                      value={selectedBoat.horsepower ? `${selectedBoat.horsepower} HP` : undefined}
-                      color="slate"
-                    />
-                  </div>
-
-                  {/* Extra specs */}
-                  {(selectedBoat.length || selectedBoat.capacity || selectedBoat.color) && (
-                    <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-3 gap-2">
-                      {selectedBoat.length && (
-                        <div className="bg-slate-50 rounded-lg p-2.5 text-center">
-                          <p className="text-[10px] text-slate-400 font-bold uppercase">Length</p>
-                          <p className="text-sm font-bold text-slate-800 mt-0.5">{selectedBoat.length}</p>
-                        </div>
-                      )}
-                      {selectedBoat.capacity && (
-                        <div className="bg-slate-50 rounded-lg p-2.5 text-center">
-                          <p className="text-[10px] text-slate-400 font-bold uppercase">Capacity</p>
-                          <p className="text-sm font-bold text-slate-800 mt-0.5">{selectedBoat.capacity}</p>
-                        </div>
-                      )}
-                      {selectedBoat.color && (
-                        <div className="bg-slate-50 rounded-lg p-2.5 text-center">
-                          <p className="text-[10px] text-slate-400 font-bold uppercase">Color</p>
-                          <p className="text-sm font-bold text-slate-800 mt-0.5">{selectedBoat.color}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* QR link preview */}
-                  <div className="mt-4 pt-4 border-t border-slate-100">
-                    <p className="text-[10px] text-slate-400 font-semibold uppercase mb-1">{t("qrCode.qrPointsTo", "QR Code Points To")}</p>
-                    <p className="text-xs text-blue-600 font-mono break-all bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
-                      {qrValue}
-                    </p>
-                  </div>
-                </div>
-
+                <h2 className="text-lg font-bold text-slate-800">Select your vessel</h2>
+                <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500">
+                  Choose a boat from the list above to generate and view its unique maritime QR certificate.
+                </p>
               </div>
             )}
 
-            {/* ── How It Works ── */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <h2 className="text-base font-bold text-slate-800 mb-4">{t("qrCode.howItWorks", "How It Works")}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { step: '01', title: t("qrCode.hiw1Title", 'Select Boat'), desc: t("qrCode.hiw1Desc", 'Choose any boat you have added to the system.') },
-                  { step: '02', title: t("qrCode.hiw2Title", 'Generate QR'),  desc: t("qrCode.hiw2Desc", 'Click "Create QR Code" to generate a unique code with all boat details.') },
-                  { step: '03', title: t("qrCode.hiw3Title", 'Download & Share'), desc: t("qrCode.hiw3Desc", 'Download as PNG/PDF or share via WhatsApp, Email, or SMS.') },
-                ].map(item => (
-                  <div key={item.step} className="flex gap-3">
-                    <span className="text-2xl font-black text-blue-100 shrink-0">{item.step}</span>
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">{item.title}</p>
-                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{item.desc}</p>
+            {/* ── Step 2: QR + Boat Details ── */}
+            {selectedBoat && (
+              <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
+
+                {/* LEFT: QR Card */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="mb-5 flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                      2
+                    </span>
+                    <h2 className="text-base font-bold text-slate-800">
+                      {t('qrCode.step2', 'Vessel QR Code')}
+                    </h2>
+                  </div>
+
+                  <div ref={printRef} className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+                    <div className="mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900 shadow-md">
+                        <FaAnchor className="text-lg text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-blue-900">Deewaraya</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                          Fleet Registry
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mb-5 text-center">
+                      <h3 className="text-lg font-black uppercase tracking-tight text-slate-900">
+                        {selectedBoat.boatName}
+                      </h3>
+                      <p className="mt-1 text-xs font-bold text-slate-500">
+                        {selectedBoat.registrationNumber}
+                      </p>
+                    </div>
+
+                    <div
+                      ref={qrRef}
+                      className="relative mx-auto flex w-fit flex-col items-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-4"
+                    >
+                      <div className="absolute left-[-2px] top-[-2px] h-4 w-4 rounded-tl-lg border-l-2 border-t-2 border-blue-600" />
+                      <div className="absolute right-[-2px] top-[-2px] h-4 w-4 rounded-tr-lg border-r-2 border-t-2 border-blue-600" />
+                      <div className="absolute bottom-[-2px] left-[-2px] h-4 w-4 rounded-bl-lg border-b-2 border-l-2 border-blue-600" />
+                      <div className="absolute bottom-[-2px] right-[-2px] h-4 w-4 rounded-br-lg border-b-2 border-r-2 border-blue-600" />
+
+                      <QRCodeCanvas
+                        value={qrValue || 'https://deewaraya.lk'}
+                        size={180}
+                        fgColor="#0F172A"
+                        bgColor="#ffffff"
+                        level="H"
+                        includeMargin={false}
+                      />
+                    </div>
+
+                    <p className="mt-4 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Scan to verify identity
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex flex-col gap-3">
+                    <div className="dropdown-wrapper relative w-full">
+                      <button
+                        onClick={() => {
+                          setShowDownload((v) => !v);
+                          setShowShare(false);
+                        }}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
+                      >
+                        <FaDownload /> {t('qrCode.download', 'Download QR')}
+                      </button>
+                      {showDownload && (
+                        <div className="absolute left-0 top-full z-30 mt-2 w-full rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
+                          <button
+                            onClick={downloadPNG}
+                            className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                          >
+                            <FaFileImage className="text-blue-500" /> PNG Image
+                          </button>
+                          <button
+                            onClick={downloadPDF}
+                            className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                          >
+                            <FaFilePdf className="text-red-500" /> PDF Document
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="dropdown-wrapper relative">
+                        <button
+                          onClick={() => {
+                            setShowShare((v) => !v);
+                            setShowDownload(false);
+                          }}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+                        >
+                          <FaShareAlt /> {t('qrCode.share', 'Share')}
+                        </button>
+                        {showShare && (
+                          <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
+                            <button
+                              onClick={shareWhatsApp}
+                              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-green-50"
+                            >
+                              <FaWhatsapp className="text-lg text-green-600" /> WhatsApp
+                            </button>
+                            <button
+                              onClick={shareEmail}
+                              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50"
+                            >
+                              <FaEnvelope className="text-lg text-blue-600" /> Email
+                            </button>
+                            <button
+                              onClick={shareSMS}
+                              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-purple-50"
+                            >
+                              <FaMobile className="text-lg text-purple-600" /> SMS
+                            </button>
+                            <button
+                              onClick={copyLink}
+                              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                              <FaLink className="text-lg text-slate-500" />
+                              {copied ? 'Copied!' : 'Copy Link'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={handlePrint}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+                      >
+                        <FaPrint /> {t('qrCode.print', 'Print')}
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
 
+                  {copied && (
+                    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-2xl">
+                      <FaCheckCircle className="text-green-400" /> Link copied to clipboard!
+                    </div>
+                  )}
+                </div>
+
+                {/* RIGHT: Complete Boat Record */}
+                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  <div className="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          Vessel Database Record
+                        </p>
+                        <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-slate-900">
+                          {selectedBoat.boatName}
+                        </h2>
+                      </div>
+                      <span
+                        className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
+                          selectedBoat.boatStatus === 'ACTIVE'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        {selectedBoat.boatStatus === 'ACTIVE' && <MdVerified />}
+                        {selectedBoat.boatStatus || 'UNKNOWN'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/*{selectedBoat.imageUrl && (
+                    <div className="border-b border-slate-200 bg-slate-100 p-1">
+                      <img
+                        src={apiUrl(selectedBoat.imageUrl)}
+                        alt={`${selectedBoat.boatName} vessel`}
+                        className="h-56 w-full rounded-xl object-cover shadow-inner"
+                      />
+                    </div>
+                  )}*/}
+
+                  <div className="grid gap-x-8 px-6 py-2 sm:grid-cols-2">
+                    <DetailRow icon={<MdVerified />} label="Registration Number" value={selectedBoat.registrationNumber} />
+                    <DetailRow icon={<FaShip />} label="Vessel Type" value={selectedBoat.boatType} />
+                    <DetailRow icon={<FaCalendarAlt />} label="Year Built / Model" value={selectedBoat.modelYear} />
+                    <DetailRow icon={<MdEngineering />} label="Engine Type" value={selectedBoat.engineType} />
+                    <DetailRow icon={<MdEngineering />} label="Engine Serial" value={selectedBoat.engineSerial} />
+                    <DetailRow
+                      icon={<FaBolt />}
+                      label="Horsepower"
+                      value={selectedBoat.horsepower ? `${selectedBoat.horsepower} HP` : null}
+                    />
+                    <DetailRow
+                      icon={<FaGasPump />}
+                      label="Fuel Capacity"
+                      value={selectedBoat.fuelCapacity ? `${selectedBoat.fuelCapacity} L` : null}
+                    />
+                    <DetailRow
+                      icon={<FaUserTie />}
+                      label="Assigned Driver"
+                      value={selectedBoat.driver?.name || 'No driver assigned'}
+                    />
+                    <DetailRow icon={<FaEnvelope />} label="Driver Email" value={selectedBoat.driver?.email} />
+                    <DetailRow
+                      icon={<FaSyncAlt />}
+                      label="Connection Status"
+                      value={selectedBoat.connectionStatus?.toUpperCase() || 'OFFLINE'}
+                      color={selectedBoat.connectionStatus === 'online' ? 'green' : 'blue'}
+                    />
+                    <DetailRow
+                      icon={<FaMapMarkerAlt />}
+                      label="Registered Coordinates"
+                      value={
+                        selectedBoat.latitude != null && selectedBoat.longitude != null
+                          ? `${Number(selectedBoat.latitude).toFixed(5)}, ${Number(selectedBoat.longitude).toFixed(5)}`
+                          : 'Not recorded'
+                      }
+                    />
+                    <DetailRow
+                      icon={<FaCalendarAlt />}
+                      label="Registered On"
+                      value={
+                        selectedBoat.createdAt
+                          ? new Date(selectedBoat.createdAt).toLocaleDateString('en-GB')
+                          : null
+                      }
+                    />
+                  </div>
+
+                  <div className="border-t border-slate-100 bg-slate-50 px-6 py-5">
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                      Public Verification Link
+                    </p>
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5">
+                      <p className="truncate font-mono text-xs text-blue-600">{qrValue}</p>
+                      <button
+                        onClick={copyLink}
+                        className="shrink-0 text-slate-400 transition hover:text-blue-600"
+                        title="Copy link"
+                      >
+                        <FaLink />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>
