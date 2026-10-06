@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, MapPin, RefreshCw, Signal, ShieldCheck } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
 import HomeNavBar from "../../components/HomeNavBar";
-import coverageBanner from "../../assets/bddashmap.png";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 import useInternetStatus from "../../hooks/useInternetStatus";
@@ -22,41 +21,60 @@ function formatCoordinates(reading) {
   return `${Number(reading.latitude).toFixed(4)}, ${Number(reading.longitude).toFixed(4)}`;
 }
 
-function CoverageViewport({ readings }) {
+function toLatLng(point) {
+  if (!point || point.latitude == null || point.longitude == null || point.latitude === "" || point.longitude === "") {
+    return null;
+  }
+  const latitude = Number(point.latitude);
+  const longitude = Number(point.longitude);
+  if (
+    !Number.isFinite(latitude) || !Number.isFinite(longitude) ||
+    latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180
+  ) {
+    return null;
+  }
+  return [latitude, longitude];
+}
+
+function CoverageViewport({ readings, liveLocation }) {
   const map = useMap();
 
   useEffect(() => {
-    if (!readings.length) return;
-    const points = readings.map((reading) => [reading.latitude, reading.longitude]);
+    const points = readings.map(toLatLng).filter(Boolean);
+    const livePoint = toLatLng(liveLocation);
+    if (livePoint) points.push(livePoint);
+    if (!points.length) return;
     if (points.length === 1) {
-      map.setView(points[0], 9);
+      map.setView(points[0], 9, { animate: false });
       return;
     }
-    map.fitBounds(points, { padding: [36, 36], maxZoom: 9 });
-  }, [map, readings]);
+    map.fitBounds(points, { padding: [36, 36], maxZoom: 9, animate: false });
+  }, [map, readings, liveLocation]);
 
   return null;
 }
 
-function CoverageMap({ readings }) {
+function CoverageMap({ readings, liveLocation, placeName }) {
   return (
     <MapContainer
       center={DEFAULT_CENTER}
       zoom={6}
       scrollWheelZoom={false}
-      className="h-105 w-full sm:h-125"
+      className="h-full w-full"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <CoverageViewport readings={readings} />
+      <CoverageViewport readings={readings} liveLocation={liveLocation} />
       {readings.map((reading, index) => {
+        const position = toLatLng(reading);
+        if (!position) return null;
         const style = SIGNAL_STYLES[reading.status] || SIGNAL_STYLES.checking;
         return (
           <CircleMarker
             key={reading._id || `${reading.recordedAt}-${index}`}
-            center={[reading.latitude, reading.longitude]}
+            center={position}
             radius={8}
             pathOptions={{ color: "#ffffff", weight: 2, fillColor: style.color, fillOpacity: 0.95 }}
           >
@@ -71,6 +89,22 @@ function CoverageMap({ readings }) {
           </CircleMarker>
         );
       })}
+      {toLatLng(liveLocation) && (
+        <CircleMarker
+          center={toLatLng(liveLocation)}
+          radius={12}
+          pathOptions={{ color: "#0e7490", weight: 3, fillColor: "#22d3ee", fillOpacity: 1 }}
+        >
+          <Popup>
+            <div className="min-w-40 text-sm">
+              <p className="font-bold text-cyan-800">Driver GPS position</p>
+              <p className="mt-1 text-slate-600">{placeName || "Place name unavailable"}</p>
+              <p className="mt-1 text-slate-600">{formatCoordinates(liveLocation)}</p>
+              <p className="mt-1 text-slate-600">Updated {new Date(liveLocation.recordedAt).toLocaleString()}</p>
+            </div>
+          </Popup>
+        </CircleMarker>
+      )}
     </MapContainer>
   );
 }
@@ -87,6 +121,8 @@ export default function SignalIndicator() {
   const [pageError, setPageError] = useState("");
   const [coverageError, setCoverageError] = useState("");
   const [coverageEnabled, setCoverageEnabled] = useState(false);
+  const [livePlaceName, setLivePlaceName] = useState("");
+  const placeNameCache = useRef(new Map());
   const coveragePreferenceKey = `signalCoverageEnabled:${user?._id || user?.id || "user"}`;
   const connection = useInternetStatus({ boatId: isDriver ? boatId : "", report: isDriver });
 
@@ -133,7 +169,7 @@ export default function SignalIndicator() {
         const { data } = await api.get(`/signal/readings/${boatId}`);
         if (!active) return;
         setBoatSnapshot(data.boat);
-        setReadings(Array.isArray(data.readings) ? data.readings : []);
+        setReadings(Array.isArray(data.readings) ? data.readings.filter(toLatLng) : []);
         setPageError("");
       } catch (error) {
         if (active) setPageError(error.response?.data?.message || "Could not load signal coverage");
@@ -157,6 +193,12 @@ export default function SignalIndicator() {
   }, []);
 
   const selectedBoat = boats.find((boat) => boat._id === boatId);
+  const latestGoodReading = [...readings].reverse().find((reading) => reading.status === "good");
+  const latestLostReading = [...readings].reverse().find((reading) => reading.status === "poor" || reading.status === "offline");
+  const liveLocation = boatSnapshot?.signalLocation;
+  const livePoint = toLatLng(liveLocation);
+  const liveLocationKey = livePoint ? `${livePoint[0].toFixed(3)},${livePoint[1].toFixed(3)}` : "";
+  const liveLocationIsFresh = liveLocation?.recordedAt && Date.now() - new Date(liveLocation.recordedAt).getTime() <= 2 * 60 * 1000;
   const currentStatus = isDriver
     ? connection.status
     : !boatSnapshot?.connectionCheckedAt
@@ -169,6 +211,47 @@ export default function SignalIndicator() {
     counts[reading.status] = (counts[reading.status] || 0) + 1;
     return counts;
   }, {}), [readings]);
+
+  useEffect(() => {
+    if (!liveLocationKey) {
+      setLivePlaceName("");
+      return undefined;
+    }
+
+    const cachedPlace = placeNameCache.current.get(liveLocationKey)
+      || sessionStorage.getItem(`signalPlaceName:${liveLocationKey}`);
+    if (cachedPlace) {
+      setLivePlaceName(cachedPlace);
+      return undefined;
+    }
+
+    let active = true;
+    const [latitude, longitude] = liveLocationKey.split(",");
+    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
+      .then((response) => {
+        if (!response.ok) throw new Error("Place lookup failed");
+        return response.json();
+      })
+      .then((data) => {
+        const locality = data.locality || data.city;
+        const place = [locality, data.principalSubdivision, data.countryName]
+          .filter((part, index, parts) => part && parts.indexOf(part) === index)
+          .join(", ");
+        if (!active) return;
+        if (place) {
+          placeNameCache.current.set(liveLocationKey, place);
+          sessionStorage.setItem(`signalPlaceName:${liveLocationKey}`, place);
+          setLivePlaceName(place);
+        } else {
+          setLivePlaceName("Place name unavailable");
+        }
+      })
+      .catch(() => {
+        if (active) setLivePlaceName("Place name unavailable");
+      });
+
+    return () => { active = false; };
+  }, [liveLocationKey]);
 
   const handleSelectBoat = (event) => {
     const nextBoatId = event.target.value;
@@ -196,7 +279,7 @@ export default function SignalIndicator() {
     try {
       const { data } = await api.get(`/signal/readings/${boatId}`);
       setBoatSnapshot(data.boat);
-      setReadings(Array.isArray(data.readings) ? data.readings : []);
+      setReadings(Array.isArray(data.readings) ? data.readings.filter(toLatLng) : []);
       setPageError("");
     } catch (error) {
       setPageError(error.response?.data?.message || "Could not refresh signal coverage");
@@ -206,29 +289,16 @@ export default function SignalIndicator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-50 to-cyan-100 text-slate-900 dark:from-slate-950 dark:via-slate-950 dark:to-blue-950 dark:text-slate-100">
-      <HomeNavBar />
+    <div className="min-h-screen bg-[#f1f5f2] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <HomeNavBar opaqueBackground />
       <main className="mx-auto max-w-7xl px-4 pb-10 pt-7 sm:px-8 sm:pt-10">
-        <section className="relative mb-7 flex min-h-36 items-end overflow-hidden rounded-xl border border-blue-200 bg-blue-950 shadow-sm dark:border-slate-800 sm:min-h-48">
-          <img
-            src={coverageBanner}
-            alt="Color-coded vessel routes around Sri Lanka"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/85 via-blue-950/45 to-transparent dark:from-slate-950/85 dark:via-slate-950/45" />
-          <div className="relative z-10 max-w-xl p-5 text-white sm:p-7">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-200">At sea · Signal overview</p>
-            <h2 className="mt-1 text-xl font-bold sm:text-2xl">Stay connected along the route</h2>
-            <p className="mt-1 text-xs leading-5 text-white/85 sm:text-sm">Review saved connection readings by location.</p>
-          </div>
-        </section>
         <header className="mb-7 flex flex-col gap-5 border-b border-slate-200 pb-6 dark:border-slate-800 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-start gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-900 to-cyan-600 text-white shadow-md shadow-cyan-900/15">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-emerald-950 text-white shadow-sm dark:bg-emerald-800">
               <Signal size={22} />
             </span>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-cyan-800 dark:text-cyan-300">Maritime operations</p>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">Maritime operations</p>
               <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white sm:text-3xl">Signal coverage</h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                 Connection quality recorded by the assigned driver's device at saved GPS points. This measures service connectivity, not cellular radio strength.
@@ -262,11 +332,20 @@ export default function SignalIndicator() {
           </section>
         ) : (
           <>
-            <section className="mb-6 flex flex-col gap-4 rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-cyan-50 p-5 dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-cyan-950/40 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <section className="mb-6 flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <div>
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Selected vessel</p>
                 <h2 className="mt-1 text-xl font-bold text-slate-950 dark:text-white">{boatSnapshot?.boatName || selectedBoat?.boatName}</h2>
-                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{boatSnapshot?.registrationNumber || selectedBoat?.registrationNumber}</p>
+                <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="text-slate-500 dark:text-slate-400">Registration number:</dt>
+                    <dd className="font-semibold text-slate-800 dark:text-slate-100">({boatSnapshot?.registrationNumber || selectedBoat?.registrationNumber || "Not available"})</dd>
+                  </div>
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="text-slate-500 dark:text-slate-400">Assigned driver:</dt>
+                    <dd className="font-semibold text-slate-800 dark:text-slate-100">{boatSnapshot?.driver?.name || selectedBoat?.driver?.name || "Not assigned"}</dd>
+                  </div>
+                </dl>
               </div>
               <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-950/70" aria-live="polite">
                 <span className="h-3 w-3 rounded-full ring-4 ring-current/10" style={{ color: statusStyle.color, backgroundColor: statusStyle.color }} />
@@ -279,19 +358,50 @@ export default function SignalIndicator() {
               </div>
             </section>
 
+            <section className="mb-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl border border-emerald-200 bg-white p-5 shadow-sm dark:border-emerald-950 dark:bg-slate-900">
+                <p className="text-xs font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">Last good signal</p>
+                {latestGoodReading ? (
+                  <>
+                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{formatCoordinates(latestGoodReading)}</p>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{new Date(latestGoodReading.recordedAt).toLocaleString()}</p>
+                  </>
+                ) : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">No good signal location recorded yet.</p>}
+              </div>
+              <div className="rounded-xl border border-red-200 bg-white p-5 shadow-sm dark:border-red-950 dark:bg-slate-900">
+                <p className="text-xs font-bold uppercase tracking-wide text-red-800 dark:text-red-300">Last poor or lost signal</p>
+                {latestLostReading ? (
+                  <>
+                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{formatCoordinates(latestLostReading)} · {SIGNAL_STYLES[latestLostReading.status]?.label || latestLostReading.status}</p>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{new Date(latestLostReading.recordedAt).toLocaleString()}</p>
+                  </>
+                ) : currentStatus === "offline" ? (
+                  <>
+                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">No driver check since {boatSnapshot?.connectionCheckedAt ? new Date(boatSnapshot.connectionCheckedAt).toLocaleString() : "unknown"}</p>
+                    {livePoint && liveLocation?.recordedAt && <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Last GPS: {formatCoordinates(liveLocation)} · {new Date(liveLocation.recordedAt).toLocaleString()}</p>}
+                  </>
+                ) : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">No poor or lost signal location recorded.</p>}
+              </div>
+            </section>
+
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(19rem,0.85fr)]">
-              <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <section className="flex h-[38rem] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 px-5 py-4 dark:border-slate-800 sm:px-6">
                   <div>
-                    <h2 className="text-lg font-bold text-slate-950 dark:text-white">Recorded coverage</h2>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Last 30 days · select a point for details</p>
+                    <h2 className="text-lg font-bold text-slate-950 dark:text-white">Driver location and signal coverage</h2>
+                    <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      {liveLocation ? `${livePlaceName || "Resolving place name…"} · ${formatCoordinates(liveLocation)}` : "No GPS position shared yet"}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Last 30 days · select a point for signal details</p>
                   </div>
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{readings.length} saved points</span>
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{liveLocationIsFresh ? "GPS live" : livePoint ? "GPS last known" : "GPS not shared"} · {readings.length} saved points</span>
                 </div>
-                {readings.length ? (
-                  <CoverageMap readings={readings} />
+                {readings.length || livePoint ? (
+                  <div className="min-h-0 flex-1">
+                    <CoverageMap readings={readings} liveLocation={liveLocation} placeName={livePlaceName} />
+                  </div>
                 ) : (
-                  <div className="flex min-h-80 flex-col items-center justify-center px-6 py-12 text-center">
+                  <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 py-12 text-center">
                     <MapPin size={28} className="text-cyan-800 dark:text-cyan-300" />
                     <h3 className="mt-3 font-bold text-slate-900 dark:text-white">No coverage points recorded yet</h3>
                     <p className="mt-2 max-w-lg text-sm leading-6 text-slate-600 dark:text-slate-300">
