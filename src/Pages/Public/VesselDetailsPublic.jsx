@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import {
   FaShip, FaCheckCircle, FaTimesCircle, FaAnchor,
   FaPrint, FaShieldAlt, FaCog, FaGasPump, FaBolt,
-  FaCalendarAlt, FaWrench, FaIdBadge, FaCopy, FaExclamationTriangle
+  FaCalendarAlt, FaWrench, FaIdBadge, FaCopy
 } from 'react-icons/fa';
 import { MdVerified, MdSecurity, MdFingerprint } from 'react-icons/md';
-import { API_BASE } from '../../services/api';
+import api from '../../services/api';
 
 const VesselDetailsPublic = () => {
   const { t } = useTranslation();
@@ -22,15 +22,10 @@ const VesselDetailsPublic = () => {
     const fetchBoat = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `${API_BASE}/boats/public/${id}`
-        );
-        if (res.status === 404) { setError('not_found');    return; }
-        if (!res.ok)            { setError('server_error'); return; }
-        const data = await res.json();
+        const { data } = await api.get(`/boats/public/${id}`);
         setBoat(data);
       } catch (err) {
-        setError('server_error');
+        setError(err.response?.status === 404 ? 'not_found' : 'server_error');
       } finally {
         setLoading(false);
       }
@@ -59,14 +54,14 @@ const VesselDetailsPublic = () => {
 
   // ── Loading State ──
   if (loading) return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="text-center">
         <div className="relative w-20 h-20 mx-auto mb-6">
           <div className="absolute inset-0 border-4 border-slate-200 rounded-full" />
-          <div className="absolute inset-0 border-4 border-transparent border-t-blue-900 rounded-full animate-spin" />
-          <FaAnchor className="absolute inset-0 m-auto text-blue-900 text-xl" />
+          <div className="absolute inset-0 border-4 border-transparent border-t-green-700 rounded-full animate-spin" />
+          <FaAnchor className="absolute inset-0 m-auto text-blue-950 text-xl" />
         </div>
-        <p className="text-slate-900 font-bold text-sm uppercase tracking-widest">{t("vesselPublic.loading", "Verifying Vessel")}</p>
+        <p className="text-black font-bold text-sm uppercase tracking-widest">{t("vesselPublic.loading", "Verifying Vessel")}</p>
         <p className="text-xs text-slate-500 mt-2 tracking-wider">{t("vesselPublic.database", "DEEWARAYA MARITIME DATABASE")}</p>
       </div>
     </div>
@@ -75,15 +70,15 @@ const VesselDetailsPublic = () => {
   // ── Error State ──
   if (error || !boat) return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-      <div className="bg-white border-t-4 border-red-700 shadow-xl max-w-md w-full">
+      <div className="w-full max-w-md border-t-4 border-blue-950 bg-white shadow-xl">
         <div className="p-8">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FaTimesCircle className="text-3xl text-red-700" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
+            <FaTimesCircle className="text-3xl text-blue-950" />
           </div>
-          <h2 className="text-center text-lg font-bold text-slate-900 uppercase tracking-wider mb-2">
+          <h2 className="text-center text-lg font-bold text-black uppercase tracking-wider mb-2">
             {error === 'not_found' ? t("vesselPublic.notFound", 'Vessel Not Registered') : t("vesselPublic.connFailed", 'Connection Failed')}
           </h2>
-          <div className="w-16 h-0.5 bg-red-700 mx-auto mb-4" />
+          <div className="mx-auto mb-4 h-0.5 w-16 bg-green-700" />
           <p className="text-center text-sm text-slate-600 mb-4">
             {error === 'not_found'
               ? t("vesselPublic.notFoundDesc", 'This QR code does not correspond to any registered vessel in the national maritime database.')
@@ -99,33 +94,27 @@ const VesselDetailsPublic = () => {
   );
 
   const isActive = boat.boatStatus === 'ACTIVE';
-  const statusColor = isActive ? 'green' : boat.boatStatus === 'MAINTENANCE' ? 'amber' : 'red';
+  const statusColor = isActive ? 'green' : 'navy';
 
   const statusColors = {
-    green: { bg: 'bg-green-700', text: 'text-green-700', bgLight: 'bg-green-50', border: 'border-green-200', icon: 'bg-green-100' },
-    amber: { bg: 'bg-amber-600', text: 'text-amber-700', bgLight: 'bg-amber-50', border: 'border-amber-200', icon: 'bg-amber-100' },
-    red:   { bg: 'bg-red-700',   text: 'text-red-700',   bgLight: 'bg-red-50',   border: 'border-red-200',   icon: 'bg-red-100'   },
+    green: { bg: 'bg-green-700', text: 'text-green-800', bgLight: 'bg-green-50', border: 'border-green-200', icon: 'bg-green-100' },
+    navy: { bg: 'bg-blue-950', text: 'text-blue-950', bgLight: 'bg-blue-50', border: 'border-blue-200', icon: 'bg-blue-100' },
   };
   const clr = statusColors[statusColor];
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans">
-
-      {/* ═══ TOP RIBBON ═══ */}
-      <div className="bg-slate-900 text-slate-300 text-[10px] py-1.5 px-4 text-center tracking-widest uppercase">
-        Government of Sri Lanka · Ministry of Fisheries
-      </div>
+    <div className="min-h-screen bg-white font-sans text-black">
 
       {/* ═══ OFFICIAL HEADER ═══ */}
-      <header className="bg-white border-b-4 border-blue-900 shadow-sm">
-        <div className="max-w-3xl mx-auto px-5 py-5">
+      <header className="border-b-2 border-green-700 bg-white shadow-sm">
+        <div className="mx-auto max-w-4xl px-5 py-5">
           <div className="flex items-center gap-4">
             {/* Official Seal */}
             <div className="relative">
-              <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center shadow-md">
+              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-blue-950 shadow-sm">
                 <FaAnchor className="text-white text-2xl" />
               </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center border-2 border-white">
+              <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-green-700">
                 <MdVerified className="text-white text-xs" />
               </div>
             </div>
@@ -134,17 +123,17 @@ const VesselDetailsPublic = () => {
               <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-semibold mb-1">
                 Official Vessel Verification
               </p>
-              <h1 className="text-xl font-black text-slate-900 leading-tight">
+              <h1 className="text-xl font-black text-black leading-tight">
                 DEEWARAYA
               </h1>
-              <p className="text-xs text-blue-900 font-bold tracking-wider">
+              <p className="text-xs font-bold tracking-wider text-green-800">
                 MARITIME FLEET MANAGEMENT SYSTEM
               </p>
             </div>
 
             <div className="hidden sm:flex flex-col items-end">
-              <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded">
-                <MdSecurity className="text-blue-900 text-xs" />
+                <div className="flex items-center gap-1.5 rounded border border-slate-200 bg-slate-50 px-3 py-1.5">
+                <MdSecurity className="text-green-800 text-xs" />
                 <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Secure</span>
               </div>
               <p className="text-[10px] text-slate-400 mt-1 font-mono">v2.0</p>
@@ -154,8 +143,8 @@ const VesselDetailsPublic = () => {
       </header>
 
       {/* ═══ CERTIFICATION STATUS ═══ */}
-      <div className={`${clr.bg} text-white shadow-md`}>
-        <div className="max-w-3xl mx-auto px-5 py-4">
+      <div className={`${clr.bg} text-white shadow-sm`}>
+        <div className="mx-auto max-w-4xl px-5 py-4">
           <div className="flex items-center justify-center gap-3">
             {isActive ? (
               <MdVerified className="text-2xl" />
@@ -181,16 +170,16 @@ const VesselDetailsPublic = () => {
       </div>
 
       {/* ═══ MAIN CONTENT ═══ */}
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+      <main className="mx-auto max-w-4xl space-y-4 px-4 py-6 sm:px-5">
 
         {/* ─── VESSEL IDENTIFICATION CARD ─── */}
-        <section className="bg-white shadow-sm border border-slate-200">
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
 
           {/* Section Header */}
           <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-1 h-5 bg-blue-900" />
-              <h2 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
+              <div className="h-5 w-1 bg-green-700" />
+              <h2 className="text-xs font-bold text-black uppercase tracking-widest">
                 {t("vesselPublic.sections.identification", "Vessel Identification")}
               </h2>
             </div>
@@ -200,14 +189,14 @@ const VesselDetailsPublic = () => {
           {/* Boat Name Banner */}
           <div className="px-5 py-5 border-b border-slate-100">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center shadow-md shrink-0">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-blue-950 shadow-sm">
                 <FaShip className="text-white text-2xl" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mb-1">
                   {t("vesselPublic.fields.registeredName", "Registered Vessel Name")}
                 </p>
-                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none">
+                <h3 className="text-2xl font-black text-black uppercase tracking-tight leading-none">
                   {boat.boatName}
                 </h3>
                 <div className="flex items-center gap-2 mt-2">
@@ -235,11 +224,12 @@ const VesselDetailsPublic = () => {
         </section>
 
         {/* ─── TECHNICAL SPECIFICATIONS ─── */}
-        <section className="bg-white shadow-sm border border-slate-200">
+        <div className="grid gap-4 lg:grid-cols-2">
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-1 h-5 bg-blue-900" />
-              <h2 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
+              <div className="h-5 w-1 bg-green-700" />
+              <h2 className="text-xs font-bold text-black uppercase tracking-widest">
                 {t("vesselPublic.sections.techSpecs", "Technical Specifications")}
               </h2>
             </div>
@@ -274,11 +264,11 @@ const VesselDetailsPublic = () => {
         </section>
 
         {/* ─── OPERATIONAL STATUS ─── */}
-        <section className="bg-white shadow-sm border border-slate-200">
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-1 h-5 bg-blue-900" />
-              <h2 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
+              <div className="h-5 w-1 bg-green-700" />
+              <h2 className="text-xs font-bold text-black uppercase tracking-widest">
                 {t("vesselPublic.sections.operationalStatus", "Operational Status")}
               </h2>
             </div>
@@ -317,10 +307,12 @@ const VesselDetailsPublic = () => {
         </section>
 
         {/* ─── VERIFICATION METADATA ─── */}
-        <section className="bg-slate-900 text-slate-300 shadow-sm">
+        </div>
+
+        <section className="overflow-hidden rounded-lg bg-blue-950 text-slate-200 shadow-sm">
           <div className="px-5 py-4">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-700">
-              <MdFingerprint className="text-blue-400 text-lg" />
+              <MdFingerprint className="text-green-300 text-lg" />
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                 {t("vesselPublic.sections.verificationMetadata", "Verification Metadata")}
               </h3>
@@ -345,69 +337,20 @@ const VesselDetailsPublic = () => {
         <div className="grid grid-cols-2 gap-3 print:hidden">
           <button
             onClick={() => window.print()}
-            className="bg-blue-900 hover:bg-blue-800 text-white py-3 font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-sm"
+            className="flex items-center justify-center gap-2 rounded-lg bg-blue-950 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-sm transition-colors hover:bg-green-800"
           >
             <FaPrint className="text-sm" /> {t("vesselPublic.actions.printReport", "Print Report")}
           </button>
           <button
             onClick={copyId}
-            className="bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 py-3 font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-sm"
+            className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white py-3 text-xs font-bold uppercase tracking-widest text-slate-700 shadow-sm transition-colors hover:border-green-700 hover:text-blue-950"
           >
             <FaCopy className="text-sm" />
             {copied ? t("vesselPublic.actions.copied", 'Copied!') : t("vesselPublic.actions.copyId", 'Copy ID')}
           </button>
         </div>
 
-        {/* ─── ADVISORY NOTICE ─── */}
-        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 print:hidden">
-          <div className="flex gap-3">
-            <FaExclamationTriangle className="text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">
-                {t("vesselPublic.advisory.title", "Advisory Notice")}
-              </p>
-              <p className="text-xs text-amber-800 leading-relaxed">
-                {t("vesselPublic.advisory.desc", "If any vessel information appears incorrect or suspicious, please report immediately to the Sri Lanka Navy or Department of Fisheries.")}
-              </p>
-              <a
-                href={`mailto:report@deewaraya.lk?subject=Vessel Report - ${boat.registrationNumber}`}
-                className="inline-block mt-2 text-[10px] font-bold text-amber-900 underline uppercase tracking-wider"
-              >
-                {t("vesselPublic.advisory.reportLink", "Report to Authorities →")}
-              </a>
-            </div>
-          </div>
-        </div>
-
       </main>
-
-      {/* ═══ OFFICIAL FOOTER ═══ */}
-      <footer className="bg-slate-900 text-slate-400 mt-8 border-t-4 border-blue-900">
-        <div className="max-w-3xl mx-auto px-5 py-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <FaAnchor className="text-blue-400 text-sm" />
-              <p className="text-xs font-bold text-white uppercase tracking-widest">
-                Deewaraya Maritime System
-              </p>
-            </div>
-            <p className="text-[10px] tracking-wider">
-              Authorized by the Ministry of Fisheries · Government of Sri Lanka
-            </p>
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4 text-[10px] uppercase tracking-widest">
-            <div>
-              <p className="text-slate-500 mb-1">Contact</p>
-              <p className="text-slate-300">official@deewaraya.lk</p>
-            </div>
-            <div className="text-right">
-              <p className="text-slate-500 mb-1">Copyright</p>
-              <p className="text-slate-300">© 2025 Deewaraya</p>
-            </div>
-          </div>
-        </div>
-      </footer>
 
     </div>
   );
@@ -423,16 +366,16 @@ const DataField = ({ label, value, mono, onCopy, copied }) => (
       {label}
     </p>
     <div className="flex items-center justify-between gap-2">
-      <p className={`text-sm font-bold text-slate-900 break-all ${mono ? 'font-mono' : ''}`}>
+      <p className={`text-sm font-bold text-black break-all ${mono ? 'font-mono' : ''}`}>
         {value || '—'}
       </p>
       {onCopy && (
         <button
           onClick={onCopy}
-          className="text-slate-400 hover:text-blue-900 transition shrink-0"
+          className="text-slate-400 hover:text-blue-950 transition shrink-0"
           title="Copy"
         >
-          {copied ? <FaCheckCircle className="text-green-600 text-xs" /> : <FaCopy className="text-xs" />}
+          {copied ? <FaCheckCircle className="text-green-700 text-xs" /> : <FaCopy className="text-xs" />}
         </button>
       )}
     </div>
@@ -449,7 +392,7 @@ const SpecTile = ({ icon, label, value }) => (
         {label}
       </p>
     </div>
-    <p className="text-base font-black text-slate-900 font-mono ml-8 -mt-1">
+    <p className="text-base font-black text-black font-mono ml-8 -mt-1">
       {value || '—'}
     </p>
   </div>
@@ -461,7 +404,7 @@ const MetaRow = ({ label, value, mono, color }) => (
       {label}
     </p>
     <p className={`text-xs font-semibold ${mono ? 'font-mono' : ''} ${
-      color === 'green' ? 'text-green-400' : 'text-slate-200'
+      color === 'green' ? 'text-green-300' : 'text-slate-200'
     }`}>
       {value}
     </p>
