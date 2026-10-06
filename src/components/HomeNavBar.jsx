@@ -8,25 +8,26 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { apiUrl } from "../services/api";
 import useBoatSignalMonitor from "../hooks/useBoatSignalMonitor";
 
-const HomeNavBar = () => {
+const HomeNavBar = ({ opaqueBackground = false }) => {
   const { t } = useTranslation();
   const { mode, toggleTheme } = useThemeContext();
   const { user, isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const signalStatus = useBoatSignalMonitor(user, { includeOwnerStatus: true });
+  const { status: signalStatus, boatName } = useBoatSignalMonitor(user, { includeOwnerStatus: true });
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const signalIndicator = {
-    good: { label: "Good connection", color: "bg-emerald-500" },
-    medium: { label: "Weak connection", color: "bg-amber-400" },
-    poor: { label: "Poor connection", color: "bg-red-600" },
-    offline: { label: "Offline or no recent check", color: "bg-red-600" },
-    checking: { label: "No boat signal yet", color: "bg-slate-400" },
-  }[signalStatus] || { label: "No boat signal yet", color: "bg-slate-400" };
+    good: { label: "Good signal", color: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-300", panel: "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/60" },
+    medium: { label: "Weak signal", color: "bg-amber-400", text: "text-amber-700 dark:text-amber-300", panel: "border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/60" },
+    poor: { label: "Poor signal", color: "bg-red-600", text: "text-red-700 dark:text-red-300", panel: "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/60" },
+    offline: { label: "Offline", color: "bg-red-600", text: "text-red-700 dark:text-red-300", panel: "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/60" },
+    checking: { label: "Checking signal", color: "bg-slate-400", text: "text-slate-600 dark:text-slate-300", panel: "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800" },
+  }[signalStatus] || { label: "Checking signal", color: "bg-slate-400", text: "text-slate-600 dark:text-slate-300", panel: "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800" };
+  const signalBoatLabel = boatName || "No assigned boat";
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -78,14 +79,14 @@ const HomeNavBar = () => {
     <>
       <style>{responsiveStyles}</style>
 
-      <nav className="w-[98%] mx-auto mt-4 rounded-2xl 
+      <nav className={`w-[98%] mx-auto mt-4 rounded-2xl 
       flex flex-col
       px-4 md:px-6 py-2.5
-      bg-white/40 dark:bg-slate-900/80 backdrop-blur-xl
-      border border-white/30 dark:border-slate-700/50
+      backdrop-blur-xl border
+      ${opaqueBackground ? "bg-[#f1f5f2] dark:bg-slate-950 border-slate-200 dark:border-slate-800" : "bg-white/40 dark:bg-slate-900/80 border-white/30 dark:border-slate-700/50"}
       sticky top-4 z-50
       shadow-lg
-      transition-colors duration-300">
+      transition-colors duration-300`}>
 
         {/* ===== MAIN NAV ROW ===== */}
         <div className="flex items-center justify-between gap-2">
@@ -116,15 +117,26 @@ const HomeNavBar = () => {
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
 
             {location.pathname === "/" && isLoggedIn() && ["owner", "driver"].includes(user?.role) && (
-              <Link
-                to="/signal-indicator"
-                aria-label={`Open signal coverage. ${signalIndicator.label}`}
-                title={signalIndicator.label}
-                className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-              >
-                <Signal className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                <span className={`absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 ${signalIndicator.color}`} />
-              </Link>
+              <div className="group relative">
+                <Link
+                  to="/signal-indicator"
+                  aria-label={`Open signal coverage for ${signalBoatLabel}: ${signalIndicator.label}`}
+                  aria-describedby="signal-status-tooltip"
+                  title={`${signalBoatLabel} · ${signalIndicator.label}`}
+                  className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-white/70 bg-white/45 text-slate-700 shadow-sm backdrop-blur-xl transition hover:border-cyan-500/60 hover:bg-white/65 dark:border-white/10 dark:bg-slate-900/45 dark:text-slate-200 dark:hover:bg-slate-800/65"
+                >
+                  <Signal className={`h-5 w-5 ${signalIndicator.text}`} />
+                  <span className={`absolute right-1 top-1 h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 ${signalIndicator.color}`} />
+                </Link>
+                <div id="signal-status-tooltip" role="tooltip" className="pointer-events-none invisible absolute right-0 top-full z-[60] mt-2 w-56 max-w-[calc(100vw-2rem)] translate-y-1 rounded-lg border border-white/70 bg-white/70 p-3 opacity-0 shadow-xl backdrop-blur-2xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 dark:border-white/15 dark:bg-slate-900/75">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Signal update</p>
+                  <p className="mt-1 truncate text-sm font-bold text-slate-900 dark:text-white">{signalBoatLabel}</p>
+                  <div className={`mt-2 flex items-center gap-2 rounded-lg border px-2.5 py-2 ${signalIndicator.panel}`}>
+                    <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${signalIndicator.color}`} />
+                    <span className={`text-xs font-bold ${signalIndicator.text}`}>{signalIndicator.label}</span>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Theme toggle - desktop only */}
