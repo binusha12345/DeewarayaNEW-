@@ -1,5 +1,3 @@
-// src/components/DriverSidebar.jsx
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -7,11 +5,10 @@ import {
   LayoutDashboard,
   Navigation,
   Route,
-  ClipboardList,
   CloudRain,
   LifeBuoy,
   MessageSquare,
-  User,
+  QrCode,
   Settings,
   Menu,
   X,
@@ -22,7 +19,7 @@ import {
    ───────────────────────────────────────────── */
 const getNavItems = (t) => [
   {
-    to: "/driverdashboard",
+    to: "/BoatDriverDashboard",
     icon: LayoutDashboard,
     label: t("driverSidebar.dashboard", "Dashboard"),
     iconColor: "text-cyan-300",
@@ -40,13 +37,7 @@ const getNavItems = (t) => [
     iconColor: "text-yellow-300",
   },
   {
-    to: "/driver/tasks",
-    icon: ClipboardList,
-    label: t("driverSidebar.tasks", "Tasks"),
-    iconColor: "text-orange-300",
-  },
-  {
-    to: "/driver/weather",
+    to: "/weather",
     icon: CloudRain,
     label: t("driverSidebar.weather", "Weather"),
     iconColor: "text-sky-300",
@@ -64,10 +55,10 @@ const getNavItems = (t) => [
     iconColor: "text-pink-300",
   },
   {
-    to: "/driver/profile",
-    icon: User,
-    label: t("driverSidebar.profile", "Profile"),
-    iconColor: "text-purple-300",
+    to: "/driver/qr-code",
+    icon: QrCode,
+    label: t("driverSidebar.assignedBoatQr", "Assigned Boat QR"),
+    iconColor: "text-emerald-300",
   },
   {
     to: "/driver/settings",
