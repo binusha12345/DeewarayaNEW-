@@ -73,7 +73,7 @@ const getBoatImageUrl = (boat) => {
   };
 
   const handleQr = (boatId) => {
-    navigate(`/boatqr/${boatId}`);
+    navigate("/qr-code", { state: { boatId } });
   };
 
   return (
