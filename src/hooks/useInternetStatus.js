@@ -72,6 +72,9 @@ export default function useInternetStatus({ boatId = "", report = false } = {}) 
 
       if (active) {
         setConnection(nextConnection);
+        window.dispatchEvent(new CustomEvent("signal-connection-update", {
+          detail: { status: nextConnection.status, latency: nextConnection.latency },
+        }));
         setSamples((current) => [
           ...current,
           {
