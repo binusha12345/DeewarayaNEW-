@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   MapPin,
   Phone,
+  X,
   ShieldCheck,
   Siren,
   Waves,
@@ -77,6 +78,8 @@ const Emergency = () => {
     fuelOk: false,
     crewConfirmed: false,
   });
+  const [callMenuHovered, setCallMenuHovered] = useState(false);
+  const [callMenuPinned, setCallMenuPinned] = useState(false);
   const countdownTimer = useRef(null);
 
   const loadEmergencyData = async () => {
@@ -196,6 +199,7 @@ const Emergency = () => {
 
   const hasLocation = Number.isFinite(location.lat) && Number.isFinite(location.lng);
   const selectedEmergency = EMERGENCY_TYPES.find((type) => type.id === selectedType);
+  const callMenuOpen = callMenuHovered || callMenuPinned;
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-sans text-slate-800">
@@ -219,9 +223,11 @@ const Emergency = () => {
             </header>
 
             {activeEmergency && (
-              <section className="flex flex-wrap items-center justify-between gap-4 overflow-hidden rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 via-white to-orange-50 p-5 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <div className="rounded-xl bg-red-100 p-2.5 text-red-700"><Siren size={20} /></div>
+              <section className="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-600 text-white shadow-sm shadow-red-200">
+                    <Siren size={22} />
+                  </div>
                   <div>
                     <p className="font-black uppercase tracking-wide text-red-800">Emergency active</p>
                     <p className="mt-1 text-sm text-red-700">
@@ -232,18 +238,22 @@ const Emergency = () => {
                 <button
                   onClick={markSafe}
                   disabled={markingSafe}
-                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-800 disabled:cursor-wait disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-800 disabled:cursor-wait disabled:opacity-60"
                 >
                   <CheckCircle2 size={17} /> {markingSafe ? "Notifying owner…" : "I'm safe now"}
                 </button>
               </section>
             )}
 
-            <div className="columns-1 gap-5 md:columns-2 xl:columns-3">
-                <section className="mb-5 break-inside-avoid rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm md:p-6">
-                  <div className="mb-5">
-                    <h2 className="text-base font-bold text-slate-900">What is the emergency?</h2>
-                    <p className="mt-1 text-sm text-slate-500">Choose the closest match before sending an SOS.</p>
+            <div className="grid items-start gap-6 xl:grid-cols-3">
+              <div className="space-y-6 xl:col-span-2">
+                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+                  <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h2 className="text-xl font-extrabold text-slate-900">What is the emergency?</h2>
+                      <p className="mt-1 text-sm text-slate-500">Choose the closest match to help responders understand the situation.</p>
+                    </div>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">STEP 1 · SELECT</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                     {EMERGENCY_TYPES.map(({ id, label, icon: Icon, color, active }) => (
@@ -252,30 +262,115 @@ const Emergency = () => {
                         type="button"
                         aria-pressed={selectedType === id}
                         onClick={() => setSelectedType(id)}
-                        className={`flex min-h-24 items-center gap-3 rounded-2xl border-2 p-3 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-                          selectedType === id ? active : "border-slate-100 bg-white hover:border-slate-300"
+                        className={`relative flex min-h-24 items-center gap-3 rounded-xl border p-3 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                          selectedType === id ? `${active} border-2 shadow-sm` : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white"
                         }`}
                       >
-                        <span className={`rounded-lg bg-white p-2.5 shadow-sm ${color}`}><Icon size={20} /></span>
-                        <span className="text-sm font-bold text-slate-800">{label}</span>
+                        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ${color}`}><Icon size={21} /></span>
+                        <span className="text-sm font-bold leading-snug text-slate-800">{label}</span>
+                        {selectedType === id && <CheckCircle2 size={16} className="absolute right-2 top-2 text-emerald-700" />}
                       </button>
                     ))}
                   </div>
                 </section>
 
-                <section className="mb-5 break-inside-avoid rounded-3xl border border-slate-100 bg-white p-5 shadow-sm md:p-6">
+                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <label htmlFor="emergency-note" className="text-xl font-bold text-slate-900">
+                      Additional details <span className="font-normal text-slate-500">(optional)</span>
+                    </label>
+                    <span className="text-xs font-medium text-slate-400">{note.length}/500</span>
+                  </div>
+                  <textarea
+                    id="emergency-note"
+                    value={note}
+                    onChange={(event) => setNote(event.target.value)}
+                    rows={3}
+                    maxLength={500}
+                    placeholder="What happened? What kind of help do you need?"
+                    className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-700 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+                  />
+                </section>
+
+              </div>
+
+              <aside className="space-y-6">
+                <section className="overflow-hidden rounded-2xl bg-[#10243a] text-white shadow-lg shadow-slate-300/50">
+                  <div className="border-b border-white/10 px-5 py-4">
+                    <div className="flex items-center gap-2 text-red-300">
+                      <Siren size={18} />
+                      <h2 className="text-lg font-extrabold uppercase tracking-wider">Emergency alert</h2>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-300">
+                      {selectedEmergency ? `${selectedEmergency.label} selected` : "Select an emergency type to continue"}
+                    </p>
+                  </div>
+                  <div className="p-5">
+                    {countdown > 0 ? (
+                      <div className="text-center">
+                        <p className="text-7xl font-black leading-none text-red-300">{countdown}</p>
+                        <p className="mt-3 text-sm text-slate-300">Sending SOS shortly…</p>
+                        <button onClick={cancelSOS} className="mt-5 w-full rounded-xl border border-white/20 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/10">
+                          Cancel SOS
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={startSOSCountdown}
+                        disabled={sending || Boolean(activeEmergency) || !selectedType}
+                        className="flex w-full items-center justify-center gap-3 rounded-xl bg-red-600 px-5 py-4 text-white shadow-lg shadow-red-950/30 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:shadow-none"
+                      >
+                        <Siren size={22} />
+                        <span className="text-lg font-black tracking-wide">{sending ? "SENDING ALERT…" : activeEmergency ? "SOS ALREADY ACTIVE" : "SEND SOS ALERT"}</span>
+                      </button>
+                    )}
+                    <p className="mt-4 text-center text-xs leading-relaxed text-slate-400">
+                      A 3-second countdown gives you time to cancel. Your owner receives an in-app and WhatsApp alert.
+                    </p>
+                  </div>
+                </section>
+
+                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <MapPin size={18} className="text-red-600" />
+                      <h2 className="text-xl font-extrabold text-slate-900">Your location</h2>
+                    </div>
+                    <span className={`h-2.5 w-2.5 rounded-full ${locationLoading ? "animate-pulse bg-amber-400" : hasLocation ? "bg-emerald-500" : "bg-amber-500"}`} />
+                  </div>
+                  {locationLoading ? (
+                    <p className="text-sm text-slate-500">Getting GPS location…</p>
+                  ) : hasLocation ? (
+                    <>
+                      <p className="rounded-lg bg-slate-50 px-3 py-2 font-mono text-sm text-slate-700">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>
+                      <a
+                        href={`https://www.google.com/maps?q=${location.lat},${location.lng}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-cyan-800 hover:underline"
+                      >
+                        Open map <Compass size={15} />
+                      </a>
+                    </>
+                  ) : (
+                    <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">GPS unavailable. SOS can still be sent without location.</p>
+                  )}
+                </section>
+
+                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center gap-2">
                     <ShieldCheck size={19} className="text-cyan-800" />
-                    <h2 className="text-base font-bold text-slate-900">Safety checklist</h2>
+                    <h2 className="text-xl font-extrabold text-slate-900">Safety checklist</h2>
                   </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
                     {[
                       { key: "lifeJackets", label: "Life jackets are on" },
                       { key: "radioWorking", label: "Radio is working" },
                       { key: "fuelOk", label: "Fuel status checked" },
                       { key: "crewConfirmed", label: "Crew count confirmed" },
                     ].map((item) => (
-                      <label key={item.key} className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-3 text-sm text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50/50">
+                      <label key={item.key} className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-100 px-3 py-3 text-sm text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50/50">
                         <input
                           type="checkbox"
                           checked={checklist[item.key]}
@@ -287,131 +382,126 @@ const Emergency = () => {
                     ))}
                   </div>
                 </section>
-
-                <section className="mb-5 break-inside-avoid rounded-3xl border border-slate-100 bg-white p-5 shadow-sm md:p-6">
-                  <label htmlFor="emergency-note" className="mb-2 block text-sm font-bold text-slate-900">
-                    Additional details <span className="font-normal text-slate-500">(optional)</span>
-                  </label>
-                  <textarea
-                    id="emergency-note"
-                    value={note}
-                    onChange={(event) => setNote(event.target.value)}
-                    rows={3}
-                    maxLength={500}
-                    placeholder="Tell the owner what happened or what help is needed."
-                    className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm outline-none transition focus:border-cyan-700 focus:bg-white focus:ring-2 focus:ring-cyan-100"
-                  />
-                  <p className="mt-1 text-right text-xs text-slate-400">{note.length}/500</p>
-                </section>
-                <section className="relative mb-5 break-inside-avoid overflow-hidden rounded-3xl border border-red-200 bg-gradient-to-br from-white via-red-50 to-orange-50 p-5 text-center shadow-lg shadow-red-100/70 md:p-6">
-                  <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-red-100/70 blur-2xl" />
-                  <div className="relative">
-                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-red-100 text-red-700"><Siren size={22} /></div>
-                  <p className="text-sm font-black text-slate-900">Emergency alert</p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {selectedEmergency ? `${selectedEmergency.label} selected` : "Select an emergency type first"}
-                  </p>
-                  {countdown > 0 ? (
-                    <div className="py-5">
-                      <p className="text-6xl font-black text-red-700">{countdown}</p>
-                      <p className="mt-2 text-sm text-slate-600">Sending SOS shortly…</p>
-                      <button onClick={cancelSOS} className="mt-4 rounded-lg bg-slate-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-slate-900">
-                        Cancel SOS
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={startSOSCountdown}
-                      disabled={sending || Boolean(activeEmergency) || !selectedType}
-                      className="mx-auto mt-5 flex h-32 w-32 flex-col items-center justify-center rounded-full border-[6px] border-red-100 bg-gradient-to-br from-red-600 to-red-800 text-white shadow-xl shadow-red-300/70 transition duration-200 hover:scale-105 hover:shadow-2xl hover:shadow-red-300 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <Siren size={31} />
-                      <span className="mt-1 text-xl font-black">{sending ? "SENDING" : "SOS"}</span>
-                    </button>
-                  )}
-                  <p className="mt-4 text-xs leading-relaxed text-slate-500">
-                    Sends an in-app alert and WhatsApp message to your assigned boat owner.
-                  </p>
-                  </div>
-                </section>
-
-                <section className="mb-5 break-inside-avoid rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-                  <div className="mb-4 flex items-center gap-2">
-                    <MapPin size={18} className="text-red-600" />
-                    <h2 className="text-base font-bold text-slate-900">Your location</h2>
-                  </div>
-                  {locationLoading ? (
-                    <p className="text-sm text-slate-500">Getting GPS location…</p>
-                  ) : hasLocation ? (
-                    <>
-                      <p className="font-mono text-sm text-slate-700">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>
-                      <a
-                        href={`https://www.google.com/maps?q=${location.lat},${location.lng}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-cyan-800 hover:underline"
-                      >
-                        Open map <Compass size={14} />
-                      </a>
-                    </>
-                  ) : (
-                    <p className="text-sm text-amber-700">GPS unavailable. SOS can still be sent without location.</p>
-                  )}
-                </section>
-
-                <section className="mb-5 break-inside-avoid rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-                  <div className="mb-4 flex items-center gap-2">
-                    <Phone size={18} className="text-emerald-700" />
-                    <h2 className="text-base font-bold text-slate-900">Call for help</h2>
-                  </div>
-                  <div className="space-y-2">
-                    {contacts.owner?.phone && (
-                      <a href={`tel:${contacts.owner.phone}`} className="flex items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-950 transition hover:bg-blue-100">
-                        <span className="min-w-0"><span className="block font-bold">Assigned boat owner</span><span className="text-xs">{contacts.owner.name} · {contacts.owner.phone}</span></span>
-                        <Phone size={17} className="shrink-0" />
-                      </a>
-                    )}
-                    {EMERGENCY_CONTACTS.map((contact) => (
-                      <a key={contact.name} href={contact.href} className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-3 text-sm transition hover:brightness-95 ${contact.color}`}>
-                        <span><span className="block font-bold">{contact.name}</span><span className="text-xs">{contact.number}</span></span>
-                        <Phone size={17} />
-                      </a>
-                    ))}
-                  </div>
-                  {!loading && !contacts.owner?.phone && (
-                    <p className="mt-3 text-xs text-amber-700">Your assigned owner has no phone number on file.</p>
-                  )}
-                </section>
-
-                <section className="mb-5 break-inside-avoid rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-                  <div className="mb-4 flex items-center gap-2">
-                    <Clock3 size={18} className="text-slate-600" />
-                    <h2 className="text-base font-bold text-slate-900">Recent emergencies</h2>
-                  </div>
-                  {loading ? (
-                    <p className="text-sm text-slate-500">Loading history…</p>
-                  ) : history.length === 0 ? (
-                    <p className="text-sm text-slate-500">No emergency logs yet.</p>
-                  ) : (
-                    <div className="space-y-3">
-                      {history.slice(0, 5).map((item) => (
-                        <div key={item._id} className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-                          <div>
-                            <p className="text-sm font-bold text-slate-800">{formatEmergencyType(item.emergencyType)}</p>
-                            <p className="mt-1 text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
-                          </div>
-                          <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase ${item.status === "active" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"}`}>
-                            {item.status}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </section>
+              </aside>
             </div>
+
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><Clock3 size={20} /></span>
+                  <div>
+                    <h2 className="text-xl font-extrabold text-slate-900">Recent emergencies</h2>
+                    <p className="mt-1 text-sm text-slate-500">A record of your latest emergency alerts.</p>
+                  </div>
+                </div>
+                <span className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 sm:inline-flex">LAST 5 RECORDS</span>
+              </div>
+              {loading ? (
+                <p className="py-6 text-center text-sm text-slate-500">Loading history…</p>
+              ) : history.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center">
+                  <p className="text-sm font-semibold text-slate-600">No emergency logs yet</p>
+                  <p className="mt-1 text-xs text-slate-500">Any SOS alerts you send will appear here.</p>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                  {history.slice(0, 5).map((item) => (
+                    <div key={item._id} className="flex min-h-24 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                      <div className="min-w-0">
+                        <p className="truncate text-base font-bold text-slate-800">{formatEmergencyType(item.emergencyType)}</p>
+                        <p className="mt-2 text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
+                      </div>
+                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${item.status === "active" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"}`}>
+                        {item.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
           </div>
         </main>
+      </div>
+      {callMenuOpen && (
+        <button
+          type="button"
+          aria-label="Close emergency contacts"
+          onClick={() => {
+            setCallMenuPinned(false);
+            setCallMenuHovered(false);
+          }}
+          className={`fixed inset-0 z-40 bg-slate-950/15 backdrop-blur-sm ${callMenuPinned ? "pointer-events-auto" : "pointer-events-none"}`}
+        />
+      )}
+      <div
+        className="fixed bottom-5 right-5 z-50 flex flex-col items-end sm:bottom-7 sm:right-7"
+        onPointerEnter={() => setCallMenuHovered(true)}
+        onPointerLeave={() => setCallMenuHovered(false)}
+        onFocus={() => setCallMenuHovered(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setCallMenuHovered(false);
+        }}
+      >
+        {callMenuOpen && (
+          <section
+            id="emergency-call-menu"
+            aria-label="Emergency call contacts"
+            className="mb-4 w-[min(22rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-white/70 bg-white/80 text-slate-900 shadow-2xl shadow-slate-950/20 backdrop-blur-2xl"
+          >
+            <div className="flex items-center justify-between border-b border-white/60 bg-white/50 px-4 py-3">
+              <div>
+                <h2 className="text-base font-extrabold">Call for help</h2>
+                <p className="text-xs text-slate-600">Tap a contact to call</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCallMenuPinned(false)}
+                aria-label="Close contacts panel"
+                className="rounded-lg p-2 text-slate-500 transition hover:bg-white/80 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="max-h-[min(60vh,28rem)] space-y-2 overflow-y-auto p-3">
+              {contacts.owner?.phone && (
+                <p className="px-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Your boat</p>
+              )}
+              {contacts.owner?.phone && (
+                <a
+                  href={`tel:${contacts.owner.phone}`}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-blue-200/80 bg-blue-50/80 px-3 py-3 text-sm text-blue-950 transition hover:bg-blue-100/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                >
+                  <span><span className="block font-bold">Assigned boat owner</span><span className="text-xs">{contacts.owner.name}</span></span>
+                  <span className="flex shrink-0 items-center gap-2 font-semibold"><span>{contacts.owner.phone}</span><Phone size={16} /></span>
+                </a>
+              )}
+              <p className="px-2 pt-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Emergency services</p>
+              {EMERGENCY_CONTACTS.map((contact) => (
+                <a
+                  key={contact.name}
+                  href={contact.href}
+                  className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-3 text-sm transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${contact.color}`}
+                >
+                  <span className="font-bold">{contact.name}</span>
+                  <span className="flex shrink-0 items-center gap-2 font-semibold">{contact.number}<Phone size={16} /></span>
+                </a>
+              ))}
+              {!loading && !contacts.owner?.phone && (
+                <p className="rounded-lg bg-amber-50/90 px-3 py-2 text-xs text-amber-800">Your assigned owner has no phone number on file.</p>
+              )}
+            </div>
+          </section>
+        )}
+        <button
+          type="button"
+          aria-label={callMenuOpen ? "Close emergency contacts" : "Open emergency contacts"}
+          aria-expanded={callMenuOpen}
+          aria-controls="emergency-call-menu"
+          onClick={() => setCallMenuPinned((current) => !current)}
+          className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-emerald-700 text-white shadow-xl shadow-emerald-950/30 transition hover:scale-105 hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300"
+        >
+          {callMenuOpen ? <X size={23} /> : <Phone size={23} />}
+        </button>
       </div>
     </div>
   );
