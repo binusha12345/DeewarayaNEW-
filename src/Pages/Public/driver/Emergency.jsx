@@ -19,6 +19,7 @@ import {
 import toast from "react-hot-toast";
 import DriverSidebar from "../../../components/DriverSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api from "../../../services/api";
 
 const EMERGENCY_TYPES = [
@@ -208,19 +209,19 @@ const Emergency = () => {
         <DashboardNav />
         <main className="flex-1 overflow-y-auto p-5 md:p-8">
           <div className="mx-auto w-full max-w-7xl space-y-7">
-            <header className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                  Driver Portal / <span className="text-blue-600">Emergency</span>
-                </p>
-                <h1 className="mt-1 text-3xl font-black leading-tight text-slate-900">Emergency</h1>
-                <p className="mt-2 text-sm text-slate-600">Safety tools and emergency contacts for your trip.</p>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                {activeEmergency ? "Emergency active" : "Safety center"}
-              </div>
-            </header>
+            <DashboardPageHeader
+              eyebrow="Driver portal / safety"
+              title="Emergency"
+              description="Safety tools and emergency contacts for your trip."
+              icon={LifeBuoy}
+              theme="rose"
+              action={
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold">
+                  <span className={`h-2 w-2 rounded-full ${activeEmergency ? "animate-pulse bg-red-300" : "bg-emerald-300"}`} />
+                  {activeEmergency ? "Emergency active" : "Safety center"}
+                </div>
+              }
+            />
 
             {activeEmergency && (
               <section className="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
