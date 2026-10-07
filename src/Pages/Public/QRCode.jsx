@@ -15,6 +15,7 @@ import {
 import { MdVerified, MdEngineering } from 'react-icons/md';
 import OwnerSidebar from "../../components/OwnerSidebar";
 import DashboardNav from "../../components/DashboardNav";
+import DashboardPageHeader from "../../components/DashboardPageHeader";
 import api, { apiUrl } from "../../services/api";
 import { getPublicVesselUrl } from "../../services/vesselQr";
 
@@ -173,26 +174,16 @@ const QRCode = () => {
         <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
           <div className="mx-auto max-w-7xl space-y-6">
 
-            {/* ── Clean Page Header (Title + Icon + Subtitle only) ── */}
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-                <FaQrcode className="text-xl" />
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-blue-600">
-                  {t('qrCode.breadcrumb', 'Fleet / QR Codes')}
-                </p>
-                <h1 className="mt-1 text-2xl font-black text-slate-900 md:text-3xl">
-                  {t('qrCode.pageTitle', 'Vessel QR Code Generator')}
-                </h1>
-                <p className="mt-1 max-w-2xl text-sm text-slate-500">
-                  {t(
-                    'qrCode.pageSubtitle',
-                    'Select a boat, generate its unique QR code, and share or download it.'
-                  )}
-                </p>
-              </div>
-            </div>
+            <DashboardPageHeader
+              eyebrow={t('qrCode.breadcrumb', 'Fleet / QR Codes')}
+              title={t('qrCode.pageTitle', 'Vessel QR Code Generator')}
+              description={t(
+                'qrCode.pageSubtitle',
+                'Select a boat, generate its unique QR code, and share or download it.'
+              )}
+              icon={FaQrcode}
+              theme="violet"
+            />
 
             {/* ── Step 1: Select Boat ── */}
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
