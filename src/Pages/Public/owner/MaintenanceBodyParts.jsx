@@ -13,6 +13,7 @@ import {
 
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 
 // Local assets
 
@@ -80,30 +81,13 @@ const openGoogleMaps = (provider) => {
 
         <main className="flex-1 px-6 lg:px-10 py-8 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
-            {/* Page header */}
-            <div className="mb-10">
-              <div className="flex items-center gap-2 text-blue-900 font-semibold text-xs tracking-[0.28em] uppercase mb-3">
-                <Wrench size={14} />
-                <span>Maintenance Console</span>
-              </div>
-
-              <h1 className="text-3xl font-black text-slate-900 leading-tight">
-                Maintenance & Repair
-              </h1>
-
-              <p className="mt-4 text-slate-700 text-[16px] max-w-4xl leading-relaxed">
-                Manage your vessel's structural integrity and find certified service partners.
-                Direct access to Sri Lanka's premium marine maintenance network.
-              </p>
-            </div>
-            
-
-            {/* Section title */}
-            <div className="flex items-center gap-3 mb-6">
-              <Gauge className="text-blue-700" size={24} />
-              <h2 className="text-3xl font-bold text-slate-900">Body Parts</h2>
-              <div className="flex-1 h-px bg-slate-200 ml-4"></div>
-            </div>
+            <DashboardPageHeader
+              eyebrow="Maintenance console"
+              title="Hull & Body Parts"
+              description="Find certified partners for your vessel's structural integrity, hull, and deck fittings."
+              icon={Gauge}
+              theme="violet"
+            />
 
             {/* Provider cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
