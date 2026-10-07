@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import engine5 from "../../../assets/engine5.png";
 import bodyparts5 from "../../../assets/bodyparts5.png";
 import spareparts5 from "../../../assets/spareparts5.png";
@@ -59,17 +60,14 @@ const Maintenance = () => {
 
         {/* Page Body */}
         <main className="flex-1 min-h-0 overflow-y-auto px-2 lg:px-2 py-8">
-          {/* Header */}
-          <div className="max-w-6xl mx-auto mb-8">
-            <div className="flex items-center gap-2 text-blue-900 font-semibold text-xs tracking-[0.3em] uppercase mb-2">
-              <Wrench size={14} />
-              <span>Precision Maintenance</span>
-            </div>
-
-            <h1 className="text-3xl font-black text-slate-900 leading-tight">
-              Maintenance & Repair
-            </h1>
-
+          <div className="mx-auto max-w-6xl">
+            <DashboardPageHeader
+              eyebrow="Vessel care"
+              title="Maintenance & Repair"
+              description="Find the right maintenance area and keep your fleet ready for the water."
+              icon={Wrench}
+              theme="amber"
+            />
           </div>
 
           {/* Top Cards */}
