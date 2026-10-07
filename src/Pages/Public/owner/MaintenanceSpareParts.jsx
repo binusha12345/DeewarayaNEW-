@@ -15,6 +15,7 @@ import {
 
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 
 // Local assets
 
@@ -73,27 +74,13 @@ const openGoogleMaps = (provider) => {
 
         <main className="flex-1 px-6 lg:px-10 py-8 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="mb-10">
-              <div className="flex items-center gap-2 text-blue-900 font-semibold text-xs tracking-[0.28em] uppercase mb-3">
-                <Wrench size={14} />
-                <span>Maintenance Console</span>
-              </div>
-
-              <h1 className="text-3xl font-black text-slate-900leading-tight">
-                Maintenance & Repair
-              </h1>
-
-              <p className="mt-3 text-slate-700 text-lg text-[16px]">
-                Manage your fleet's technical health and spare parts sourcing.
-              </p>
-            </div>
-
-            {/* Section Title */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-2 h-10 bg-blue-700 rounded-full"></div>
-              <h2 className="text-3xl font-bold text-slate-900">Spare Parts</h2>
-            </div>
+            <DashboardPageHeader
+              eyebrow="Maintenance console"
+              title="Spare Parts"
+              description="Find parts suppliers for repairs and keep essential components within reach."
+              icon={Box}
+              theme="orange"
+            />
 
             {/* Provider Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
