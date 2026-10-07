@@ -3,6 +3,7 @@ import { Bell, Check, MapPin, QrCode, Radio, Share2, Siren } from "lucide-react"
 import { io } from "socket.io-client";
 import DashboardNav from "../../../components/DashboardNav";
 import OwnerSidebar from "../../../components/OwnerSidebar";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api, { API_ORIGIN } from "../../../services/api";
 
 export default function Notifications() {
@@ -56,10 +57,13 @@ export default function Notifications() {
         <DashboardNav />
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-9">
           <div className="mx-auto max-w-4xl">
-            <div className="mb-7 flex items-center gap-3">
-              <div className="rounded-lg bg-cyan-900 p-3 text-white"><Bell size={21} /></div>
-              <div><p className="text-sm font-semibold uppercase text-cyan-800">Fleet alerts</p><h1 className="text-2xl font-bold sm:text-3xl">Notifications</h1></div>
-            </div>
+            <DashboardPageHeader
+              eyebrow="Fleet alerts"
+              title="Notifications"
+              description="Stay up to date with vessel events, safety alerts, and fleet activity."
+              icon={Bell}
+              theme="cyan"
+            />
             {actionError && <p role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{actionError}</p>}
             <div className="divide-y divide-slate-200 border-y border-slate-200 bg-white">
               {notifications.length === 0 ? (
