@@ -20,11 +20,13 @@ import {
   Cloud,
   Sun,
   CloudFog,
+  CloudSun,
   Navigation,
 } from "lucide-react";
 import OwnerSidebar from "../../components/OwnerSidebar";
 import DashboardNav from "../../components/DashboardNav";
 import DriverSidebar from "../../components/DriverSidebar";
+import DashboardPageHeader from "../../components/DashboardPageHeader";
 import {
   MapContainer,
   TileLayer,
@@ -452,19 +454,13 @@ const WeatherDashboard = () => {
         <main className="flex-1 min-h-0 overflow-y-auto px-6 lg:px-10 py-8">
           <div className="max-w-6xl mx-auto">
 
-            {/* Header */}
-            <div className="mb-8">
-              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-blue-500 mb-2">
-                Fleet / Weather & Safety
-              </p>
-              <h1 className="text-3xl font-black text-slate-900">
-                Weather and Safety Alerts
-              </h1>
-              <p className="mt-3 text-slate-600 text-[16px]">
-                Search any boat, allow GPS, and view current weather at your
-                location
-              </p>
-            </div>
+            <DashboardPageHeader
+              eyebrow="Fleet / weather & safety"
+              title="Weather and Safety Alerts"
+              description="Search for a boat, use your location, and view current weather conditions."
+              icon={CloudSun}
+              theme="teal"
+            />
 
             {/* Search & Select Boat */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-4">
