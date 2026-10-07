@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, QrCode, Eye, Loader2 } from "lucide-react";
+import { Plus, QrCode, Eye, Loader2, Anchor } from "lucide-react";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api, { apiUrl } from "../../../services/api";
 
 const BoatOwnerBoats = () => {
@@ -90,25 +91,22 @@ const getBoatImageUrl = (boat) => {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-10">
-          {/* Header */}
-          <div className="flex justify-between items-end mb-10">
-            <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                Fleet / <span className="text-blue-600">Vessel List</span>
-              </p>
-              <h1 className="text-3xl font-black text-slate-900 leading-tight">
-                Boats Management
-              </h1>
-            </div>
-
-            <button
-              onClick={handleAddBoat}
-              className="flex items-center gap-2 px-6 py-2.5 bg-[#2056d3] text-white rounded-lg text-sm font-bold hover:bg-blue-900 transition cursor-pointer"
-            >
-              <Plus size={18} />
-              Add New Boat
-            </button>
-          </div>
+          <DashboardPageHeader
+            eyebrow="Fleet / Vessel list"
+            title="Boats Management"
+            description="Review your fleet, manage driver assignments, and open vessel records."
+            icon={Anchor}
+            theme="cyan"
+            action={
+              <button
+                onClick={handleAddBoat}
+                className="flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-900 shadow-sm transition hover:bg-blue-50"
+              >
+                <Plus size={18} />
+                Add New Boat
+              </button>
+            }
+          />
 
           {/* Loading */}
           {loading && (
