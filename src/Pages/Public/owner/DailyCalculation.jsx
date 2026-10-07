@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import SuccessNotice from "../../../components/SuccessNotice";
 import {
   FaPlus,
@@ -218,23 +219,22 @@ const DailyCalculation = () => {
 
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-6 max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-              <button
-                onClick={() => navigate("/owner/finance")}
-                className="p-2 bg-white rounded-lg shadow hover:bg-gray-100"
-              >
-                <FaArrowLeft />
-              </button>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                  📝 Daily Calculation
-                </h1>
-                <p className="text-gray-500 text-sm">
-                  Record your daily fish catch and expenses
-                </p>
-              </div>
-            </div>
+            <DashboardPageHeader
+              eyebrow="Finance / Daily entry"
+              title="Daily Calculation"
+              description="Record today's catch, income, and operating expenses."
+              icon={FaFish}
+              theme="teal"
+              action={
+                <button
+                  onClick={() => navigate("/owner/finance")}
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
+                >
+                  <FaArrowLeft />
+                  Finance
+                </button>
+              }
+            />
 
             {/* ===== PAST ENTRIES SECTION ===== */}
             {pastEntries.length > 0 && (
