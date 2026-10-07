@@ -3,6 +3,7 @@ import { Anchor, CalendarDays, ChevronLeft, ChevronRight, Clock3, MapPin, Play, 
 import toast from "react-hot-toast";
 import DriverSidebar from "../../../components/DriverSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api, { apiUrl } from "../../../services/api";
 
 const formatDateTime = (value) => value
@@ -176,12 +177,14 @@ const DriverTrips = () => {
         <DashboardNav />
         <main className="flex-1 overflow-y-auto p-5 md:p-8">
           <div className="mx-auto w-full max-w-7xl space-y-7">
-            <header className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Driver Portal / <span className="text-blue-600">My Trips</span></p>
-                <h1 className="mt-1 text-3xl font-black leading-tight text-slate-900">My Trips</h1>
-                <p className="mt-2 text-sm text-slate-600">{new Date(now).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}</p>
-              </div>
+            <DashboardPageHeader
+              eyebrow="Driver portal / journeys"
+              title="My Trips"
+              description={`Trip schedule and activity · ${new Date(now).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}`}
+              icon={CalendarDays}
+              theme="blue"
+            />
+            <div className="flex flex-wrap items-center justify-end gap-4">
               {activeTrip ? (
                 <button onClick={finishTrip} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-red-700 px-5 py-3 font-bold text-white shadow-sm transition-colors hover:bg-red-800 disabled:opacity-50">
                   <Square size={17} /> {busy ? "Saving..." : "End trip"}
@@ -196,7 +199,7 @@ const DriverTrips = () => {
                   </button>
                 </div>
               )}
-            </header>
+            </div>
 
             {activeTrip && (
               <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm" aria-live="polite">
