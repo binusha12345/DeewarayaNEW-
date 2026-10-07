@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import OwnerSidebar from '../../../components/OwnerSidebar';
 import DashboardNav from '../../../components/DashboardNav';
+import DashboardPageHeader from '../../../components/DashboardPageHeader';
 import { useAuth } from '../../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -50,25 +51,18 @@ const BoatOwnerDashboard = () => {
             </button>
           </div>
           
-          {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-            <div>
-              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">
-                {t("ownerDashboard.overview")}
-              </p>
-              <h1 className="text-3xl font-black text-slate-900">
-                {t("ownerDashboard.welcome", { name: user?.name || "Owner" })} 🚤
-              </h1>
-              <p className="text-sm text-slate-500 mt-1">
-                {t("ownerDashboard.manageFleet")}
-              </p>
-            </div>
-            <div className="flex gap-3">
+          <DashboardPageHeader
+            eyebrow={t("ownerDashboard.overview")}
+            title={t("ownerDashboard.welcome", { name: user?.name || "Owner" })}
+            description={t("ownerDashboard.manageFleet")}
+            icon={Ship}
+            theme="blue"
+            action={
               <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-[16px] font-bold shadow-md hover:shadow-lg hover:scale-[1.02] transition cursor-pointer">
                 <Download size={16} /> {t("ownerDashboard.downloadReport")}
               </button>
-            </div>
-          </div>
+            }
+          />
 
           {/* Key Metrics Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
