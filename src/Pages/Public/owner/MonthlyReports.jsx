@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import SuccessNotice from "../../../components/SuccessNotice";
 import {
   FaArrowLeft,
@@ -288,27 +289,25 @@ const MonthlyReports = () => {
 
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-6 max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-              <div className="flex items-center gap-4 mb-4 md:mb-0">
+            <DashboardPageHeader
+              eyebrow="Finance / Insights"
+              title="Monthly Reports"
+              description="Analyze your monthly catch, earnings, and business performance."
+              icon={FaChartLine}
+              theme="indigo"
+              action={
                 <button
                   onClick={() => navigate("/owner/finance")}
-                  className="p-2 bg-white rounded-lg shadow hover:bg-gray-100"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
                 >
                   <FaArrowLeft />
+                  Finance
                 </button>
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                    📊 Monthly Reports
-                  </h1>
-                  <p className="text-gray-500 text-sm">
-                    Analyze your monthly performance
-                  </p>
-                </div>
-              </div>
+              }
+            />
 
-              {/* Month/Year Selector + Refresh */}
-              <div className="flex items-center gap-3 flex-wrap">
+            {/* Month/Year Selector + Refresh */}
+            <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
@@ -344,7 +343,6 @@ const MonthlyReports = () => {
                   <FaSyncAlt className={loading ? "animate-spin" : ""} />
                   {loading ? "Refreshing..." : "Refresh"}
                 </button>
-              </div>
             </div>
 
             {/* Last Updated Info */}
