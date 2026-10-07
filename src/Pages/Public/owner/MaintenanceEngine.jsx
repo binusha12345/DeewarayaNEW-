@@ -13,6 +13,7 @@ import {
 
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import ssjImg from "../../../assets/ssj.webp";
 import diyakawaImg from "../../../assets/diyakawa.webp";
 import dolphinImg from "../../../assets/dolphine.webp";
@@ -73,29 +74,13 @@ const openGoogleMaps = (provider) => {
         {/* Content */}
         <main className="flex-1 px-6 lg:px-10 py-8 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
-            {/* Page Header */}
-            <div className="mb-10">
-              <div className="flex items-center gap-2 text-blue-900 font-semibold text-xs tracking-[0.28em] uppercase mb-3">
-                <Wrench size={14} />
-                <span>Maintenance Console</span>
-              </div>
-
-              <h1 className="text-3xl font-black text-slate-900 leading-tight">
-                Maintenance & Repair
-              </h1>
-
-              <div className="mt-3 w-20 h-1 bg-blue-950 rounded-full"></div>
-            </div>
-
-            {/* Section Title */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <Settings className="text-blue-950" size={24} />
-                <h2 className="text-3xl font-bold text-blue-950">Engine</h2>
-              </div>
-
-
-            </div>
+            <DashboardPageHeader
+              eyebrow="Maintenance console"
+              title="Engine Services"
+              description="Connect with marine engine specialists and keep your vessel's propulsion system in top condition."
+              icon={Settings}
+              theme="indigo"
+            />
 
             {/* Provider Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
