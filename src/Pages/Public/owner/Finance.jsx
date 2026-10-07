@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
+import { Wallet } from "lucide-react";
 import api from "../../../services/api";
 import cfhcLogo from '../../../assets/cfhc.png';
 import {
@@ -149,14 +151,13 @@ const Finance = () => {
         <DashboardNav />
         <main className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-7xl p-6">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">
-              💰 Finance Management
-            </h1>
-            <p className="text-gray-500 mt-2">
-              Track your daily income, expenses and monthly performance
-            </p>
-          </div>
+          <DashboardPageHeader
+            eyebrow="Fleet performance"
+            title="Finance Management"
+            description="Track daily income, expenses, and your monthly performance."
+            icon={Wallet}
+            theme="green"
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Daily Calculation */}
