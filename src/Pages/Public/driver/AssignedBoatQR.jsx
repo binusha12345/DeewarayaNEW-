@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import DashboardNav from "../../../components/DashboardNav";
 import DriverSidebar from "../../../components/DriverSidebar";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api, { API_ORIGIN, apiUrl } from "../../../services/api";
 import { getPublicVesselUrl } from "../../../services/vesselQr";
 
@@ -108,20 +109,13 @@ export default function AssignedBoatQR() {
         <DashboardNav />
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-9">
           <div className="mx-auto max-w-6xl">
-            <header className="mb-7 border-b border-slate-200 pb-6">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-950 text-white">
-                  <Ship size={21} />
-                </span>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-800">Driver fleet access</p>
-                  <h1 className="text-2xl font-bold text-slate-950 sm:text-3xl">Assigned boats &amp; QR codes</h1>
-                </div>
-              </div>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-                Review the boats assigned to you. Request each vessel QR code from its owner; approved codes open the public vessel record.
-              </p>
-            </header>
+            <DashboardPageHeader
+              eyebrow="Driver fleet access"
+              title="Assigned Boats & QR Codes"
+              description="Review boats assigned to you and request owner approval to access public vessel records."
+              icon={QrCode}
+              theme="violet"
+            />
 
             {pageError && <p role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{pageError}</p>}
             {actionError && <p role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{actionError}</p>}
