@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Anchor,
+  Plus,
   Info,
   Sliders,
   Upload,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
+import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api from "../../../services/api";
 
 const initialFormData = {
@@ -168,22 +169,13 @@ const AddNewBoat = () => {
 
         {/* Scrollable Form Area */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-12">
-          {/* Header */}
-          <div className="mb-10">
-            <div className="flex items-center gap-2 text-blue-600 mb-2">
-              <Anchor size={16} />
-              <p className="text-[11px] font-bold uppercase tracking-widest">
-                Fleet Expansion
-              </p>
-            </div>
-            <h1 className="text-3xl font-black text-slate-900 mb-3">
-              Register New Boat
-            </h1>
-            <p className="text-slate-600 max-w-2xl text-[14px] leading-relaxed">
-              Complete the technical specifications to induct a new vessel into
-              the Authority's monitoring network.
-            </p>
-          </div>
+          <DashboardPageHeader
+            eyebrow="Fleet expansion"
+            title="Register New Boat"
+            description="Add a vessel to your fleet by completing its identification and technical details."
+            icon={Plus}
+            theme="emerald"
+          />
 
           {/* Error / Success */}
           {error && (
