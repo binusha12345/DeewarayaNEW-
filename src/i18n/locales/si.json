@@ -421,6 +421,7 @@
     "fleetManagement": "නාවික කළමනාකරණය",
     "dashboard": "උපකරණ පුවරුව",
     "myBoats": "මගේ බෝට්ටු",
+    "trips": "ගමන්",
     "gpsTracking": "GPS නිරීක්ෂණය",
     "maintenance": "නඩත්තු කටයුතු",
     "weather": "කාලගුණය",
@@ -821,4 +822,3 @@
     }
   }
 }
-
