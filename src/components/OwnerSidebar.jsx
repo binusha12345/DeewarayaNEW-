@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Ship,
-  History,
   MapPin,
   Wrench,
   CloudRain,
@@ -24,7 +23,6 @@ import {
 const getNavItems = (t) => [
   { to: "/boatownerdashboard", icon: LayoutDashboard, label: t("sidebar.dashboard"), iconColor: "text-cyan-300" },
   { to: "/boatownerboats", icon: Ship, label: t("sidebar.myBoats"), iconColor: "text-emerald-300" },
-  { to: "/owner/trips", icon: History, label: t("sidebar.trips"), iconColor: "text-violet-300" },
   { to: "/gps-tracking", icon: MapPin, label: t("sidebar.gpsTracking"), iconColor: "text-yellow-300" },
   { to: "/maintenance", icon: Wrench, label: t("sidebar.maintenance"), iconColor: "text-orange-300" },
   { to: "/weather", icon: CloudRain, label: t("sidebar.weather"), iconColor: "text-sky-300" },
