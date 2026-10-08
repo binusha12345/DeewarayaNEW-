@@ -15,6 +15,11 @@ const NAV_LINKS = [
   { to: "/contact", label: "Contact" },
 ];
 
+const OWNER_NAV_LINKS = [
+  ...NAV_LINKS,
+  { to: "/owner/trips", label: "Boat Trips" },
+];
+
 /* ─────────────────────────────────────────────
    DESKTOP NAV LINK
    ───────────────────────────────────────────── */
@@ -63,6 +68,7 @@ const MobileNavLink = ({ to, label, onNavigate }) => (
 const DashboardNav = () => {
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navLinks = user?.role === "owner" ? OWNER_NAV_LINKS : NAV_LINKS;
   useBoatSignalMonitor(user);
 
   const openMobileMenu = () => setIsMobileMenuOpen(true);
@@ -106,7 +112,7 @@ const openSidebar = () => {
 
         {/* ─────────── CENTER: desktop nav ─────────── */}
         <nav className="hidden items-center gap-6 text-[15px] font-medium md:flex lg:gap-8 lg:text-[17px]">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <DesktopNavLink key={link.to} {...link} />
           ))}
         </nav>
@@ -152,7 +158,7 @@ const openSidebar = () => {
         }`}
       >
         <nav className="space-y-1 px-4 py-3">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <MobileNavLink
               key={link.to}
               {...link}
