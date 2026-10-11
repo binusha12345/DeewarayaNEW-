@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../../../services/api";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
@@ -30,18 +31,20 @@ import {
   Legend,
 } from "recharts";
 
-const EXPENSE_CATEGORIES = [
-  { value: "fuel", label: "⛽ Fuel", icon: "⛽" },
-  { value: "driver_salary", label: "👨‍✈️ Driver Salary", icon: "👨‍✈️" },
-  { value: "ice", label: "🧊 Ice", icon: "🧊" },
-  { value: "repair_maintenance", label: "🔧 Repair & Maintenance", icon: "🔧" },
-  { value: "equipment", label: "🎣 Equipment", icon: "🎣" },
-  { value: "other", label: "📦 Other", icon: "📦" },
+const getExpenseCategories = (t) => [
+  { value: "fuel", label: t('dailyCalculation.fuel'), icon: "⛽" },
+  { value: "driver_salary", label: t('dailyCalculation.driverSalary'), icon: "👨‍✈️" },
+  { value: "ice", label: t('dailyCalculation.ice'), icon: "🧊" },
+  { value: "repair_maintenance", label: t('dailyCalculation.repairMaintenance'), icon: "🔧" },
+  { value: "equipment", label: t('dailyCalculation.equipment'), icon: "🎣" },
+  { value: "other", label: t('dailyCalculation.other'), icon: "📦" },
 ];
 
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
 
 const DailyCalculation = () => {
+  const { t } = useTranslation();
+  const EXPENSE_CATEGORIES = getExpenseCategories(t);
   const navigate = useNavigate();
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [loading, setSaving] = useState(false);
