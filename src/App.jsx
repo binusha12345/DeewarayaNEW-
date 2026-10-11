@@ -16,6 +16,7 @@ import VesselDetailsPublic from './Pages/Public/VesselDetailsPublic';
 // Owner Pages
 import BoatOwnerDashboard from "./Pages/Public/owner/BoatOwnerDashboard";
 import BoatOwnerBoats from "./Pages/Public/owner/BoatOwnerBoats";
+import BoatOwnerBoatDetails from "./Pages/Public/owner/BoatOwnerBoatDetails";
 import OwnerTrips from "./Pages/Public/owner/OwnerTrips";
 import AddNewBoat from "./Pages/Public/owner/AddNewBoat";
 import Maintenance from "./Pages/Public/owner/Maintenance";
@@ -94,6 +95,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["owner"]}>
               <BoatOwnerBoats />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/boatdetails/:boatId"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <BoatOwnerBoatDetails />
             </ProtectedRoute>
           }
         />
