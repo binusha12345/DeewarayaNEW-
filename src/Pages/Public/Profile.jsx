@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
-import HomeNavBar from "../../components/HomeNavBar";
+import DashboardPageHeader from "../../components/DashboardPageHeader";
 import api, { apiUrl } from "../../services/api";
 import { useTranslation } from "react-i18next";
 import {
@@ -10,7 +10,7 @@ import {
   FaCamera, FaCheckCircle, FaTimesCircle,
   FaAnchor, FaShip, FaCompass
 } from "react-icons/fa";
-import { LockKeyhole, Pencil, Save, ShieldCheck, X } from "lucide-react";
+import { ArrowLeft, LockKeyhole, Pencil, Save, ShieldCheck, X } from "lucide-react";
 
 
 const ROLE = {
@@ -155,10 +155,7 @@ const Profile = () => {
     : "N/A";
 
   return (
-    <div data-tour="profile-page" className="min-h-screen bg-slate-50">
-      <HomeNavBar />
-
-
+    <div data-tour="profile-page" className="min-h-screen bg-slate-100 font-sans text-slate-800">
       {/* Clean Toast */}
       <AnimatePresence>
         {message.text && (
@@ -167,7 +164,7 @@ const Profile = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className={`fixed top-24 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-medium border ${
+            className={`fixed right-5 top-5 z-50 flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium shadow-lg ${
               message.type === "success"
                 ? "bg-green-50 border-green-200 text-green-700"
                 : "bg-red-50 border-red-200 text-red-700"
@@ -179,18 +176,28 @@ const Profile = () => {
         )}
       </AnimatePresence>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-8 border-b border-slate-200 pb-6">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-800">Account & identity</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">My Profile</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Manage your registration details, profile photos, and sign-in security.
-          </p>
-        </header>
+      <main className="min-h-screen">
+        <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+        <DashboardPageHeader
+          eyebrow={t("profile.accountType")}
+          title={t("profile.myProfile", "My Profile")}
+          description={t("profile.manageDescription", "Manage your personal details, profile photos, and sign-in security.")}
+          icon={user.role === "owner" ? FaShip : FaCompass}
+          theme={user.role === "owner" ? "green" : "cyan"}
+          action={
+            <button
+              type="button"
+              onClick={() => navigate(user.role === "owner" ? "/boatownerdashboard" : "/boatdriverdashboard")}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/20"
+            >
+              <ArrowLeft size={17} /> Back to dashboard
+            </button>
+          }
+        />
 
-        <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
-          <aside className="space-y-6 border-b border-slate-200 pb-7 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-            <section aria-labelledby="account-overview-heading" className="space-y-4">
+        <div className="grid gap-6 xl:grid-cols-[minmax(260px,0.75fr)_minmax(0,1.7fr)]">
+          <aside className="space-y-6">
+            <section aria-labelledby="account-overview-heading" className="space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
               <h2 id="account-overview-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
                 Account overview
               </h2>
@@ -245,7 +252,7 @@ const Profile = () => {
               </div>
             </section>
 
-            <section aria-labelledby="photos-heading" className="space-y-3 border-t border-slate-200 pt-5">
+            <section aria-labelledby="photos-heading" className="space-y-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
               <h2 id="photos-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
                 Profile photos
               </h2>
@@ -293,8 +300,8 @@ const Profile = () => {
             </button>
           </aside>
 
-          <div className="min-w-0 space-y-9">
-            <section aria-labelledby="registration-heading">
+          <div className="min-w-0 space-y-6">
+            <section aria-labelledby="registration-heading" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
               <div className="mb-6">
                 <p className="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-cyan-800">Personal information</p>
                 <h2 id="registration-heading" className="text-2xl font-semibold tracking-tight text-slate-900">Registration details</h2>
@@ -388,7 +395,7 @@ const Profile = () => {
             </form>
             </section>
 
-            <section id="password" aria-labelledby="password-heading" className="scroll-mt-24 border-t border-slate-200 pt-7">
+            <section id="password" aria-labelledby="password-heading" className="scroll-mt-24 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
               <div className="mb-6">
                 <p className="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-cyan-800">Security</p>
                 <div className="flex items-center gap-2">
@@ -436,6 +443,7 @@ const Profile = () => {
               </form>
             </section>
           </div>
+        </div>
         </div>
       </main>
     </div>
