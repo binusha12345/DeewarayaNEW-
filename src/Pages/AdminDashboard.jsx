@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import {
   HiOutlineUsers,
@@ -21,6 +22,7 @@ import { IoBoatOutline } from 'react-icons/io5';
 import { MdOutlineAttachMoney, MdOutlineBuild } from 'react-icons/md';
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const { adminUser: user, adminLogout: logout } = useAuth();
   const navigate = useNavigate();
 
@@ -32,86 +34,29 @@ const AdminDashboard = () => {
   // Admin management options
   const adminOptions = [
     { 
-      title: 'User Management', 
-      description: 'Manage all registered users, view profiles, and control access',
+      title: t('adminDashboard.userManagement'), 
+      description: t('adminDashboard.userManagementDesc'),
       icon: HiOutlineUsers, 
       color: 'from-blue-500 to-cyan-500',
       shadowColor: 'shadow-blue-500/30',
       path: '/dw-admin/users',
     },
     { 
-      title: 'Boat Management', 
-      description: 'Register, update, and monitor all boats in the fleet system',
+      title: t('adminDashboard.boatManagement'), 
+      description: t('adminDashboard.boatManagementDesc'),
       icon: IoBoatOutline, 
       color: 'from-cyan-500 to-teal-500',
       shadowColor: 'shadow-cyan-500/30',
       path: '/dw-admin/boats',
     },
-    /*{ 
-      title: 'Emergency Center', 
-      description: 'Monitor and respond to emergency alerts from boat operators',
-      icon: HiOutlineExclamation, 
-      color: 'from-red-500 to-orange-500',
-      shadowColor: 'shadow-red-500/30',
-      path: '/dw-admin/emergencies',
-      urgent: true
-    },
     { 
-      title: 'Maintenance Records', 
-      description: 'Track boat maintenance schedules and service history',
-      icon: MdOutlineBuild, 
-      color: 'from-amber-500 to-orange-500',
-      shadowColor: 'shadow-amber-500/30',
-      path: '/dw-admin/maintenance',
-    },*/,
-    { 
-      title: 'Weather Monitoring', 
-      description: 'View real-time weather conditions and forecasts for fleet safety',
+      title: t('adminDashboard.weatherMonitoring'), 
+      description: t('adminDashboard.weatherMonitoringDesc'),
       icon: HiOutlineCloud, 
       color: 'from-sky-500 to-blue-500',
       shadowColor: 'shadow-sky-500/30',
       path: '/dw-admin/weather',
     },
-    /*{ 
-      title: 'Financial Reports', 
-      description: 'Access revenue reports, income tracking, and financial analytics',
-      icon: MdOutlineAttachMoney, 
-      color: 'from-emerald-500 to-green-500',
-      shadowColor: 'shadow-emerald-500/30',
-      path: '/dw-admin/finance',
-    },
-    { 
-      title: 'Trip Tracking', 
-      description: 'Monitor active trips, routes, and boat locations in real-time',
-      icon: HiOutlineLocationMarker, 
-      color: 'from-purple-500 to-pink-500',
-      shadowColor: 'shadow-purple-500/30',
-      path: '/dw-admin/tracking',
-    },
-    { 
-      title: 'Analytics & Reports', 
-      description: 'View comprehensive analytics and generate custom reports',
-      icon: HiOutlineChartBar, 
-      color: 'from-indigo-500 to-purple-500',
-      shadowColor: 'shadow-indigo-500/30',
-      path: '/dw-admin/reports',
-    },
-    { 
-      title: 'Notifications', 
-      description: 'Send announcements and manage system-wide notifications',
-      icon: HiOutlineBell, 
-      color: 'from-yellow-500 to-amber-500',
-      shadowColor: 'shadow-yellow-500/30',
-      path: '/dw-admin/notifications',
-    },
-    { 
-      title: 'System Settings', 
-      description: 'Configure system preferences, security, and admin settings',
-      icon: HiOutlineCog, 
-      color: 'from-slate-500 to-slate-600',
-      shadowColor: 'shadow-slate-500/30',
-      path: '/dw-admin/settings',
-    },*/
   ];
 
   return (
@@ -145,7 +90,7 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-white">Deewaraya</h1>
-                <p className="text-[10px] text-blue-300 tracking-widest uppercase">Admin Panel</p>
+                <p className="text-[10px] text-blue-300 tracking-widest uppercase">{t('adminDashboard.adminPanel')}</p>
               </div>
             </div>
 
@@ -166,7 +111,7 @@ const AdminDashboard = () => {
                   </p>
                   <p className="text-xs text-cyan-300 capitalize flex items-center gap-1 justify-end">
                     <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                    {user?.role || 'Administrator'}
+                    {user?.role || t('adminDashboard.administrator')}
                   </p>
                 </div>
                 <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
@@ -180,7 +125,7 @@ const AdminDashboard = () => {
                 className="flex items-center gap-2 px-4 py-2.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 hover:text-red-200 rounded-xl text-sm font-semibold transition-all"
               >
                 <HiOutlineLogout className="text-lg" />
-                <span className="hidden sm:inline">Logout</span>
+                <span className="hidden sm:inline">{t('adminDashboard.logout')}</span>
               </button>
             </div>
           </div>
@@ -206,10 +151,10 @@ const AdminDashboard = () => {
                 </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-black text-white mb-3">
-                Welcome back, <span className="bg-gradient-to-r from-cyan-300 to-sky-400 bg-clip-text text-transparent">Admin!</span> 👋
+                {t('adminDashboard.welcomeBack')} <span className="bg-gradient-to-r from-cyan-300 to-sky-400 bg-clip-text text-transparent">{t('adminDashboard.admin')}</span> 👋
               </h2>
               <p className="text-blue-100/80 text-sm md:text-base max-w-2xl">
-                Manage your entire smart fishing fleet operations from one place. Access all administrative tools below.
+                {t('adminDashboard.manageOperations')}
               </p>
             </div>
 
@@ -219,10 +164,10 @@ const AdminDashboard = () => {
                 <FaShip className="text-green-400 text-xl" />
               </div>
               <div>
-                <p className="text-white text-sm font-bold">System Status</p>
+                <p className="text-white text-sm font-bold">{t('adminDashboard.systemStatus')}</p>
                 <p className="text-green-400 text-xs flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                  All Systems Operational
+                  {t('adminDashboard.allSystemsOperational')}
                 </p>
               </div>
             </div>
@@ -237,7 +182,7 @@ const AdminDashboard = () => {
               <HiOutlineMail className="text-blue-400 text-xl" />
             </div>
             <div className="min-w-0">
-              <p className="text-blue-200/60 text-xs uppercase tracking-wider mb-1">Admin Email</p>
+              <p className="text-blue-200/60 text-xs uppercase tracking-wider mb-1">{t('adminDashboard.adminEmail')}</p>
               <p className="text-white text-sm font-semibold truncate">{user?.email}</p>
             </div>
           </div>
@@ -247,10 +192,10 @@ const AdminDashboard = () => {
               <HiOutlineShieldCheck className="text-cyan-400 text-xl" />
             </div>
             <div>
-              <p className="text-blue-200/60 text-xs uppercase tracking-wider mb-1">Access Role</p>
+              <p className="text-blue-200/60 text-xs uppercase tracking-wider mb-1">{t('adminDashboard.accessRole')}</p>
               <p className="text-white text-sm font-semibold capitalize flex items-center gap-2">
-                {user?.role || 'Administrator'}
-                <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] rounded-full font-bold">ACTIVE</span>
+                {user?.role || t('adminDashboard.administrator')}
+                <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] rounded-full font-bold">{t('adminDashboard.active')}</span>
               </p>
             </div>
           </div>
@@ -260,7 +205,7 @@ const AdminDashboard = () => {
               <HiOutlineClock className="text-purple-400 text-xl" />
             </div>
             <div>
-              <p className="text-blue-200/60 text-xs uppercase tracking-wider mb-1">Last Login</p>
+              <p className="text-blue-200/60 text-xs uppercase tracking-wider mb-1">{t('adminDashboard.lastLogin')}</p>
               <p className="text-white text-sm font-semibold">
                 {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -273,15 +218,15 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-2xl font-bold text-white mb-1">
-                Admin Control Center
+                {t('adminDashboard.adminControlCenter')}
               </h3>
               <p className="text-blue-200/60 text-sm">
-                Select any option below to manage your fleet operations
+                {t('adminDashboard.selectOption')}
               </p>
             </div>
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
               <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
-              <span className="text-blue-100 text-xs font-medium">{adminOptions.length} Modules Available</span>
+              <span className="text-blue-100 text-xs font-medium">{t('adminDashboard.modulesAvailable', { count: adminOptions.length })}</span>
             </div>
           </div>
 
@@ -302,7 +247,7 @@ const AdminDashboard = () => {
                   {option.urgent && (
                     <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-red-500/20 border border-red-500/40 rounded-full">
                       <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span>
-                      <span className="text-red-300 text-[10px] font-bold uppercase tracking-wider">Urgent</span>
+                      <span className="text-red-300 text-[10px] font-bold uppercase tracking-wider">{t('adminDashboard.urgent')}</span>
                     </div>
                   )}
 
@@ -324,7 +269,7 @@ const AdminDashboard = () => {
 
                     {/* Action */}
                     <div className="flex items-center gap-2 text-cyan-400 text-sm font-semibold group-hover:gap-3 transition-all">
-                      <span>Open Module</span>
+                      <span>{t('adminDashboard.openModule')}</span>
                       <HiOutlineArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -339,11 +284,11 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-center gap-2 mb-2">
             <HiOutlineShieldCheck className="text-cyan-400" />
             <p className="text-blue-100 text-sm font-medium">
-              Secured Admin Panel
+              {t('adminDashboard.securedAdminPanel')}
             </p>
           </div>
           <p className="text-blue-300/50 text-xs">
-            © 2024 Deewaraya • Smart Fleet Management System 🌊
+            {t('adminDashboard.copyright')}
           </p>
         </div>
       </main>
