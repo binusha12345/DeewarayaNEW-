@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Activity, MapPin, RefreshCw, Signal, ShieldCheck } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
@@ -55,6 +56,7 @@ function CoverageViewport({ readings, liveLocation }) {
 }
 
 function CoverageMap({ readings, liveLocation, placeName }) {
+  const { t } = useTranslation();
   return (
     <MapContainer
       center={DEFAULT_CENTER}
@@ -80,10 +82,10 @@ function CoverageMap({ readings, liveLocation, placeName }) {
           >
             <Popup>
               <div className="min-w-40 text-sm">
-                <p className="font-bold" style={{ color: style.color }}>{style.label} connection</p>
+                <p className="font-bold" style={{ color: style.color }}>{style.label} {t('signalIndicator.connection')}</p>
                 <p className="mt-1 text-slate-600">{formatCoordinates(reading)}</p>
                 <p className="mt-1 text-slate-600">{new Date(reading.recordedAt).toLocaleString()}</p>
-                {reading.latency != null && <p className="mt-1 text-slate-600">Service response: {reading.latency} ms</p>}
+                {reading.latency != null && <p className="mt-1 text-slate-600">{t('signalIndicator.serviceResponse', { latency: reading.latency })}</p>}
               </div>
             </Popup>
           </CircleMarker>
@@ -97,10 +99,10 @@ function CoverageMap({ readings, liveLocation, placeName }) {
         >
           <Popup>
             <div className="min-w-40 text-sm">
-              <p className="font-bold text-cyan-800">Driver GPS position</p>
-              <p className="mt-1 text-slate-600">{placeName || "Place name unavailable"}</p>
+              <p className="font-bold text-cyan-800">{t('signalIndicator.driverGpsPosition')}</p>
+              <p className="mt-1 text-slate-600">{placeName || t('signalIndicator.placeNameUnavailable')}</p>
               <p className="mt-1 text-slate-600">{formatCoordinates(liveLocation)}</p>
-              <p className="mt-1 text-slate-600">Updated {new Date(liveLocation.recordedAt).toLocaleString()}</p>
+              <p className="mt-1 text-slate-600">{t('signalIndicator.updated', { time: new Date(liveLocation.recordedAt).toLocaleString() })}</p>
             </div>
           </Popup>
         </CircleMarker>
@@ -110,6 +112,7 @@ function CoverageMap({ readings, liveLocation, placeName }) {
 }
 
 export default function SignalIndicator() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const isDriver = user?.role === "driver";
   const [boats, setBoats] = useState([]);
@@ -143,7 +146,7 @@ export default function SignalIndicator() {
         if (nextBoatId) localStorage.setItem(`signalBoatId:${user.role}`, nextBoatId);
       })
       .catch((error) => {
-        if (active) setPageError(error.response?.data?.message || "Could not load your boats");
+        if (active) setPageError(error.response?.data?.message || t('signalIndicator.couldNotLoadBoats'));
       })
       .finally(() => {
         if (active) setLoadingBoats(false);
@@ -172,7 +175,7 @@ export default function SignalIndicator() {
         setReadings(Array.isArray(data.readings) ? data.readings.filter(toLatLng) : []);
         setPageError("");
       } catch (error) {
-        if (active) setPageError(error.response?.data?.message || "Could not load signal coverage");
+        if (active) setPageError(error.response?.data?.message || t('signalIndicator.couldNotLoadCoverage'));
       } finally {
         if (active) setLoadingReadings(false);
       }
@@ -243,11 +246,11 @@ export default function SignalIndicator() {
           sessionStorage.setItem(`signalPlaceName:${liveLocationKey}`, place);
           setLivePlaceName(place);
         } else {
-          setLivePlaceName("Place name unavailable");
+          setLivePlaceName(t('signalIndicator.placeNameUnavailable'));
         }
       })
       .catch(() => {
-        if (active) setLivePlaceName("Place name unavailable");
+        if (active) setLivePlaceName(t('signalIndicator.placeNameUnavailable'));
       });
 
     return () => { active = false; };
@@ -269,7 +272,7 @@ export default function SignalIndicator() {
     localStorage.setItem(coveragePreferenceKey, String(nextEnabled));
     window.dispatchEvent(new Event("signal-coverage-setting"));
     if (nextEnabled && !navigator.geolocation) {
-      setCoverageError("GPS location is not supported by this browser.");
+      setCoverageError(t('signalIndicator.gpsNotSupported'));
     }
   };
 
@@ -282,10 +285,18 @@ export default function SignalIndicator() {
       setReadings(Array.isArray(data.readings) ? data.readings.filter(toLatLng) : []);
       setPageError("");
     } catch (error) {
-      setPageError(error.response?.data?.message || "Could not refresh signal coverage");
+      setPageError(error.response?.data?.message || t('signalIndicator.couldNotRefreshCoverage'));
     } finally {
       setLoadingReadings(false);
     }
+  };
+
+  const labelMapping = {
+    good: t('signalIndicator.good'),
+    weak: t('signalIndicator.weak'),
+    poor: t('signalIndicator.poor'),
+    offline: t('signalIndicator.offline'),
+    checking: t('signalIndicator.waiting'),
   };
 
   return (
@@ -298,23 +309,23 @@ export default function SignalIndicator() {
               <Signal size={22} />
             </span>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">Maritime operations</p>
-              <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white sm:text-3xl">Signal coverage</h1>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">{t('signalIndicator.eyebrow')}</p>
+              <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white sm:text-3xl">{t('signalIndicator.title')}</h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                Connection quality recorded by the assigned driver's device at saved GPS points. This measures service connectivity, not cellular radio strength.
+                {t('signalIndicator.description')}
               </p>
             </div>
           </div>
           <div className="flex items-end gap-2 sm:pl-16">
             {boats.length > 1 && (
               <label className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                Vessel
+                {t('signalIndicator.vessel')}
                 <select value={boatId} onChange={handleSelectBoat} className="mt-1 block min-w-56 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold normal-case tracking-normal text-slate-800 outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-cyan-950">
                   {boats.map((boat) => <option key={boat._id} value={boat._id}>{boat.boatName} · {boat.registrationNumber}</option>)}
                 </select>
               </label>
             )}
-            <button onClick={refreshCoverage} disabled={!boatId || loadingReadings} title="Refresh coverage" aria-label="Refresh coverage" className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 transition hover:border-cyan-600 hover:text-cyan-800 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-cyan-300">
+            <button onClick={refreshCoverage} disabled={!boatId || loadingReadings} title={t('signalIndicator.refreshCoverage')} aria-label={t('signalIndicator.refreshCoverage')} className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 transition hover:border-cyan-600 hover:text-cyan-800 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-cyan-300">
               <RefreshCw size={17} className={loadingReadings ? "animate-spin" : ""} />
             </button>
           </div>
@@ -323,35 +334,35 @@ export default function SignalIndicator() {
         {pageError && <p role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/50 dark:text-red-200">{pageError}</p>}
 
         {loadingBoats ? (
-          <div className="flex min-h-72 items-center justify-center text-sm text-slate-600 dark:text-slate-300">Loading assigned boats…</div>
+          <div className="flex min-h-72 items-center justify-center text-sm text-slate-600 dark:text-slate-300">{t('signalIndicator.loadingAssignedBoats')}</div>
         ) : boats.length === 0 ? (
           <section className="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center dark:border-slate-800 dark:bg-slate-900">
             <Signal size={30} className="mx-auto text-cyan-800 dark:text-cyan-300" />
-            <h2 className="mt-4 text-lg font-bold text-slate-900 dark:text-white">No boat assigned</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{isDriver ? "Ask the boat owner to assign your driver account to a boat." : "Register a boat to monitor its connection coverage."}</p>
+            <h2 className="mt-4 text-lg font-bold text-slate-900 dark:text-white">{t('signalIndicator.noBoatAssigned')}</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{isDriver ? t('signalIndicator.askOwnerToAssign') : t('signalIndicator.registerBoatToMonitor')}</p>
           </section>
         ) : (
           <>
             <section className="mb-6 flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Selected vessel</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('signalIndicator.selectedVessel')}</p>
                 <h2 className="mt-1 text-xl font-bold text-slate-950 dark:text-white">{boatSnapshot?.boatName || selectedBoat?.boatName}</h2>
                 <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm">
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="text-slate-500 dark:text-slate-400">Registration number:</dt>
-                    <dd className="font-semibold text-slate-800 dark:text-slate-100">({boatSnapshot?.registrationNumber || selectedBoat?.registrationNumber || "Not available"})</dd>
+                    <dt className="text-slate-500 dark:text-slate-400">{t('signalIndicator.registrationNumber')}</dt>
+                    <dd className="font-semibold text-slate-800 dark:text-slate-100">({boatSnapshot?.registrationNumber || selectedBoat?.registrationNumber || t('signalIndicator.notAvailable')})</dd>
                   </div>
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="text-slate-500 dark:text-slate-400">Assigned driver:</dt>
-                    <dd className="font-semibold text-slate-800 dark:text-slate-100">{boatSnapshot?.driver?.name || selectedBoat?.driver?.name || "Not assigned"}</dd>
+                    <dt className="text-slate-500 dark:text-slate-400">{t('signalIndicator.assignedDriver')}</dt>
+                    <dd className="font-semibold text-slate-800 dark:text-slate-100">{boatSnapshot?.driver?.name || selectedBoat?.driver?.name || t('signalIndicator.notAssigned')}</dd>
                   </div>
                 </dl>
               </div>
               <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-950/70" aria-live="polite">
                 <span className="h-3 w-3 rounded-full ring-4 ring-current/10" style={{ color: statusStyle.color, backgroundColor: statusStyle.color }} />
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{isDriver ? "This device" : "Latest driver check"}</p>
-                  <p className="text-lg font-bold" style={{ color: statusStyle.color }}>{statusStyle.label}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{isDriver ? t('signalIndicator.thisDevice') : t('signalIndicator.latestDriverCheck')}</p>
+                  <p className="text-lg font-bold" style={{ color: statusStyle.color }}>{labelMapping[currentStatus] || statusStyle.label}</p>
                 </div>
                 {isDriver && connection.latency != null && <p className="border-l border-slate-200 pl-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">{connection.latency} ms</p>}
                 {!isDriver && boatSnapshot?.connectionCheckedAt && <p className="border-l border-slate-200 pl-3 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">{new Date(boatSnapshot.connectionCheckedAt).toLocaleString()}</p>}
@@ -360,27 +371,27 @@ export default function SignalIndicator() {
 
             <section className="mb-6 grid gap-4 md:grid-cols-2">
               <div className="rounded-xl border border-emerald-200 bg-white p-5 shadow-sm dark:border-emerald-950 dark:bg-slate-900">
-                <p className="text-xs font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">Last good signal</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">{t('signalIndicator.lastGoodSignal')}</p>
                 {latestGoodReading ? (
                   <>
                     <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{formatCoordinates(latestGoodReading)}</p>
                     <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{new Date(latestGoodReading.recordedAt).toLocaleString()}</p>
                   </>
-                ) : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">No good signal location recorded yet.</p>}
+                ) : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{t('signalIndicator.noGoodSignal')}</p>}
               </div>
               <div className="rounded-xl border border-red-200 bg-white p-5 shadow-sm dark:border-red-950 dark:bg-slate-900">
-                <p className="text-xs font-bold uppercase tracking-wide text-red-800 dark:text-red-300">Last poor or lost signal</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-red-800 dark:text-red-300">{t('signalIndicator.lastPoorOrLost')}</p>
                 {latestLostReading ? (
                   <>
-                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{formatCoordinates(latestLostReading)} · {SIGNAL_STYLES[latestLostReading.status]?.label || latestLostReading.status}</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{formatCoordinates(latestLostReading)} · {labelMapping[latestLostReading.status] || latestLostReading.status}</p>
                     <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{new Date(latestLostReading.recordedAt).toLocaleString()}</p>
                   </>
                 ) : currentStatus === "offline" ? (
                   <>
-                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">No driver check since {boatSnapshot?.connectionCheckedAt ? new Date(boatSnapshot.connectionCheckedAt).toLocaleString() : "unknown"}</p>
-                    {livePoint && liveLocation?.recordedAt && <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Last GPS: {formatCoordinates(liveLocation)} · {new Date(liveLocation.recordedAt).toLocaleString()}</p>}
+                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{t('signalIndicator.noDriverCheckSince', { time: boatSnapshot?.connectionCheckedAt ? new Date(boatSnapshot.connectionCheckedAt).toLocaleString() : t('signalIndicator.notAvailable') })}</p>
+                    {livePoint && liveLocation?.recordedAt && <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{t('signalIndicator.lastGps', { coords: formatCoordinates(liveLocation), time: new Date(liveLocation.recordedAt).toLocaleString() })}</p>}
                   </>
-                ) : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">No poor or lost signal location recorded.</p>}
+                ) : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{t('signalIndicator.noPoorSignal')}</p>}
               </div>
             </section>
 
@@ -388,13 +399,13 @@ export default function SignalIndicator() {
               <section className="flex h-[38rem] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 px-5 py-4 dark:border-slate-800 sm:px-6">
                   <div>
-                    <h2 className="text-lg font-bold text-slate-950 dark:text-white">Driver location and signal coverage</h2>
+                    <h2 className="text-lg font-bold text-slate-950 dark:text-white">{t('signalIndicator.driverLocationCoverage')}</h2>
                     <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-200">
-                      {liveLocation ? `${livePlaceName || "Resolving place name…"} · ${formatCoordinates(liveLocation)}` : "No GPS position shared yet"}
+                      {liveLocation ? `${livePlaceName || t('signalIndicator.resolvingPlaceName')} · ${formatCoordinates(liveLocation)}` : t('signalIndicator.noGpsShared')}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Last 30 days · select a point for signal details</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('signalIndicator.last30Days')}</p>
                   </div>
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{liveLocationIsFresh ? "GPS live" : livePoint ? "GPS last known" : "GPS not shared"} · {readings.length} saved points</span>
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{liveLocationIsFresh ? t('signalIndicator.gpsLive') : livePoint ? t('signalIndicator.gpsLastKnown') : t('signalIndicator.gpsNotShared')} · {t('signalIndicator.savedPoints', { count: readings.length })}</span>
                 </div>
                 {readings.length || livePoint ? (
                   <div className="min-h-0 flex-1">
@@ -403,11 +414,11 @@ export default function SignalIndicator() {
                 ) : (
                   <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 py-12 text-center">
                     <MapPin size={28} className="text-cyan-800 dark:text-cyan-300" />
-                    <h3 className="mt-3 font-bold text-slate-900 dark:text-white">No coverage points recorded yet</h3>
+                    <h3 className="mt-3 font-bold text-slate-900 dark:text-white">{t('signalIndicator.noCoveragePoints')}</h3>
                     <p className="mt-2 max-w-lg text-sm leading-6 text-slate-600 dark:text-slate-300">
                       {isDriver
-                        ? "Enable location logging to add connection readings along your route."
-                        : "The assigned driver must enable location logging before coverage points appear."}
+                        ? t('signalIndicator.driverEnableLogging')
+                        : t('signalIndicator.ownerEnableLogging')}
                     </p>
                   </div>
                 )}
@@ -419,35 +430,35 @@ export default function SignalIndicator() {
                     <div className="flex items-start gap-3">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300"><ShieldCheck size={19} /></span>
                       <div>
-                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">GPS coverage logging</h2>
-                        <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">Saves a GPS point with connection status every 15 minutes. Shared with this boat's owner and assigned driver; records expire after 90 days.</p>
+                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">{t('signalIndicator.gpsCoverageLogging')}</h2>
+                        <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">{t('signalIndicator.gpsLoggingDesc')}</p>
                       </div>
                     </div>
                     {coverageError && <p role="alert" className="mt-3 text-xs font-semibold text-red-700 dark:text-red-300">{coverageError}</p>}
                     <button role="switch" aria-checked={coverageEnabled} onClick={toggleCoverage} className={`mt-5 flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm font-bold transition ${coverageEnabled ? "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200" : "border-slate-300 bg-slate-50 text-slate-700 hover:border-cyan-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"}`}>
-                      <span>{coverageEnabled ? "Location logging on" : "Location logging off"}</span>
+                      <span>{coverageEnabled ? t('signalIndicator.locationLoggingOn') : t('signalIndicator.locationLoggingOff')}</span>
                       <span className={`relative h-6 w-11 rounded-full transition-colors ${coverageEnabled ? "bg-emerald-600" : "bg-slate-400 dark:bg-slate-600"}`}>
                         <span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${coverageEnabled ? "translate-x-6" : "translate-x-1"}`} />
                       </span>
                     </button>
-                    {!navigator.geolocation && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">GPS is not available in this browser.</p>}
+                    {!navigator.geolocation && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">{t('signalIndicator.gpsNotAvailable')}</p>}
                   </section>
                 )}
 
                 <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <h2 className="text-sm font-bold text-slate-900 dark:text-white">Coverage summary</h2>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Saved points by status</p>
+                      <h2 className="text-sm font-bold text-slate-900 dark:text-white">{t('signalIndicator.coverageSummary')}</h2>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('signalIndicator.savedPointsByStatus')}</p>
                     </div>
                     <Activity size={18} className="text-cyan-800 dark:text-cyan-300" />
                   </div>
                   <div className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
                     {[
-                      ["Good", statusCounts.good || 0, SIGNAL_STYLES.good.color],
-                      ["Weak", statusCounts.medium || 0, SIGNAL_STYLES.medium.color],
-                      ["Poor", statusCounts.poor || 0, SIGNAL_STYLES.poor.color],
-                      ["Offline", statusCounts.offline || 0, SIGNAL_STYLES.offline.color],
+                      [t('signalIndicator.good'), statusCounts.good || 0, SIGNAL_STYLES.good.color],
+                      [t('signalIndicator.weak'), statusCounts.medium || 0, SIGNAL_STYLES.medium.color],
+                      [t('signalIndicator.poor'), statusCounts.poor || 0, SIGNAL_STYLES.poor.color],
+                      [t('signalIndicator.offline'), statusCounts.offline || 0, SIGNAL_STYLES.offline.color],
                     ].map(([label, count, color]) => (
                       <div key={label} className="flex items-center justify-between py-2.5">
                         <span className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200"><span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />{label}</span>
@@ -458,7 +469,7 @@ export default function SignalIndicator() {
                 </section>
 
                 <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">Latest readings</h2>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">{t('signalIndicator.latestReadings')}</h2>
                   {readings.length ? (
                     <div className="mt-3 divide-y divide-slate-100 dark:divide-slate-800">
                       {[...readings].reverse().slice(0, 5).map((reading) => {
@@ -467,17 +478,17 @@ export default function SignalIndicator() {
                           <div key={reading._id} className="py-3">
                             <div className="flex items-center justify-between gap-2">
                               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">{formatCoordinates(reading)}</span>
-                              <span className="h-2.5 w-2.5 shrink-0 rounded-full" title={style.label} style={{ backgroundColor: style.color }} />
+                              <span className="h-2.5 w-2.5 shrink-0 rounded-full" title={labelMapping[reading.status] || style.label} style={{ backgroundColor: style.color }} />
                             </div>
                             <div className="mt-1 flex justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
                               <span>{new Date(reading.recordedAt).toLocaleString()}</span>
-                              <span>{reading.latency == null ? style.label : `${reading.latency} ms · ${style.label}`}</span>
+                              <span>{reading.latency == null ? labelMapping[reading.status] || style.label : `${reading.latency} ms · ${labelMapping[reading.status] || style.label}`}</span>
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                  ) : <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">No saved readings for this boat yet.</p>}
+                  ) : <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">{t('signalIndicator.noSavedReadings')}</p>}
                 </section>
               </aside>
             </div>
