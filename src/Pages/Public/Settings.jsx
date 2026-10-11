@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Anchor,
   Bell,
@@ -19,7 +20,6 @@ import {
   UserRound,
   Wrench,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import DashboardNav from "../../components/DashboardNav";
 import DriverSidebar from "../../components/DriverSidebar";
 import OwnerSidebar from "../../components/OwnerSidebar";
@@ -35,30 +35,6 @@ const DEFAULT_SETTINGS = {
   maintenanceAlerts: true,
   offlineBoatAlerts: true,
 };
-
-const SETTINGS_SECTIONS = [
-  { id: "preferences", label: "Preferences", icon: Gauge },
-  { id: "alerts", label: "Alerts", icon: Bell },
-  { id: "safety", label: "Safety & location", icon: Radio },
-  { id: "account", label: "Account & security", icon: ShieldCheck },
-];
-
-function readSettings(storageKey, coveragePreferenceKey, fallbackLanguage) {
-  try {
-    const saved = localStorage.getItem(storageKey);
-    const settings = saved
-      ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) }
-      : { ...DEFAULT_SETTINGS, language: fallbackLanguage };
-    const savedCoveragePreference = localStorage.getItem(coveragePreferenceKey);
-    if (savedCoveragePreference !== null) {
-      settings.signalCoverage = savedCoveragePreference === "true";
-    }
-    return settings;
-  } catch (error) {
-    console.warn("Could not load saved settings; using defaults.", error);
-    return DEFAULT_SETTINGS;
-  }
-}
 
 function SettingsToggle({ checked, onChange, title, description, icon: Icon }) {
   return (
@@ -131,12 +107,13 @@ function SettingsCard({ eyebrow, title, description, icon: Icon, children }) {
 }
 
 function Settings() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const accountId = user?._id || user?.id || user?.email || "account";
   const storageKey = `deewaraya-settings:${user?.role || "driver"}:${accountId}`;
   const coveragePreferenceKey = `signalCoverageEnabled:${user?._id || user?.id || "user"}`;
   const isOwner = user?.role === "owner";
-  const roleLabel = isOwner ? "Boat owner" : "Boat driver";
+  const roleLabel = isOwner ? t('settings.boatOwner') : t('settings.boatDriver');
 
   return (
     <SettingsPanel
@@ -150,7 +127,7 @@ function Settings() {
 }
 
 function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const fallbackLanguage = i18n.resolvedLanguage?.startsWith("si") ? "si" : "en";
   const [settings, setSettings] = useState(() =>
     readSettings(storageKey, coveragePreferenceKey, fallbackLanguage),
@@ -175,10 +152,10 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
         i18n.changeLanguage(settings.language);
       }
       setSavedSettings(settings);
-      setSaveMessage("Your settings have been saved on this device.");
+      setSaveMessage(t('settings.savedOnDevice'));
     } catch (error) {
       console.error("Could not save settings.", error);
-      setSaveMessage("Settings could not be saved. Check your browser storage and try again.");
+      setSaveMessage(t('settings.couldNotSave'));
     }
   };
 
@@ -186,6 +163,13 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
     setSettings({ ...DEFAULT_SETTINGS });
     setSaveMessage("");
   };
+
+  const SETTINGS_SECTIONS = [
+    { id: "preferences", label: t('settings.preferences'), icon: Gauge },
+    { id: "alerts", label: t('settings.alerts'), icon: Bell },
+    { id: "safety", label: t('settings.safetyLocation'), icon: Radio },
+    { id: "account", label: t('settings.accountSecurity'), icon: ShieldCheck },
+  ];
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f4f7fb] font-sans text-slate-800">
@@ -201,11 +185,11 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                 <div>
                   <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-cyan-50">
                     <Anchor size={14} />
-                    {roleLabel} workspace
+                    {t('settings.workspace', { role: roleLabel })}
                   </div>
-                  <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Settings</h1>
+                  <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{t('settings.settings')}</h1>
                   <p className="mt-2 max-w-xl text-sm leading-6 text-cyan-50/80 sm:text-base">
-                    Personalize your Deewaraya experience, safety alerts, and account preferences.
+                    {t('settings.settingsDescription')}
                   </p>
                 </div>
                 <Link
@@ -213,21 +197,21 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                   className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
                 >
                   <UserRound size={17} />
-                  View profile
+                  {t('settings.viewProfile')}
                   <ChevronRight size={16} />
                 </Link>
               </div>
               <div className="mt-7 flex flex-wrap gap-2 text-xs font-medium text-white/75">
-                <span className="rounded-full bg-slate-950/15 px-3 py-1.5">Account preferences</span>
-                <span className="rounded-full bg-slate-950/15 px-3 py-1.5">Safety & alerts</span>
-                <span className="rounded-full bg-slate-950/15 px-3 py-1.5">Privacy & security</span>
+                <span className="rounded-full bg-slate-950/15 px-3 py-1.5">{t('settings.accountPreferences')}</span>
+                <span className="rounded-full bg-slate-950/15 px-3 py-1.5">{t('settings.safetyAlerts')}</span>
+                <span className="rounded-full bg-slate-950/15 px-3 py-1.5">{t('settings.privacySecurity')}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[230px_minmax(0,1fr)]">
               <aside className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm lg:sticky lg:top-5">
                 <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.17em] text-slate-400">
-                  Settings menu
+                  {t('settings.settingsMenu')}
                 </p>
                 <nav aria-label="Settings sections" className="flex gap-2 overflow-x-auto lg:flex-col">
                   {SETTINGS_SECTIONS.map(({ id, label, icon: Icon }) => (
@@ -244,11 +228,11 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                 <div className="mt-4 hidden rounded-xl bg-slate-50 p-3 text-xs leading-5 text-slate-500 lg:block">
                   <div className="mb-2 flex items-center gap-2 font-semibold text-slate-700">
                     <CircleHelp size={15} className="text-cyan-700" />
-                    Need help?
+                    {t('settings.needHelp')}
                   </div>
-                  Contact support if you need help securing your account.
+                  {t('settings.contactSupportDesc')}
                   <Link to="/contact" className="mt-2 inline-flex items-center gap-1 font-semibold text-cyan-800 hover:text-cyan-950">
-                    Contact support <ChevronRight size={13} />
+                    {t('settings.contactSupport')} <ChevronRight size={13} />
                   </Link>
                 </div>
               </aside>
@@ -256,15 +240,15 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
               <div className="min-w-0 space-y-5">
                 <section id="preferences" className="scroll-mt-5">
                   <SettingsCard
-                    eyebrow="Your experience"
-                    title="App preferences"
-                    description="Choose how information is displayed throughout your account."
+                    eyebrow={t('settings.yourExperience')}
+                    title={t('settings.appPreferences')}
+                    description={t('settings.appPreferencesDesc')}
                     icon={Globe2}
                   >
                     <div className="divide-y divide-slate-100">
                       <SettingsSelect
-                        label="Display language"
-                        description="Choose the language used by the application."
+                        label={t('settings.displayLanguage')}
+                        description={t('settings.displayLanguageDesc')}
                         value={settings.language}
                         onChange={(value) => updateSetting("language", value)}
                       >
@@ -272,22 +256,22 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                         <option value="si">සිංහල</option>
                       </SettingsSelect>
                       <SettingsSelect
-                        label="Distance units"
-                        description="Your preferred unit for distance and navigation."
+                        label={t('settings.distanceUnits')}
+                        description={t('settings.distanceUnitsDesc')}
                         value={settings.distanceUnit}
                         onChange={(value) => updateSetting("distanceUnit", value)}
                       >
-                        <option value="km">Kilometres (km)</option>
-                        <option value="mi">Miles (mi)</option>
+                        <option value="km">{t('settings.kilometres')}</option>
+                        <option value="mi">{t('settings.miles')}</option>
                       </SettingsSelect>
                       <SettingsSelect
-                        label="Temperature"
-                        description="Choose how weather temperatures are shown."
+                        label={t('settings.temperature')}
+                        description={t('settings.temperatureDesc')}
                         value={settings.temperatureUnit}
                         onChange={(value) => updateSetting("temperatureUnit", value)}
                       >
-                        <option value="celsius">Celsius (°C)</option>
-                        <option value="fahrenheit">Fahrenheit (°F)</option>
+                        <option value="celsius">{t('settings.celsius')}</option>
+                        <option value="fahrenheit">{t('settings.fahrenheit')}</option>
                       </SettingsSelect>
                     </div>
                   </SettingsCard>
@@ -295,12 +279,12 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
 
                 <section id="alerts" className="scroll-mt-5">
                   <SettingsCard
-                    eyebrow={isOwner ? "Fleet awareness" : "On-water awareness"}
-                    title={isOwner ? "Fleet alerts" : "Trip & safety alerts"}
+                    eyebrow={isOwner ? t('settings.fleetAwareness') : t('settings.onWaterAwareness')}
+                    title={isOwner ? t('settings.fleetAlerts') : t('settings.tripSafetyAlerts')}
                     description={
                       isOwner
-                        ? "Keep informed about vessel conditions and important fleet events."
-                        : "Choose the reminders that help you stay prepared during your trips."
+                        ? t('settings.fleetAlertsDesc')
+                        : t('settings.tripAlertsDesc')
                     }
                     icon={Bell}
                   >
@@ -308,8 +292,8 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                       <SettingsToggle
                         checked={settings.severeWeatherAlerts}
                         onChange={(value) => updateSetting("severeWeatherAlerts", value)}
-                        title="Severe weather updates"
-                        description="Keep weather-related alerts enabled for changing conditions."
+                        title={t('settings.severeWeatherUpdates')}
+                        description={t('settings.severeWeatherDesc')}
                         icon={CloudSun}
                       />
                       {isOwner ? (
@@ -317,15 +301,15 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                           <SettingsToggle
                             checked={settings.offlineBoatAlerts}
                             onChange={(value) => updateSetting("offlineBoatAlerts", value)}
-                            title="Boat connection reminders"
-                            description="Remember your preference for alerts about an offline vessel."
+                            title={t('settings.boatConnectionReminders')}
+                            description={t('settings.boatConnectionDesc')}
                             icon={Radio}
                           />
                           <SettingsToggle
                             checked={settings.maintenanceAlerts}
                             onChange={(value) => updateSetting("maintenanceAlerts", value)}
-                            title="Maintenance reminders"
-                            description="Keep maintenance due-date reminders on your settings checklist."
+                            title={t('settings.maintenanceReminders')}
+                            description={t('settings.maintenanceDesc')}
                             icon={Wrench}
                           />
                         </>
@@ -333,43 +317,43 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                         <SettingsToggle
                           checked={settings.tripReminderAlerts}
                           onChange={(value) => updateSetting("tripReminderAlerts", value)}
-                          title="Trip preparation reminders"
-                          description="Remember to review your assigned trip and boat details before departure."
+                          title={t('settings.tripPrepReminders')}
+                          description={t('settings.tripPrepDesc')}
                           icon={Compass}
                         />
                       )}
                     </div>
                     <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-800">
-                      These are saved preferences for this browser. Critical safety and emergency functions remain available independently.
+                      {t('settings.savedPrefsNote')}
                     </p>
                   </SettingsCard>
                 </section>
 
                 <section id="safety" className="scroll-mt-5">
                   <SettingsCard
-                    eyebrow="Location & safety"
-                    title="Signal coverage history"
-                    description="Control whether signal-status history is shown on your Signal Status page."
+                    eyebrow={t('settings.locationSafety')}
+                    title={t('settings.signalCoverageHistory')}
+                    description={t('settings.signalCoverageDesc')}
                     icon={isOwner ? Ship : Radio}
                   >
                     <SettingsToggle
                       checked={settings.signalCoverage}
                       onChange={(value) => updateSetting("signalCoverage", value)}
-                      title="Show signal coverage history"
-                      description="Use your saved preference on the Signal Status page."
+                      title={t('settings.showSignalCoverage')}
+                      description={t('settings.showSignalCoverageDesc')}
                       icon={Radio}
                     />
                     <p className="mt-2 rounded-xl bg-cyan-50 px-3 py-2.5 text-xs leading-5 text-cyan-900">
-                      Location and signal information may be sensitive. Only enable coverage history when you need it.
+                      {t('settings.sensitiveInfoNote')}
                     </p>
                   </SettingsCard>
                 </section>
 
                 <section id="account" className="scroll-mt-5">
                   <SettingsCard
-                    eyebrow="Account"
-                    title="Profile & security"
-                    description="Manage your personal account details and sign-in credentials."
+                    eyebrow={t('settings.account')}
+                    title={t('settings.profileSecurity')}
+                    description={t('settings.profileSecurityDesc')}
                     icon={LockKeyhole}
                   >
                     <div className="grid gap-3 pt-1 sm:grid-cols-2">
@@ -382,8 +366,8 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                             <UserRound size={18} />
                           </span>
                           <span>
-                            <span className="block text-sm font-semibold text-slate-800">Personal profile</span>
-                            <span className="mt-1 block text-xs text-slate-500">Review account information</span>
+                            <span className="block text-sm font-semibold text-slate-800">{t('settings.personalProfile')}</span>
+                            <span className="mt-1 block text-xs text-slate-500">{t('settings.reviewAccountInfo')}</span>
                           </span>
                         </span>
                         <ChevronRight size={17} className="text-slate-400" />
@@ -397,8 +381,8 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                             <LockKeyhole size={18} />
                           </span>
                           <span>
-                            <span className="block text-sm font-semibold text-slate-800">Password & sign-in</span>
-                            <span className="mt-1 block text-xs text-slate-500">Open password recovery</span>
+                            <span className="block text-sm font-semibold text-slate-800">{t('settings.passwordSignIn')}</span>
+                            <span className="mt-1 block text-xs text-slate-500">{t('settings.openPasswordRecovery')}</span>
                           </span>
                         </span>
                         <ChevronRight size={17} className="text-slate-400" />
@@ -411,7 +395,7 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                   <div className="flex min-h-8 items-center gap-2 text-xs text-slate-500" aria-live="polite">
                     {saveMessage ? (
                       <>
-                        {saveMessage.startsWith("Your") ? (
+                        {saveMessage.startsWith(t('settings.savedOnDevice')) ? (
                           <Check size={15} className="text-emerald-600" />
                         ) : (
                           <CircleHelp size={15} className="text-rose-600" />
@@ -421,7 +405,7 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                     ) : (
                       <>
                         <ShieldCheck size={15} className="text-slate-400" />
-                        Settings are stored on this device for this account.
+                        {t('settings.settingsStored')}
                       </>
                     )}
                   </div>
@@ -432,7 +416,7 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                       className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
                     >
                       <RotateCcw size={15} />
-                      Reset
+                      {t('settings.reset')}
                     </button>
                     <button
                       type="button"
@@ -441,14 +425,14 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
                       className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-700 px-5 text-sm font-bold text-white shadow-md shadow-cyan-900/10 transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
                     >
                       <Save size={16} />
-                      Save changes
+                      {t('settings.saveChanges')}
                     </button>
                   </div>
                 </div>
 
                 <p className="flex items-center justify-center gap-2 pb-2 text-center text-xs text-slate-400">
                   <ShieldCheck size={14} />
-                  Your preferences are kept separate for each signed-in account.
+                  {t('settings.prefsSeparate')}
                 </p>
               </div>
             </div>
@@ -457,6 +441,23 @@ function SettingsPanel({ coveragePreferenceKey, isOwner, roleLabel, storageKey }
       </div>
     </div>
   );
+}
+
+function readSettings(storageKey, coveragePreferenceKey, fallbackLanguage) {
+  try {
+    const saved = localStorage.getItem(storageKey);
+    const settings = saved
+      ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) }
+      : { ...DEFAULT_SETTINGS, language: fallbackLanguage };
+    const savedCoveragePreference = localStorage.getItem(coveragePreferenceKey);
+    if (savedCoveragePreference !== null) {
+      settings.signalCoverage = savedCoveragePreference === "true";
+    }
+    return settings;
+  } catch (error) {
+    console.warn("Could not load saved settings; using defaults.", error);
+    return DEFAULT_SETTINGS;
+  }
 }
 
 export default Settings;
