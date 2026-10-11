@@ -202,7 +202,7 @@ const QRCode = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                   </svg>
-                  Loading boats...
+                  {t('qrCode.loadingBoats')}
                 </div>
               ) : boats.length === 0 ? (
                 <div className="flex items-center gap-2 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-700">
@@ -246,7 +246,7 @@ const QRCode = () => {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search boats..."
+                            placeholder={t('qrCode.searchBoats')}
                             className="w-full rounded-lg border border-slate-200 py-2 pl-8 pr-3 text-sm outline-none focus:border-blue-500"
                             autoFocus
                           />
@@ -254,7 +254,7 @@ const QRCode = () => {
                       </div>
                       <div className="max-h-56 overflow-y-auto p-1">
                         {filteredBoats.length === 0 ? (
-                          <p className="py-4 text-center text-sm text-slate-400">No boats found</p>
+                          <p className="py-4 text-center text-sm text-slate-400">{t('qrCode.noBoatsFound')}</p>
                         ) : (
                           filteredBoats.map((boat) => (
                             <button
@@ -292,9 +292,9 @@ const QRCode = () => {
                 <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-blue-50">
                   <FaShip className="text-3xl text-blue-300" />
                 </div>
-                <h2 className="text-lg font-bold text-slate-800">Select your vessel</h2>
+                <h2 className="text-lg font-bold text-slate-800">{t('qrCode.selectVessel')}</h2>
                 <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500">
-                  Choose a boat from the list above to generate and view its unique maritime QR certificate.
+                  {t('qrCode.selectVesselDesc')}
                 </p>
               </div>
             )}
@@ -322,7 +322,7 @@ const QRCode = () => {
                       <div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-blue-900">Deewaraya</p>
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                          Fleet Registry
+                          {t('qrCode.fleetRegistry')}
                         </p>
                       </div>
                     </div>
@@ -356,7 +356,7 @@ const QRCode = () => {
                     </div>
 
                     <p className="mt-4 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Scan to verify identity
+                      {t('qrCode.scanToVerify')}
                     </p>
                   </div>
 
@@ -377,13 +377,13 @@ const QRCode = () => {
                             onClick={downloadPNG}
                             className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                           >
-                            <FaFileImage className="text-blue-500" /> PNG Image
+                            <FaFileImage className="text-blue-500" /> {t('qrCode.pngImage')}
                           </button>
                           <button
                             onClick={downloadPDF}
                             className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                           >
-                            <FaFilePdf className="text-red-500" /> PDF Document
+                            <FaFilePdf className="text-red-500" /> {t('qrCode.pdfDocument')}
                           </button>
                         </div>
                       )}
@@ -406,26 +406,26 @@ const QRCode = () => {
                               onClick={shareWhatsApp}
                               className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-green-50"
                             >
-                              <FaWhatsapp className="text-lg text-green-600" /> WhatsApp
+                              <FaWhatsapp className="text-lg text-green-600" /> {t('qrCode.whatsapp')}
                             </button>
                             <button
                               onClick={shareEmail}
                               className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50"
                             >
-                              <FaEnvelope className="text-lg text-blue-600" /> Email
+                              <FaEnvelope className="text-lg text-blue-600" /> {t('qrCode.email')}
                             </button>
                             <button
                               onClick={shareSMS}
                               className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-purple-50"
                             >
-                              <FaMobile className="text-lg text-purple-600" /> SMS
+                              <FaMobile className="text-lg text-purple-600" /> {t('qrCode.sms')}
                             </button>
                             <button
                               onClick={copyLink}
                               className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                             >
                               <FaLink className="text-lg text-slate-500" />
-                              {copied ? 'Copied!' : 'Copy Link'}
+                              {copied ? t('qrCode.copied') : t('qrCode.copyLink')}
                             </button>
                           </div>
                         )}
@@ -442,7 +442,7 @@ const QRCode = () => {
 
                   {copied && (
                     <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-2xl">
-                      <FaCheckCircle className="text-green-400" /> Link copied to clipboard!
+                      <FaCheckCircle className="text-green-400" /> {t('qrCode.linkCopied')}
                     </div>
                   )}
                 </div>
@@ -453,7 +453,7 @@ const QRCode = () => {
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                          Vessel Database Record
+                          {t('qrCode.vesselDatabaseRecord')}
                         </p>
                         <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-slate-900">
                           {selectedBoat.boatName}
@@ -483,45 +483,45 @@ const QRCode = () => {
                   )}*/}
 
                   <div className="grid gap-x-8 px-6 py-2 sm:grid-cols-2">
-                    <DetailRow icon={<MdVerified />} label="Registration Number" value={selectedBoat.registrationNumber} />
-                    <DetailRow icon={<FaShip />} label="Vessel Type" value={selectedBoat.boatType} />
-                    <DetailRow icon={<FaCalendarAlt />} label="Year Built / Model" value={selectedBoat.modelYear} />
-                    <DetailRow icon={<MdEngineering />} label="Engine Type" value={selectedBoat.engineType} />
-                    <DetailRow icon={<MdEngineering />} label="Engine Serial" value={selectedBoat.engineSerial} />
+                    <DetailRow icon={<MdVerified />} label={t('qrCode.registrationNumber')} value={selectedBoat.registrationNumber} />
+                    <DetailRow icon={<FaShip />} label={t('qrCode.vesselType')} value={selectedBoat.boatType} />
+                    <DetailRow icon={<FaCalendarAlt />} label={t('qrCode.yearBuiltModel')} value={selectedBoat.modelYear} />
+                    <DetailRow icon={<MdEngineering />} label={t('qrCode.engineType')} value={selectedBoat.engineType} />
+                    <DetailRow icon={<MdEngineering />} label={t('qrCode.engineSerial')} value={selectedBoat.engineSerial} />
                     <DetailRow
                       icon={<FaBolt />}
-                      label="Horsepower"
+                      label={t('qrCode.horsepower')}
                       value={selectedBoat.horsepower ? `${selectedBoat.horsepower} HP` : null}
                     />
                     <DetailRow
                       icon={<FaGasPump />}
-                      label="Fuel Capacity"
+                      label={t('qrCode.fuelCapacity')}
                       value={selectedBoat.fuelCapacity ? `${selectedBoat.fuelCapacity} L` : null}
                     />
                     <DetailRow
                       icon={<FaUserTie />}
-                      label="Assigned Driver"
-                      value={selectedBoat.driver?.name || 'No driver assigned'}
+                      label={t('qrCode.assignedDriver')}
+                      value={selectedBoat.driver?.name || t('qrCode.noDriverAssigned')}
                     />
-                    <DetailRow icon={<FaEnvelope />} label="Driver Email" value={selectedBoat.driver?.email} />
+                    <DetailRow icon={<FaEnvelope />} label={t('qrCode.driverEmail')} value={selectedBoat.driver?.email} />
                     <DetailRow
                       icon={<FaSyncAlt />}
-                      label="Connection Status"
-                      value={selectedBoat.connectionStatus?.toUpperCase() || 'OFFLINE'}
+                      label={t('qrCode.connectionStatus')}
+                      value={selectedBoat.connectionStatus?.toUpperCase() || t('qrCode.offline')}
                       color={selectedBoat.connectionStatus === 'online' ? 'green' : 'blue'}
                     />
                     <DetailRow
                       icon={<FaMapMarkerAlt />}
-                      label="Registered Coordinates"
+                      label={t('qrCode.registeredCoordinates')}
                       value={
                         selectedBoat.latitude != null && selectedBoat.longitude != null
                           ? `${Number(selectedBoat.latitude).toFixed(5)}, ${Number(selectedBoat.longitude).toFixed(5)}`
-                          : 'Not recorded'
+                          : t('qrCode.notRecorded')
                       }
                     />
                     <DetailRow
                       icon={<FaCalendarAlt />}
-                      label="Registered On"
+                      label={t('qrCode.registeredOn')}
                       value={
                         selectedBoat.createdAt
                           ? new Date(selectedBoat.createdAt).toLocaleDateString('en-GB')
@@ -532,7 +532,7 @@ const QRCode = () => {
 
                   <div className="border-t border-slate-100 bg-slate-50 px-6 py-5">
                     <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                      Public Verification Link
+                      {t('qrCode.publicVerificationLink')}
                     </p>
                     <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5">
                       <p className="truncate font-mono text-xs text-blue-600">{qrValue}</p>
