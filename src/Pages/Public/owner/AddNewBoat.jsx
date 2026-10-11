@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Plus,
   Info,
@@ -28,6 +29,7 @@ const initialFormData = {
 };
 
 const AddNewBoat = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -71,7 +73,7 @@ const AddNewBoat = () => {
   console.log("=".repeat(50));
 
   if (!token) {
-    setError("❌ You are not logged in. Please login first.");
+    setError(t('addNewBoat.notLoggedIn'));
     setTimeout(() => navigate("/login"), 2000);
     return;
   }
@@ -87,19 +89,19 @@ const AddNewBoat = () => {
     !formData.engineType ||
     !formData.boatStatus
   ) {
-    setError("Boat Name, Registration Number, Boat Type, Model/Year needed.");
+    setError(t('addNewBoat.requiredFields'));
     return;
   }
 
     // ✅ Validate model year is 4 digits
   if (formData.modelYear.length !== 4) {
-    setError("Model year must be exactly 4 digits.");
+    setError(t('addNewBoat.modelYearInvalid'));
     return;
   }
 
   // ✅ Validate numbers > 0
   if (Number(formData.fuelCapacity) <= 0) {
-    setError("Fuel capacity must be greater than 0.");
+    setError(t('addNewBoat.fuelCapacityInvalid'));
     return;
   }
 
@@ -126,7 +128,7 @@ const AddNewBoat = () => {
       },
     });
 
-    setSuccess(res.data.message || "Boat registered successfully");
+    setSuccess(res.data.message || t('addNewBoat.successRegistered'));
 
     setTimeout(() => {
       navigate("/boatownerboats");
@@ -139,7 +141,7 @@ const AddNewBoat = () => {
     setError(
       err.response?.data?.message ||
       err.message ||
-      "Boat registration failed"
+      t('addNewBoat.registrationFailed')
     );
   } finally {
     setLoading(false);
@@ -148,7 +150,7 @@ const AddNewBoat = () => {
   
   const handleSaveDraft = () => {
     localStorage.setItem("boatDraft", JSON.stringify(formData));
-    setSuccess("Draft saved locally.");
+    setSuccess(t('addNewBoat.draftSaved'));
   };
 
   const handleCancel = () => {
@@ -170,9 +172,9 @@ const AddNewBoat = () => {
         {/* Scrollable Form Area */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-12">
           <DashboardPageHeader
-            eyebrow="Fleet expansion"
-            title="Register New Boat"
-            description="Add a vessel to your fleet by completing its identification and technical details."
+            eyebrow={t('addNewBoat.eyebrow')}
+            title={t('addNewBoat.title')}
+            description={t('addNewBoat.description')}
             icon={Plus}
             theme="emerald"
           />
@@ -200,32 +202,32 @@ const AddNewBoat = () => {
                     <Info size={20} />
                   </div>
                   <h3 className="font-bold text-[18px] text-slate-900">
-                    Boat Information
+                    {t('addNewBoat.boatInformation')}
                   </h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   <FormInput 
                     
-                    label="BOAT NAME"
+                    label={t('addNewBoat.boatName')}
                     name="boatName"
                     value={formData.boatName}
                     onChange={handleChange}
-                    placeholder="e.g. Sea Guardian II"
+                    placeholder={t('addNewBoat.boatNamePlaceholder')}
                     
                   />
 
                   <FormInput
-                    label="REGISTRATION NUMBER"
+                    label={t('addNewBoat.registrationNumber')}
                     name="registrationNumber"
                     value={formData.registrationNumber}
                     onChange={handleChange}
-                    placeholder="MAR-990-234X"
+                    placeholder={t('addNewBoat.registrationPlaceholder')}
                   />
 
                   <div className="flex flex-col gap-2">
                     <label className="text-[12px] font-bold text-slate-600 uppercase tracking-widest">
-                      BOAT TYPE
+                      {t('addNewBoat.boatType')}
                     </label>
                     <select
                       name="boatType"
@@ -233,15 +235,15 @@ const AddNewBoat = () => {
                       onChange={handleChange}
                       className="bg-[#f8fafc] border border-slate-200 rounded-lg p-2 text-[12px] text-slate-600 focus:ring-1 focus:ring-blue-500 outline-none"
                     >
-                      <option value="">Select Category</option>
-                      <option value="Ruvala">Ruvala</option>
-                      <option value="One-day Boat">One-day Boat</option>
-                      <option value="Tanker Boat">Tanker Boat</option>
+                      <option value="">{t('addNewBoat.selectCategory')}</option>
+                      <option value="Ruvala">{t('addNewBoat.ruvala')}</option>
+                      <option value="One-day Boat">{t('addNewBoat.oneDayBoat')}</option>
+                      <option value="Tanker Boat">{t('addNewBoat.tankerBoat')}</option>
                     </select>
                   </div>
 
                   <FormInput
-                    label="BOAT MANUFACTURE YEAR"
+                    label={t('addNewBoat.manufactureYear')}
                     name="modelYear"
                     value={formData.modelYear}
                     onChange={handleChange}
@@ -259,22 +261,22 @@ const AddNewBoat = () => {
                     <Sliders size={20} />
                   </div>
                   <h3 className="font-bold text-[18px] text-slate-900">
-                    Engine & Technical Details
+                    {t('addNewBoat.engineDetails')}
                   </h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <FormInput
-                    label="ENGINE SERIAL"
+                    label={t('addNewBoat.engineSerial')}
                     name="engineSerial"
                     value={formData.engineSerial}
                     onChange={handleChange}
-                    placeholder="S/N 8839120"
+                    placeholder={t('addNewBoat.engineSerialPlaceholder')}
                   />
 
               <div className="flex flex-col gap-2">
                 <label className="text-[12px] font-bold text-slate-600 uppercase tracking-widest">
-                  BOAT STATUS
+                  {t('addNewBoat.boatStatus')}
                 </label>
                 <select
                   name="boatStatus"
@@ -282,15 +284,15 @@ const AddNewBoat = () => {
                   onChange={handleChange}
                   className="bg-[#f8fafc] border border-slate-200 rounded-lg p-2 text-[12px] text-slate-600 focus:ring-1 focus:ring-blue-500 outline-none"
                 >
-                  <option value="NON-ACTIVE">NON-ACTIVE</option>
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="MAINTENANCE">MAINTENANCE</option>
+                  <option value="NON-ACTIVE">{t('addNewBoat.nonActive')}</option>
+                  <option value="ACTIVE">{t('addNewBoat.active')}</option>
+                  <option value="MAINTENANCE">{t('addNewBoat.maintenance')}</option>
                 </select>
               </div>
 
                   <div className="relative">
                     <FormInput
-                      label="FUEL CAPACITY (L) OF THE BOAT"
+                      label={t('addNewBoat.fuelCapacity')}
                       name="fuelCapacity"
                       value={formData.fuelCapacity}
                       onChange={handleChange}
@@ -298,13 +300,13 @@ const AddNewBoat = () => {
                       type="number"
                     />
                     <span className="absolute right-12 bottom-4 text-[12px] font-bold text-slate-600 uppercase">
-                      Liters
+                      {t('addNewBoat.liters')}
                     </span>
                   </div>
 
                   <div className="relative ">
                     <FormInput 
-                      label="HORSEPOWER (HP)"
+                      label={t('addNewBoat.horsepower')}
                       name="horsepower"
                       value={formData.horsepower}
                       onChange={handleChange}
@@ -312,18 +314,18 @@ const AddNewBoat = () => {
                       type="number"
                     />
                     <span className="absolute right-12 bottom-4 text-[12px] font-bold text-slate-600 uppercase">
-                      HP
+                      {t('addNewBoat.hp')}
                     </span>
                   </div>
 
                   <div className="flex flex-col gap-2">
                   <FormInput 
                     
-                    label="ENGINE TYPE"
+                    label={t('addNewBoat.engineType')}
                     name="engineType"
                     value={formData.engineType}
                     onChange={handleChange}
-                    placeholder="Yamaha"
+                    placeholder={t('addNewBoat.engineTypePlaceholder')}
                     
                   />
                   </div>
@@ -336,7 +338,7 @@ const AddNewBoat = () => {
               {/* Vessel Imagery Card */}
               <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
                 <h3 className="text-[12px] font-bold text-slate-600 uppercase tracking-widest mb-4 ml-20">
-                  Vessel Imagery
+                  {t('addNewBoat.vesselImagery')}
                 </h3>
 
                 <div className="border-2 border-dashed text-[14px] border-slate-400 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-slate-50 hover:bg-slate-100/50 transition-colors group">
@@ -356,11 +358,11 @@ const AddNewBoat = () => {
                     onClick={() => fileInputRef.current.click()}
                     className="w-full px-2 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition cursor-pointer"
                   >
-                    Choose Boat Image
+                    {t('addNewBoat.chooseBoatImage')}
                   </button>
 
                   <p className="text-[12px] text-slate-800 mt-2">
-                    Select an image from your computer
+                    {t('addNewBoat.selectImage')}
                   </p>
                 </div>
                 </div>
@@ -377,7 +379,7 @@ const AddNewBoat = () => {
                   />
                   <div className="absolute inset-0 flex items-center justify-center border border-white/20 bg-black/10">
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                      Preview Frame
+                      {t('addNewBoat.previewFrame')}
                     </span>
                   </div>
                 </div>
@@ -390,19 +392,17 @@ const AddNewBoat = () => {
                 <div className="flex items-center gap-2 mb-4 relative z-10">
                   <ShieldCheck size={18} className="text-blue-400" />
                   <h3 className="text-[12px] font-bold uppercase tracking-widest">
-                    Regulatory Compliance
+                    {t('addNewBoat.regulatoryCompliance')}
                   </h3>
                 </div>
 
                 <p className="text-[10px] text-slate-400 leading-relaxed relative z-10 mb-6">
-                  Registration details will be verified against the IMO Global
-                  Integrated Shipping Information System. Ensure all technical
-                  fields match manufacturer documentation.
+                  {t('addNewBoat.complianceDesc')}
                 </p>
 
                 <div className="flex justify-between items-center relative z-10 pt-4 border-t border-white/10">
                   <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">
-                    Auth Code
+                    {t('addNewBoat.authCode')}
                   </span>
                   <span className="text-[12px] font-mono text-blue-200">
                     NAV-AUTH-2024-X
@@ -419,7 +419,7 @@ const AddNewBoat = () => {
               onClick={handleCancel}
               className="flex items-center gap-2 text-red-500 text-[14px] font-bold hover:bg-red-50 px-4 py-2 rounded-lg transition cursor-pointer ml-10"
             >
-              <X size={14} /> Cancel
+              <X size={14} /> {t('addNewBoat.cancel')}
             </button>
 
             <div className="flex gap-4">
@@ -436,7 +436,7 @@ const AddNewBoat = () => {
                 disabled={loading}
                 className="px-10 py-2.5 mr-10 bg-[#1b416f] text-white rounded-lg text-[14px] font-bold hover:bg-slate-800 transition shadow-lg flex items-center gap-3 group cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {loading ? "Saving..." : "Register Boat"}
+                {loading ? t('addNewBoat.saving') : t('addNewBoat.registerBoat')}
                 <ArrowRight
                   size={14}
                   className="group-hover:translate-x-1 transition-transform"
