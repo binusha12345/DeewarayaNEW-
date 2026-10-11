@@ -5,9 +5,11 @@ import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
 import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api, { apiUrl } from "../../../services/api";
+import { useTranslation } from 'react-i18next';
 
 const BoatOwnerBoats = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const [boats, setBoats] = useState([]);
   const [drivers, setDrivers] = useState([]);
