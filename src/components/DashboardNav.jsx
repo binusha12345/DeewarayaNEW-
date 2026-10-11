@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Anchor, Menu, UserRound, X } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useAuth } from "../context/AuthContext";
 import useBoatSignalMonitor from "../hooks/useBoatSignalMonitor";
+import { apiUrl } from "../services/api";
 
 /* ─────────────────────────────────────────────
    NAV LINKS DATA
@@ -105,9 +106,7 @@ const openSidebar = () => {
           </button>
 
           {/* Logo */}
-          <h2 className="truncate text-base font-bold tracking-wide text-white sm:text-lg md:text-xl lg:text-2xl">
-            Maritime <span className="text-cyan-300">Precision</span>
-          </h2>
+          <Anchor aria-hidden="true" className="h-6 w-6 shrink-0 text-cyan-200 sm:h-7 sm:w-7" />
         </div>
 
         {/* ─────────── CENTER: desktop nav ─────────── */}
@@ -136,18 +135,24 @@ const openSidebar = () => {
           </button>
 
           {/* Avatar */}
-          <button
+          <NavLink
+            to="/profile"
             aria-label="User profile"
-            className="group relative h-9 w-9 shrink-0 cursor-pointer rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 p-[2px] shadow-md sm:h-10 sm:w-10 lg:h-11 lg:w-11"
+            title="Open profile"
+            className="group relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 p-[2px] shadow-md sm:h-10 sm:w-10 lg:h-11 lg:w-11"
           >
-            <div className="h-full w-full overflow-hidden rounded-full border-2 border-blue-900">
-              <img
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                alt="User Profile"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
+            <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-blue-900 bg-blue-950 text-white transition-transform duration-300 group-hover:scale-105">
+              {user?.profilePicture ? (
+                <img
+                  src={apiUrl(user.profilePicture)}
+                  alt={`${user.name || "User"} profile`}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <UserRound size={19} aria-hidden="true" />
+              )}
             </div>
-          </button>
+          </NavLink>
         </div>
       </div>
 
