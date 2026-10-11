@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Wrench,
   ArrowRight,
@@ -17,31 +18,32 @@ import bodyparts5 from "../../../assets/bodyparts5.png";
 import spareparts5 from "../../../assets/spareparts5.png";
 
 const Maintenance = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const maintenanceCards = [
     {
-      title: "Engine",
-      subtitle: "Monitor propulsion performance, fuel efficiency",
+      title: t('maintenance.engine'),
+      subtitle: t('maintenance.engineSubtitle'),
       //badge: "DIAGNOSTICS ACTIVE",
       image: engine5,     
-      buttonText: "Inspect Module",
+      buttonText: t('maintenance.inspectModule'),
       route: "/maintenance/engine",
     },
     {
-      title: "Body Parts",
-      subtitle: "Manage hull maintenance, deck fittings",
+      title: t('maintenance.bodyParts'),
+      subtitle: t('maintenance.bodyPartsSubtitle'),
       //badge: "STRUCTURAL INTEGRITY",
       image: bodyparts5,
-      buttonText: "View Components",
+      buttonText: t('maintenance.viewComponents'),
       route: "/maintenance/body-parts",
     },
     {
-      title: "Spare Parts",
-      subtitle: "Real-time inventory tracking for gaskets, filters, pumps",
+      title: t('maintenance.spareParts'),
+      subtitle: t('maintenance.sparePartsSubtitle'),
       //badge: "INVENTORY CONTROL",
       image: spareparts5, 
-      buttonText: "Access Warehouse",
+      buttonText: t('maintenance.accessWarehouse'),
       route: "/maintenance/spare-parts",
     },
   ];
@@ -62,9 +64,9 @@ const Maintenance = () => {
         <main className="flex-1 min-h-0 overflow-y-auto px-2 lg:px-2 py-8">
           <div className="mx-auto max-w-6xl">
             <DashboardPageHeader
-              eyebrow="Vessel care"
-              title="Maintenance & Repair"
-              description="Find the right maintenance area and keep your fleet ready for the water."
+              eyebrow={t('maintenance.eyebrow')}
+              title={t('maintenance.title')}
+              description={t('maintenance.description')}
               icon={Wrench}
               theme="amber"
             />
@@ -120,11 +122,11 @@ const Maintenance = () => {
                 
 
                 <h2 className="text-4xl font-bold text-slate-900 leading-tight max-w-md">
-                  Spare Parts
+                  {t('maintenance.spareParts')}
                 </h2>
 
                 <p className="mt-4 text-slate-600 text-lg max-w-md leading-relaxed">
-                  Real-time inventory tracking for gaskets, filters, pumps, and mission-critical hardware.
+                  {t('maintenance.sparePartsDesc')}
                 </p>
 
                 <button
@@ -136,7 +138,7 @@ const Maintenance = () => {
                   hover:bg-blue-800 hover:scale-105 
                   transition-all duration-300  cursor-pointer"
                 >
-                  Access Warehouse
+                  {t('maintenance.accessWarehouse')}
                   <Home size={16} />
                 </button>
               </div>
