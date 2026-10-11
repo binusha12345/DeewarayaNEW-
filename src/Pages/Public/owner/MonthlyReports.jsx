@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../../../services/api";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
@@ -38,6 +39,7 @@ import {
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
 
 const MonthlyReports = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
