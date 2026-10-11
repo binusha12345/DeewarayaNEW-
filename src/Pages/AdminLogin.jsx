@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { API_BASE } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -17,6 +18,7 @@ import {
 import { FaAnchor } from 'react-icons/fa';
 
 const AdminLogin = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -55,7 +57,7 @@ const AdminLogin = () => {
 
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || t('adminLogin.loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -89,7 +91,7 @@ const AdminLogin = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-white">Deewaraya</h1>
-            <p className="text-[10px] text-blue-300 tracking-widest uppercase">Admin Portal</p>
+            <p className="text-[10px] text-blue-300 tracking-widest uppercase">{t('adminLogin.adminPortal')}</p>
           </div>
         </Link>
 
@@ -213,10 +215,10 @@ const AdminLogin = () => {
         {/* Bottom Text */}
         <div className="text-center">
           <h2 className="text-2xl xl:text-3xl font-bold text-white mb-2">
-            Welcome to <span className="bg-gradient-to-r from-cyan-300 to-sky-400 bg-clip-text text-transparent">Deewaraya Admin</span>
+            {t('adminLogin.welcomeTo')} <span className="bg-gradient-to-r from-cyan-300 to-sky-400 bg-clip-text text-transparent">{t('adminLogin.deewarayaAdmin')}</span>
           </h2>
           <p className="text-blue-200/70 text-sm">
-            Manage your smart fishing fleet with confidence 🌊
+            {t('adminLogin.manageFleet')}
           </p>
         </div>
       </div>
@@ -233,7 +235,7 @@ const AdminLogin = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Deewaraya</h1>
-                <p className="text-[10px] text-blue-300 tracking-widest uppercase">Admin Portal</p>
+                <p className="text-[10px] text-blue-300 tracking-widest uppercase">{t('adminLogin.adminPortal')}</p>
               </div>
             </Link>
           </div>
@@ -247,10 +249,10 @@ const AdminLogin = () => {
                 <HiOutlineShieldCheck className="text-white text-xl" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-1">
-                Admin Sign In
+                {t('adminLogin.adminSignIn')}
               </h2>
               <p className="text-blue-200/70 text-sm">
-                Enter your credentials to continue
+                {t('adminLogin.enterCredentials')}
               </p>
             </div>
 
@@ -260,7 +262,7 @@ const AdminLogin = () => {
               {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-xs font-medium text-blue-100 mb-1.5">
-                  Email Address
+                  {t('adminLogin.emailAddress')}
                 </label>
                 <div className="relative group">
                   <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70 text-lg group-focus-within:text-cyan-400 transition-colors" />
@@ -281,7 +283,7 @@ const AdminLogin = () => {
               {/* Password */}
               <div>
                 <label htmlFor="password" className="block text-xs font-medium text-blue-100 mb-1.5">
-                  Password
+                  {t('adminLogin.password')}
                 </label>
                 <div className="relative group">
                   <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70 text-lg group-focus-within:text-cyan-400 transition-colors" />
@@ -291,7 +293,7 @@ const AdminLogin = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
+                    placeholder={t('adminLogin.enterPassword')}
                     required
                     autoComplete="off"
                     className="w-full pl-11 pr-11 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-blue-200/40 focus:outline-none focus:border-cyan-400/50 focus:bg-white/10 focus:ring-2 focus:ring-cyan-400/20 transition-all"
@@ -328,11 +330,11 @@ const AdminLogin = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Signing in...
+                      {t('adminLogin.signingIn')}
                     </>
                   ) : (
                     <>
-                      Sign In to Dashboard
+                      {t('adminLogin.signInToDashboard')}
                       <HiOutlineArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
@@ -343,7 +345,7 @@ const AdminLogin = () => {
             {/* Divider */}
             <div className="my-4 flex items-center gap-3">
               <div className="flex-1 h-px bg-white/10"></div>
-              <span className="text-[10px] text-blue-200/50 uppercase tracking-wider">or</span>
+              <span className="text-[10px] text-blue-200/50 uppercase tracking-wider">{t('adminLogin.or')}</span>
               <div className="flex-1 h-px bg-white/10"></div>
             </div>
 
@@ -353,7 +355,7 @@ const AdminLogin = () => {
               className="flex items-center justify-center gap-2 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-blue-100 text-sm font-medium rounded-xl transition-all"
             >
               <HiOutlineUser />
-              Sign in as User
+              {t('adminLogin.signInAsUser')}
             </Link>
 
             {/* Back to Home */}
@@ -363,7 +365,7 @@ const AdminLogin = () => {
                 className="inline-flex items-center gap-1.5 text-xs text-blue-200/70 hover:text-cyan-400 transition-colors"
               >
                 <HiOutlineArrowLeft />
-                Back to Home
+                {t('adminLogin.backToHome')}
               </Link>
             </div>
           </div>
@@ -371,7 +373,7 @@ const AdminLogin = () => {
           {/* Security Note */}
           <p className="text-center text-[11px] text-blue-300/50 mt-4 flex items-center justify-center gap-1.5">
             <HiOutlineShieldCheck />
-            Protected by enterprise-grade security
+            {t('adminLogin.protectedBySecurity')}
           </p>
         </div>
       </div>
