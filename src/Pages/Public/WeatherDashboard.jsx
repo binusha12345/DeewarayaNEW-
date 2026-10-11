@@ -1,5 +1,6 @@
 import "leaflet/dist/leaflet.css";
 import React, { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import {
   Loader2,
@@ -71,6 +72,7 @@ const MapResizeFix = ({ center }) => {
 };
 
 const WeatherDashboard = () => {
+  const { t } = useTranslation();
   const user = JSON.parse(localStorage.getItem("user"));
   const userRole = user?.role;
 
@@ -113,7 +115,7 @@ const WeatherDashboard = () => {
         setBoats(allBoats);
         setFilteredBoats(allBoats);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load boats");
+        setError(err.response?.data?.message || t('weatherDashboard.failedToLoadBoats'));
       } finally {
         setLoadingBoats(false);
       }
@@ -455,9 +457,9 @@ const WeatherDashboard = () => {
           <div className="max-w-6xl mx-auto">
 
             <DashboardPageHeader
-              eyebrow="Fleet / weather & safety"
-              title="Weather and Safety Alerts"
-              description="Search for a boat, use your location, and view current weather conditions."
+              eyebrow={t('weatherDashboard.eyebrow')}
+              title={t('weatherDashboard.title')}
+              description={t('weatherDashboard.description')}
               icon={CloudSun}
               theme="teal"
             />
@@ -467,7 +469,7 @@ const WeatherDashboard = () => {
 
               <div className="flex items-center justify-between mb-4">
                 <label className="text-[18px] font-bold text-slate-800">
-                  Search & Select Boat
+                  {t('weatherDashboard.searchSelectBoat')}
                 </label>
                 <span
                   className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full ${
@@ -476,7 +478,7 @@ const WeatherDashboard = () => {
                       : "bg-blue-100 text-blue-700"
                   }`}
                 >
-                  {userRole === "driver" ? "🧑‍✈️ Driver" : "👑 Owner"}
+                  {userRole === "driver" ? t('weatherDashboard.driver') : t('weatherDashboard.owner')}
                   {boats.length > 0 && (
                     <span
                       className={`px-1.5 py-0.5 rounded-full text-[10px] ${
@@ -485,7 +487,7 @@ const WeatherDashboard = () => {
                           : "bg-blue-200 text-blue-800"
                       }`}
                     >
-                      {boats.length} boat{boats.length !== 1 ? "s" : ""} available
+                      {t('weatherDashboard.boatsAvailable', { count: boats.length })}
                     </span>
                   )}
                 </span>
@@ -494,12 +496,12 @@ const WeatherDashboard = () => {
               {loadingBoats ? (
                 <div className="flex items-center gap-2 text-slate-500">
                   <Loader2 className="animate-spin" size={18} />
-                  Loading boats...
+                  {t('weatherDashboard.loadingBoats')}
                 </div>
               ) : boats.length === 0 ? (
                 <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-yellow-700 text-sm">
                   <AlertTriangle size={16} />
-                  No boats found in database. Please add boats first.
+                  {t('weatherDashboard.noBoatsFound')}
                 </div>
               ) : (
                 <div className="relative max-w-lg" ref={searchRef}>
@@ -520,7 +522,7 @@ const WeatherDashboard = () => {
                           searchQuery.trim() === "" ? boats : filteredBoats
                         );
                       }}
-                      placeholder="Search by boat name, registration, type..."
+                      placeholder={t('weatherDashboard.searchPlaceholder')}
                       className={`w-full border rounded-xl pl-10 pr-10 py-2.5 outline-none focus:ring-2 bg-white transition text-sm
                         ${
                           selectedBoat
