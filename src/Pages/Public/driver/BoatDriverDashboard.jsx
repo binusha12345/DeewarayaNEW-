@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DriverSidebar from '../../../components/DriverSidebar';
 import DashboardNav from '../../../components/DashboardNav';
 import DashboardPageHeader from '../../../components/DashboardPageHeader';
@@ -17,16 +18,17 @@ import {
 } from 'lucide-react';
 
 const BoatDriverDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth(); // ADD THIS
   const [signalBoatId, setSignalBoatId] = useState(() => localStorage.getItem('signalBoatId:driver') || '');
   const connection = useInternetStatus({ boatId: signalBoatId, report: Boolean(signalBoatId) });
   const connectionLabel = {
-    good: "System connected",
-    medium: "Weak connection",
-    poor: "Poor connection",
-    offline: "Offline",
-    checking: "Checking connection",
-  }[connection.status] || "Checking connection";
+    good: t('driverDashboard.systemConnected'),
+    medium: t('driverDashboard.weakConnection'),
+    poor: t('driverDashboard.poorConnection'),
+    offline: t('driverDashboard.offline'),
+    checking: t('driverDashboard.checkingConnection'),
+  }[connection.status] || t('driverDashboard.checkingConnection');
   const connectionIndicator = {
     good: "bg-emerald-300",
     medium: "bg-amber-300",
@@ -65,22 +67,22 @@ const BoatDriverDashboard = () => {
         <main className="flex-1 overflow-y-auto p-8">
           {(connection.status === 'poor' || connection.status === 'offline') && (
             <div role="alert" className="mb-6 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">
-              <span>{connection.status === 'offline' ? 'Internet is offline. GPS updates will be queued until connection returns.' : 'Internet connection is poor. GPS updates may be delayed.'}</span>
-              <a href="/signal-indicator" className="underline underline-offset-2">View signal status</a>
+              <span>{connection.status === 'offline' ? t('driverDashboard.internetOffline') : t('driverDashboard.internetPoor')}</span>
+              <a href="/signal-indicator" className="underline underline-offset-2">{t('driverDashboard.viewSignalStatus')}</a>
             </div>
           )}
           
           <DashboardPageHeader
-            eyebrow="Driver dashboard"
-            title={`Welcome, ${user?.name || 'Driver'}`}
-            description="Your real-time vessel telemetry and navigation overview."
+            eyebrow={t('driverDashboard.eyebrow')}
+            title={t('driverDashboard.welcome', { name: user?.name || 'Driver' })}
+            description={t('driverDashboard.description')}
             icon={Anchor}
             theme="cyan"
             action={
               <div className="flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-3">
                 <span className={`h-2.5 w-2.5 rounded-full ${connectionIndicator}`} />
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">Connection</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">{t('driverDashboard.connection')}</p>
                   <p className="text-sm font-bold">{connectionLabel}</p>
                 </div>
               </div>
@@ -102,30 +104,30 @@ const BoatDriverDashboard = () => {
                 />
                 <div className="absolute right-5 top-5 flex items-center gap-2 rounded-full border border-white/50 bg-white/90 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-md backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  Navigation view
+                  {t('driverDashboard.navigationView')}
                 </div>
                 
                 {/* HUD Overlay */}
                 <div className="absolute top-6 left-6 min-w-[200px] rounded-3xl border border-white/60 bg-white/90 p-5 shadow-xl backdrop-blur-md">
                   <div className="flex items-center gap-2 mb-3">
                     <p className="text-xs font-bold text-blue-900 uppercase tracking-wider">
-                      Navigation HUD
+                      {t('driverDashboard.navigationHud')}
                     </p>
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                   </div>
                   
                   <div className="mb-4">
                     <span className="text-4xl font-bold text-slate-900">12.42</span>
-                    <span className="text-xs font-bold text-slate-500 ml-1">KNOTS</span>
+                    <span className="text-xs font-bold text-slate-500 ml-1">{t('driverDashboard.knots')}</span>
                   </div>
                   
                   <div className="flex gap-6 border-t border-slate-200 pt-3">
                     <div>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase">Heading</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase">{t('driverDashboard.heading')}</p>
                       <p className="text-sm font-bold text-slate-900">284° W</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase">Depth</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase">{t('driverDashboard.depth')}</p>
                       <p className="text-sm font-bold text-slate-900">42.5 m</p>
                     </div>
                   </div>
@@ -134,15 +136,15 @@ const BoatDriverDashboard = () => {
                 {/* Map Controls */}
                 <div className="absolute bottom-6 right-6 flex gap-2">
                   <div className="flex overflow-hidden rounded-xl border border-white/70 bg-white/95 shadow-lg backdrop-blur">
-                    <button aria-label="Zoom in" className="p-2.5 text-slate-700 transition hover:bg-cyan-50 hover:text-cyan-800">
+                    <button aria-label={t('driverDashboard.zoomIn')} className="p-2.5 text-slate-700 transition hover:bg-cyan-50 hover:text-cyan-800">
                       <Plus size={20} />
                     </button>
                     <div className="w-px bg-slate-200"></div>
-                    <button aria-label="Zoom out" className="p-2.5 text-slate-700 transition hover:bg-cyan-50 hover:text-cyan-800">
+                    <button aria-label={t('driverDashboard.zoomOut')} className="p-2.5 text-slate-700 transition hover:bg-cyan-50 hover:text-cyan-800">
                       <Minus size={20} />
                     </button>
                   </div>
-                  <button aria-label="Center map" className="rounded-xl bg-cyan-800 p-2.5 text-white shadow-lg transition hover:bg-cyan-900">
+                  <button aria-label={t('driverDashboard.centerMap')} className="rounded-xl bg-cyan-800 p-2.5 text-white shadow-lg transition hover:bg-cyan-900">
                     <Crosshair size={20} />
                   </button>
                 </div>
@@ -156,7 +158,7 @@ const BoatDriverDashboard = () => {
                   <div className="absolute -right-5 -top-8 h-24 w-24 rounded-full bg-sky-100/70 transition-transform group-hover:scale-110" />
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Wind Velocity
+                      {t('driverDashboard.windVelocity')}
                     </h3>
                     <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-700 ring-1 ring-sky-200">
                       <Wind size={20} />
@@ -164,9 +166,9 @@ const BoatDriverDashboard = () => {
                   </div>
                   <div className="relative mb-2">
                     <span className="text-5xl font-bold text-slate-900">24</span>
-                    <span className="ml-1 text-lg font-bold text-slate-500">kph</span>
+                    <span className="ml-1 text-lg font-bold text-slate-500">{t('driverDashboard.kph')}</span>
                   </div>
-                  <p className="text-sm text-slate-500">Moderate breeze from North-East</p>
+                  <p className="text-sm text-slate-500">{t('driverDashboard.moderateBreeze')}</p>
                   <div className="mt-5 flex items-center gap-1.5" aria-label="Moderate wind">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((bar) => (
                       <span key={bar} className={`h-1.5 flex-1 rounded-full ${bar < 6 ? "bg-sky-500" : "bg-sky-100"}`} />
@@ -179,7 +181,7 @@ const BoatDriverDashboard = () => {
                   <div className="absolute -right-5 -top-8 h-24 w-24 rounded-full bg-orange-100/70 transition-transform group-hover:scale-110" />
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Temperature
+                      {t('driverDashboard.temperature')}
                     </h3>
                     <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 ring-1 ring-orange-200">
                       <Thermometer size={20} />
@@ -189,7 +191,7 @@ const BoatDriverDashboard = () => {
                     <span className="text-5xl font-bold text-slate-900">25</span>
                     <span className="ml-1 text-2xl font-bold text-slate-500">°C</span>
                   </div>
-                  <p className="text-sm text-slate-500">Ambient deck temperature</p>
+                  <p className="text-sm text-slate-500">{t('driverDashboard.ambientDeckTemp')}</p>
                   <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-orange-100">
                     <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-amber-400 to-orange-500" />
                   </div>
@@ -211,8 +213,8 @@ const BoatDriverDashboard = () => {
                     <Info size={14} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-700">Vessel profile</p>
-                    <h3 className="text-lg font-bold text-slate-900">Boat Details</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-700">{t('driverDashboard.vesselProfile')}</p>
+                    <h3 className="text-lg font-bold text-slate-900">{t('driverDashboard.boatDetails')}</h3>
                   </div>
                 </div>
 
@@ -223,25 +225,25 @@ const BoatDriverDashboard = () => {
                     className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                   <span className="absolute bottom-3 left-3 rounded-full border border-white/40 bg-slate-950/65 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
-                    Assigned vessel
+                    {t('driverDashboard.assignedVessel')}
                   </span>
                 </div>
 
                 <div className="mb-5 grid grid-cols-2 gap-3">
                   <div className="col-span-2 rounded-xl bg-cyan-50/80 p-3">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Boat name</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('driverDashboard.boatName')}</p>
                     <p className="mt-1 text-lg font-bold text-cyan-900">Boat A</p>
                   </div>
                   <div className="rounded-xl bg-slate-50 p-3">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Registration</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('driverDashboard.registration')}</p>
                     <p className="mt-1 text-sm font-bold text-slate-900">209934</p>
                   </div>
                   <div className="rounded-xl bg-slate-50 p-3">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Capacity</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('driverDashboard.capacity')}</p>
                     <p className="mt-1 text-sm font-bold text-slate-900">2 Tons</p>
                   </div>
                   <div className="col-span-2 flex items-center justify-between rounded-xl border border-slate-100 px-3 py-2.5">
-                    <span className="text-xs font-semibold text-slate-500">Engine type</span>
+                    <span className="text-xs font-semibold text-slate-500">{t('driverDashboard.engineType')}</span>
                     <span className="text-sm font-bold text-slate-900">25</span>
                   </div>
                 </div>
@@ -253,7 +255,7 @@ const BoatDriverDashboard = () => {
                   </div>
                   <div className="flex-1">
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-700">Fuel level</span>
+                      <span className="text-xs font-bold text-slate-700">{t('driverDashboard.fuelLevel')}</span>
                       <span className="text-xs font-extrabold text-cyan-900">75%</span>
                     </div>
                     <div className="h-2 w-full overflow-hidden rounded-full bg-white">
@@ -274,20 +276,20 @@ const BoatDriverDashboard = () => {
                     <Crosshair size={19} />
                   </span>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-200">At your fingertips</p>
-                    <h3 className="text-sm font-bold">Quick Actions</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-200">{t('driverDashboard.atYourFingertips')}</p>
+                    <h3 className="text-sm font-bold">{t('driverDashboard.quickActions')}</h3>
                   </div>
                 </div>
                 
                 <div className="relative space-y-3">
                   <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-cyan-400">
                     <Anchor size={18} />
-                    Deploy Anchor
+                    {t('driverDashboard.deployAnchor')}
                   </button>
                   
                   <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-semibold text-white transition hover:bg-white/15">
                     <span className="rounded-md bg-red-500 px-2 py-1 text-[10px] font-black tracking-widest text-white">SOS</span>
-                    Emergency Broadcast
+                    {t('driverDashboard.emergencyBroadcast')}
                   </button>
                 </div>
               </div>
