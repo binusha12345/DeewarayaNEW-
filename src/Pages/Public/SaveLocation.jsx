@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import { flushLocationQueue, queueLocation } from "../../services/locationQueue";
 
 const SaveLocation = () => {
+  const { t } = useTranslation();
   const [boatId, setBoatId] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,12 +20,12 @@ const SaveLocation = () => {
     setStatus("");
 
     if (!boatId.trim()) {
-      setStatus("Boat ID එක දාන්න.");
+      setStatus(t('saveLocation.boatIdRequired'));
       return;
     }
 
     if (!navigator.geolocation) {
-      setStatus("Geolocation unsupported in this browser");
+      setStatus(t('saveLocation.geolocationUnsupported'));
       return;
     }
 
@@ -47,7 +49,7 @@ const SaveLocation = () => {
 
           if (!navigator.onLine) {
             await queueLocation(location);
-            setStatus("Internet unavailable. GPS location saved on this device and will sync when online.");
+            setStatus(t('saveLocation.internetUnavailable'));
             return;
           }
 
@@ -57,12 +59,12 @@ const SaveLocation = () => {
           } catch (error) {
             if (error.response) throw error;
             await queueLocation(location);
-            setStatus("Connection lost. GPS location saved on this device and will sync when online.");
+            setStatus(t('saveLocation.connectionLost'));
             return;
           }
 
           console.log("Save Location Success:", res.data);
-          setStatus(res.data.message || "Location saved successfully");
+          setStatus(res.data.message || t('saveLocation.locationSaved'));
         } catch (error) {
           console.log("Save Location Error:", error);
           console.log("Error Response:", error.response);
@@ -71,7 +73,7 @@ const SaveLocation = () => {
           setStatus(
             error.response?.data?.message ||
               error.message ||
-              "Failed to save location"
+              t('saveLocation.failedToSave')
           );
         } finally {
           setLoading(false);
@@ -79,7 +81,7 @@ const SaveLocation = () => {
       },
       (error) => {
         console.log("Geolocation Error:", error);
-        setStatus("Location access denied or unavailable");
+        setStatus(t('saveLocation.locationDenied'));
         setLoading(false);
       }
     );
@@ -89,15 +91,15 @@ const SaveLocation = () => {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
         <h1 className="text-2xl font-bold text-slate-900 mb-4">
-          Save GPS Location
+          {t('saveLocation.title')}
         </h1>
 
         <label className="block text-sm font-semibold text-slate-700 mb-2">
-          Boat ID
+          {t('saveLocation.boatId')}
         </label>
         <input
           type="text"
-          placeholder="Enter Boat ID"
+          placeholder={t('saveLocation.enterBoatId')}
           value={boatId}
           onChange={(e) => setBoatId(e.target.value)}
           className="border border-slate-300 p-3 rounded-lg w-full mb-4 outline-none focus:border-blue-500"
@@ -108,7 +110,7 @@ const SaveLocation = () => {
           disabled={loading}
           className="bg-blue-700 text-white px-4 py-3 rounded-lg w-full font-semibold disabled:opacity-60 disabled:cursor-not-allowed hover:bg-blue-800 transition"
         >
-          {loading ? "Saving..." : "Save Current GPS Location"}
+          {loading ? t('saveLocation.saving') : t('saveLocation.saveCurrentGps')}
         </button>
 
         {status && (
