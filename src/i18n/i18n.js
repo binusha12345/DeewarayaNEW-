@@ -15,6 +15,7 @@ i18n
     },
     fallbackLng: "en",
     supportedLngs: ["en", "si"],
+    load: "languageOnly",
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage", "navigator"],
