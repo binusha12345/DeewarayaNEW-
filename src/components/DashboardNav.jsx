@@ -1,25 +1,11 @@
-// src/components/DashboardNav.jsx
-
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Anchor, Menu, UserRound, X } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useAuth } from "../context/AuthContext";
 import useBoatSignalMonitor from "../hooks/useBoatSignalMonitor";
 import { apiUrl } from "../services/api";
-
-/* ─────────────────────────────────────────────
-   NAV LINKS DATA
-   ───────────────────────────────────────────── */
-const NAV_LINKS = [
-  { to: "/", label: "Home" },
-  { to: "/contact", label: "Contact" },
-];
-
-const OWNER_NAV_LINKS = [
-  ...NAV_LINKS,
-  { to: "/owner/trips", label: "Boat Trips" },
-];
 
 /* ─────────────────────────────────────────────
    DESKTOP NAV LINK
@@ -67,9 +53,14 @@ const MobileNavLink = ({ to, label, onNavigate }) => (
    MAIN NAVBAR
    ───────────────────────────────────────────── */
 const DashboardNav = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navLinks = user?.role === "owner" ? OWNER_NAV_LINKS : NAV_LINKS;
+  const navLinks = [
+    { to: "/", label: t("nav.home", "Home") },
+    { to: "/contact", label: t("nav.contact", "Contact") },
+    ...(user?.role === "owner" ? [{ to: "/owner/trips", label: t("nav.boatTrips", "Boat Trips") }] : []),
+  ];
   useBoatSignalMonitor(user);
 
   const openMobileMenu = () => setIsMobileMenuOpen(true);
