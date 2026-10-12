@@ -3,6 +3,8 @@
     "home": "Home",
     "about": "About",
     "features": "Features",
+    "contact": "Contact",
+    "boatTrips": "Boat Trips",
     "login": "Login",
     "register": "Register",
     "logout": "Logout"
@@ -260,7 +262,10 @@
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode",
     "toggleTheme": "Toggle Theme",
-    "toggleMobileMenu": "Toggle Mobile Menu"
+    "toggleMobileMenu": "Toggle Mobile Menu",
+    "boatTrips": "Boat Trips",
+    "dailyFinance": "Daily Finance",
+    "monthlyReports": "Monthly Reports"
   },
   "footer": {
     "newsletter": {
@@ -773,24 +778,27 @@
     "ice": "Ice",
     "repairs": "Repairs",
     "equipment": "Equipment",
-    "other": "Other"
-  },
-  "saveLocation": {
-    "title": "Save GPS Location",
-    "boatId": "Boat ID",
-    "enterBoatId": "Enter Boat ID",
-    "saving": "Saving...",
-    "saveCurrentGps": "Save Current GPS Location",
-    "boatIdRequired": "Boat ID එක දාන්න.",
-    "geolocationUnsupported": "Geolocation unsupported in this browser",
-    "internetUnavailable": "Internet unavailable. GPS location saved on this device and will sync when online.",
-    "connectionLost": "Connection lost. GPS location saved on this device and will sync when online.",
-    "locationSaved": "Location saved successfully",
-    "failedToSave": "Failed to save location",
-    "locationDenied": "Location access denied or unavailable"
+    "other": "Other",
+    "whatsappModalTitle": "Send via WhatsApp",
+    "whatsappModalDesc": "Enter the recipient's WhatsApp number",
+    "whatsappNumber": "WhatsApp Number",
+    "close": "Close",
+    "formatNote": "📌 Format:",
+    "formatNoteDesc": "Include the country code with a '+' sign",
+    "formatExample": "Example: +94771234567 (Sri Lanka), +14155551234 (USA)",
+    "reportDetails": "Report Details",
+    "monthlyReportLabel": "📊 {{month}} {{year}} Monthly Report",
+    "netProfitLabel": "💰 Net Profit:",
+    "cancel": "Cancel",
+    "sending": "Sending...",
+    "sendNow": "Send Now",
+    "deliveryComplete": "Delivery complete",
+    "pdfSentSuccess": "PDF report sent successfully",
+    "whatsappDelivered": "Your monthly finance report has been delivered to the WhatsApp number provided.",
+    "emailDelivered": "Your monthly finance report has been delivered to your email inbox.",
+    "monthProgress": "Month progress"
   },
   "signalIndicator": {
-    "eyebrow": "Maritime operations",
     "title": "Signal coverage",
     "description": "Connection quality recorded by the assigned driver's device at saved GPS points. This measures service connectivity, not cellular radio strength.",
     "vessel": "Vessel",
@@ -1474,52 +1482,6 @@
       "registered": "Registered",
       "updated": "Updated"
     }
-  },
-  "finance": {
-    "eyebrow": "මුදල් සහ ගිණුම්",
-    "title": "මූල්‍ය උපකරණ පුවරුව",
-    "description": "දෛනික වියදම් ගණනය කිරීම්, මාසික වාර්තා සකස් කිරීම් සහ ශ්‍රී ලංකාවේ වෙළඳපල යොමු මිල ගණන් නිරීක්ෂණය කරන්න.",
-    "dailyCalculation": "දෛනික ගණනය කිරීම්",
-    "dailyCalculationDesc": "සෑම ගමනකම ඉන්ධන පිරිවැය, සේවක කොටස් සහ සමස්ත ලාභය ගණනය කරන්න.",
-    "dailyCalcPoints": [
-      "ගමන් ආදායම සහ අස්වැන්න වාර්තා කිරීම",
-      "ඉන්ධන සහ ආහාර වියදම් අඩු කිරීම",
-      "සේවක කොටස් ස්වයංක්‍රීයව ගණනය කිරීම",
-      "හිමිකරුගේ ශුද්ධ ආදායම නිරීක්ෂණය කිරීම"
-    ],
-    "monthlyReports": "මාසික වාර්තා සහ විශ්ලේෂණ",
-    "monthlyReportsDesc": "දිගුකාලීන ලාභ, වියදම් සහ යාත්‍රා කාර්ය සාධන ප්‍රවණතා සමාලෝචනය කර විශ්ලේෂණය කරන්න.",
-    "monthlyReportPoints": [
-      "මාසික ලාභ හා අලාභ වාර්තා ලබා ගැනීම",
-      "යාත්‍රා අනුව වියදම් වර්ගීකරණය විශ්ලේෂණය",
-      "සේවක ගෙවීම් ඉතිහාස වාර්තා නිරීක්ෂණය",
-      "වාර්තා CSV හෝ PDF ආකාරයෙන් බාගත කිරීම"
-    ],
-    "marketPrices": {
-      "unavailable": "වෙළඳපල මිල තොරතුරු තාවකාලිකව ලබා ගත නොහැක.",
-      "loading": "වෙළඳපල යොමු මිල ගණන් පූරණය වෙමින් පවතී...",
-      "notGenerated": "ලංකා ඛනිජ තෙල් සහ ධීවර වරාය නීතිගත සංස්ථා මිල වාර්තා පූරණය කිරීමට නොහැකි විය.",
-      "tryAgain": "නැවත උත්සාහ කරන්න",
-      "sriLanka": "ශ්‍රී ලංකාව",
-      "marketPriceReference": "වෙළඳපල මිල සමුද්දේශය",
-      "updated": "යාවත්කාලීන කරන ලදී: {{value}}",
-      "notAvailable": "ලබා ගත නොහැක",
-      "fuelPrices": "ඉන්ධන මිල ගණන්",
-      "lkrPerLiter": "(ලීටරයකට රුපියල්)",
-      "autoDiesel": "ඔටෝ ඩීසල්",
-      "superDiesel": "සුපර් ඩීසල්",
-      "keroseneOil": "භූමිතෙල්",
-      "effective": "බලාත්මක වන දිනය: {{value}}",
-      "fishPrices": "මත්ස්‍ය මිල ගණන්",
-      "lkrPerKg": "(කිලෝග්‍රෑමයකට රුපියල්)",
-      "noFishPrices": "මෙම අවස්ථාවේදී සක්‍රීය මත්ස්‍ය වෙළඳපල මිල දත්ත නොමැත.",
-      "priceDataSources": "මිල දත්ත මූලාශ්‍ර",
-      "ceylonPetroleum": "ලංකා ඛනිජ තෙල් නීතිගත සංස්ථාව",
-      "officialFuelPrices": "නිල ඉන්ධන මිල ගණන්",
-      "cfhc": "ලංකා ධීවර වරාය නීතිගත සංස්ථාව (CFHC)",
-      "liveFishFeed": "සජීවී මත්ස්‍ය මිල දත්ත",
-      "fishEstimates": "මත්ස්‍ය මිල ඇස්තමේන්තු"
-    }
-}
+  }
 }
 }
