@@ -32,18 +32,18 @@ import {
 } from "recharts";
 
 const getExpenseCategories = (t) => [
-  { value: "fuel", label: t('dailyCalculation.fuel'), icon: "⛽" },
-  { value: "driver_salary", label: t('dailyCalculation.driverSalary'), icon: "👨‍✈️" },
-  { value: "ice", label: t('dailyCalculation.ice'), icon: "🧊" },
-  { value: "repair_maintenance", label: t('dailyCalculation.repairMaintenance'), icon: "🔧" },
-  { value: "equipment", label: t('dailyCalculation.equipment'), icon: "🎣" },
-  { value: "other", label: t('dailyCalculation.other'), icon: "📦" },
+  { value: "fuel", label: t('dailyCalculation.fuel'), cleanName: t('monthlyReports.fuel', 'Fuel'), icon: "⛽" },
+  { value: "driver_salary", label: t('dailyCalculation.driverSalary'), cleanName: t('monthlyReports.salary', 'Salary'), icon: "👨‍✈️" },
+  { value: "ice", label: t('dailyCalculation.ice'), cleanName: t('monthlyReports.ice', 'Ice'), icon: "🧊" },
+  { value: "repair_maintenance", label: t('dailyCalculation.repairMaintenance'), cleanName: t('monthlyReports.repairs', 'Repairs'), icon: "🔧" },
+  { value: "equipment", label: t('dailyCalculation.equipment'), cleanName: t('monthlyReports.equipment', 'Equipment'), icon: "🎣" },
+  { value: "other", label: t('dailyCalculation.other'), cleanName: t('monthlyReports.other', 'Other'), icon: "📦" },
 ];
 
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
 
 const DailyCalculation = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const EXPENSE_CATEGORIES = getExpenseCategories(t);
   const navigate = useNavigate();
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -75,16 +75,16 @@ const DailyCalculation = () => {
   };
 
   const handleDeleteEntry = async (entryId) => {
-    if (!window.confirm("Are you sure you want to delete this entry?")) {
+    if (!window.confirm(t('dailyCalculation.confirmDelete', "Are you sure you want to delete this entry?"))) {
       return;
     }
 
     try {
       await api.delete(`/finance/daily/${entryId}`);
       await fetchPastEntries();
-      alert("✅ Entry deleted successfully");
+      alert(t('dailyCalculation.entryDeleted', "✅ Entry deleted successfully"));
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete entry");
+      alert(err.response?.data?.message || t('dailyCalculation.failedToDelete', "Failed to delete entry"));
     }
   };
 
@@ -151,7 +151,7 @@ const DailyCalculation = () => {
     const validExpenses = expenses.filter((e) => e.amount);
 
     if (validFish.length === 0) {
-      alert("Please add at least one fish entry");
+      alert(t('dailyCalculation.addAtLeastOneFish', "Please add at least one fish entry"));
       return;
     }
 
@@ -191,7 +191,7 @@ const DailyCalculation = () => {
       setTimeout(() => setSaved(false), 3000);
       setTimeout(() => setDailySaveSuccess(false), 3000);
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to save entry");
+      alert(err.response?.data?.message || t('dailyCalculation.failedToSave', "Failed to save entry"));
     } finally {
       setSaving(false);
     }
@@ -207,7 +207,7 @@ const DailyCalculation = () => {
     }));
 
   const expenseChartData = EXPENSE_CATEGORIES.map((cat) => ({
-    name: cat.label.replace(/^[^\w]+ /, ""),
+    name: cat.cleanName || cat.label,
     value: expenses
       .filter((e) => e.category === cat.value)
       .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0),
@@ -223,9 +223,9 @@ const DailyCalculation = () => {
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-6 max-w-7xl mx-auto">
             <DashboardPageHeader
-              eyebrow="Finance / Daily entry"
-              title="Daily Calculation"
-              description="Record today's catch, income, and operating expenses."
+              eyebrow={t('dailyCalculation.eyebrow')}
+              title={t('dailyCalculation.title')}
+              description={t('dailyCalculation.description')}
               icon={FaFish}
               theme="teal"
               action={
@@ -234,7 +234,7 @@ const DailyCalculation = () => {
                   className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
                 >
                   <FaArrowLeft />
-                  Finance
+                  {t('dailyCalculation.finance')}
                 </button>
               }
             />
@@ -244,32 +244,32 @@ const DailyCalculation = () => {
               <div className="bg-white rounded-xl shadow p-6 mb-6">
                 <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <FaHistory className="text-blue-500" />
-                  Recent Daily Entries (Last 7 Days)
+                  {t('dailyCalculation.recentEntries')}
                 </h2>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-4 py-2 text-left font-semibold text-gray-700">
-                          Date
+                          {t('dailyCalculation.date')}
                         </th>
                         <th className="px-4 py-2 text-left font-semibold text-gray-700">
-                          Fish
+                          {t('dailyCalculation.fish')}
                         </th>
                         <th className="px-4 py-2 text-right font-semibold text-gray-700">
-                          Qty
+                          {t('dailyCalculation.qty')}
                         </th>
                         <th className="px-4 py-2 text-right font-semibold text-green-700">
-                          Income
+                          {t('dailyCalculation.income')}
                         </th>
                         <th className="px-4 py-2 text-right font-semibold text-red-700">
-                          Expenses
+                          {t('dailyCalculation.expenses')}
                         </th>
                         <th className="px-4 py-2 text-right font-semibold text-blue-700">
-                          Profit
+                          {t('dailyCalculation.profit')}
                         </th>
                         <th className="px-4 py-2 text-center font-semibold text-gray-700">
-                          Action
+                          {t('dailyCalculation.action')}
                         </th>
                       </tr>
                     </thead>
@@ -281,13 +281,13 @@ const DailyCalculation = () => {
                         >
                           <td className="px-4 py-3">
                             <div className="font-medium">
-                              {new Date(entry.date).toLocaleDateString("en-US", {
+                              {new Date(entry.date).toLocaleDateString(i18n.language === 'si' ? 'si-LK' : 'en-US', {
                                 day: "2-digit",
                                 month: "short",
                               })}
                             </div>
                             <div className="text-xs text-gray-500">
-                              {new Date(entry.date).toLocaleDateString("en-US", {
+                              {new Date(entry.date).toLocaleDateString(i18n.language === 'si' ? 'si-LK' : 'en-US', {
                                 weekday: "short",
                               })}
                             </div>
@@ -305,7 +305,7 @@ const DailyCalculation = () => {
                               ))}
                               {entry.fishEntries.length > 2 && (
                                 <span className="text-xs text-gray-500">
-                                  +{entry.fishEntries.length - 2} more
+                                  {t('dailyCalculation.more', { count: entry.fishEntries.length - 2 })}
                                 </span>
                               )}
                             </div>
@@ -332,7 +332,7 @@ const DailyCalculation = () => {
                             <button
                               onClick={() => handleDeleteEntry(entry._id)}
                               className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
-                              title="Delete entry"
+                              title={t('dailyCalculation.deleteEntry')}
                             >
                               <FaTrash size={14} />
                             </button>
@@ -348,7 +348,7 @@ const DailyCalculation = () => {
             {/* Date Picker */}
             <div className="bg-white rounded-xl shadow p-4 mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                📅 Select Date
+                {t('dailyCalculation.selectDate')}
               </label>
               <input
                 type="date"
