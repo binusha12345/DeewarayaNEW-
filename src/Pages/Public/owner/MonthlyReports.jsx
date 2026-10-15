@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -39,7 +38,8 @@ import {
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
 
 const MonthlyReports = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.resolvedLanguage === "si" ? "si-LK" : "en-US";
   const navigate = useNavigate();
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
@@ -187,7 +187,7 @@ const MonthlyReports = () => {
       setTimeout(() => setPdfSent(false), 5000);
       setTimeout(() => setDeliverySuccess(null), 5000);
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to send PDF");
+      alert(err.response?.data?.message || t("monthlyReports.errors.sendPdfFailed"));
     } finally {
       setSendingPDF(false);
     }
@@ -211,12 +211,12 @@ const MonthlyReports = () => {
     setWhatsappError("");
 
     if (!whatsappNumber.trim()) {
-      setWhatsappError("Please enter a WhatsApp number");
+      setWhatsappError(t("monthlyReports.whatsappModal.errors.requiredNumber"));
       return;
     }
 
     if (!validatePhoneNumber(whatsappNumber)) {
-      setWhatsappError("Invalid format. Use international format: +94771234567");
+      setWhatsappError(t("monthlyReports.whatsappModal.errors.invalidNumber"));
       return;
     }
 
@@ -234,7 +234,7 @@ const MonthlyReports = () => {
       setTimeout(() => setDeliverySuccess(null), 5000);
     } catch (err) {
       setWhatsappError(
-        err.response?.data?.message || "Failed to send WhatsApp message"
+        err.response?.data?.message || t("monthlyReports.whatsappModal.errors.sendFailed")
       );
     } finally {
       setSendingWhatsApp(false);
@@ -248,17 +248,17 @@ const MonthlyReports = () => {
   const selectedMonthName = new Date(
     selectedYear,
     selectedMonth - 1
-  ).toLocaleString("default", { month: "long" });
+  ).toLocaleString(dateLocale, { month: "long" });
 
   const expenseChartData = summary
     ? Object.entries(summary.expenseBreakdown).map(([key, value]) => {
         const labels = {
-          fuel: "Fuel",
-          driver_salary: "Salary",
-          ice: "Ice",
-          repair_maintenance: "Repairs",
-          equipment: "Equipment",
-          other: "Other",
+          fuel: t("monthlyReports.expenseCategories.fuel"),
+          driver_salary: t("monthlyReports.expenseCategories.salary"),
+          ice: t("monthlyReports.expenseCategories.ice"),
+          repair_maintenance: t("monthlyReports.expenseCategories.repairs"),
+          equipment: t("monthlyReports.expenseCategories.equipment"),
+          other: t("monthlyReports.expenseCategories.other"),
         };
         return { name: labels[key] || key, value };
       })
@@ -292,9 +292,9 @@ const MonthlyReports = () => {
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-6 max-w-7xl mx-auto">
             <DashboardPageHeader
-              eyebrow="Finance / Insights"
-              title="Monthly Reports"
-              description="Analyze your monthly catch, earnings, and business performance."
+              eyebrow={t("monthlyReports.eyebrow")}
+              title={t("monthlyReports.title")}
+              description={t("monthlyReports.description")}
               icon={FaChartLine}
               theme="indigo"
               action={
@@ -303,7 +303,7 @@ const MonthlyReports = () => {
                   className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
                 >
                   <FaArrowLeft />
-                  Finance
+                  {t("monthlyReports.finance")}
                 </button>
               }
             />
@@ -317,7 +317,7 @@ const MonthlyReports = () => {
                 >
                   {Array.from({ length: 12 }, (_, i) => (
                     <option key={i + 1} value={i + 1}>
-                      {new Date(2000, i).toLocaleString("default", {
+                      {new Date(2000, i).toLocaleString(dateLocale, {
                         month: "long",
                       })}
                     </option>
@@ -340,17 +340,17 @@ const MonthlyReports = () => {
                   disabled={loading}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
                              disabled:opacity-50 flex items-center gap-2 transition-all"
-                  title="Refresh data"
+                  title={t("monthlyReports.refreshData")}
                 >
                   <FaSyncAlt className={loading ? "animate-spin" : ""} />
-                  {loading ? "Refreshing..." : "Refresh"}
+                  {loading ? t("monthlyReports.refreshing") : t("monthlyReports.refresh")}
                 </button>
             </div>
 
             {/* Last Updated Info */}
             <div className="text-right text-xs text-gray-500 mb-4">
-              🔄 Last updated: {lastUpdated.toLocaleTimeString()}
-              <span className="ml-2 text-green-600">● Auto-refresh ON</span>
+              🔄 {t("monthlyReports.lastUpdated")} {lastUpdated.toLocaleTimeString(dateLocale)}
+              <span className="ml-2 text-green-600">● {t("monthlyReports.autoRefreshOn")}</span>
             </div>
 
             {loading && !reportData ? (
@@ -361,16 +361,16 @@ const MonthlyReports = () => {
               <div className="bg-white rounded-xl shadow p-12 text-center">
                 <p className="text-6xl mb-4">📭</p>
                 <h3 className="text-xl font-bold text-gray-600">
-                  No data for this month
+                  {t("monthlyReports.noDataTitle")}
                 </h3>
                 <p className="text-gray-400 mt-2">
-                  Start recording daily entries to see monthly reports
+                  {t("monthlyReports.noDataDescription")}
                 </p>
                 <button
                   onClick={() => navigate("/owner/finance/daily")}
                   className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                  ➕ Add Daily Entry
+                  ➕ {t("monthlyReports.addDailyEntry")}
                 </button>
               </div>
             ) : (
@@ -387,7 +387,7 @@ const MonthlyReports = () => {
                           : "bg-white text-gray-600 hover:bg-gray-100"
                       }`}
                     >
-                      {tab === "daily" ? "📅 Daily Entries" : tab}
+                      {tab === "daily" ? `📅 ${t("monthlyReports.tabs.daily")}` : t(`monthlyReports.tabs.${tab}`)}
                     </button>
                   ))}
                 </div>
@@ -398,19 +398,19 @@ const MonthlyReports = () => {
                     {/* Summary Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                       <div className="bg-white rounded-xl shadow p-5">
-                        <p className="text-sm text-gray-500">Total Income</p>
+                        <p className="text-sm text-gray-500">{t("monthlyReports.summary.totalIncome")}</p>
                         <p className="text-2xl font-bold text-green-600">
                           Rs. {summary.totalIncome.toLocaleString()}
                         </p>
                       </div>
                       <div className="bg-white rounded-xl shadow p-5">
-                        <p className="text-sm text-gray-500">Total Expenses</p>
+                        <p className="text-sm text-gray-500">{t("monthlyReports.summary.totalExpenses")}</p>
                         <p className="text-2xl font-bold text-red-600">
                           Rs. {summary.totalExpenses.toLocaleString()}
                         </p>
                       </div>
                       <div className="bg-white rounded-xl shadow p-5">
-                        <p className="text-sm text-gray-500">Net Profit</p>
+                        <p className="text-sm text-gray-500">{t("monthlyReports.summary.netProfit")}</p>
                         <p
                           className={`text-2xl font-bold ${
                             summary.totalNetProfit >= 0
@@ -422,7 +422,7 @@ const MonthlyReports = () => {
                         </p>
                       </div>
                       <div className="bg-white rounded-xl shadow p-5">
-                        <p className="text-sm text-gray-500">Working Days</p>
+                        <p className="text-sm text-gray-500">{t("monthlyReports.summary.workingDays")}</p>
                         <p className="text-2xl font-bold text-blue-600">
                           {summary.workingDays}
                         </p>
@@ -432,19 +432,19 @@ const MonthlyReports = () => {
                     {/* Average Stats */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-5 text-white">
-                        <p className="text-sm opacity-80">Avg Daily Income</p>
+                        <p className="text-sm opacity-80">{t("monthlyReports.summary.avgDailyIncome")}</p>
                         <p className="text-xl font-bold">
                           Rs. {summary.avgDailyIncome.toLocaleString()}
                         </p>
                       </div>
                       <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-5 text-white">
-                        <p className="text-sm opacity-80">Avg Daily Expense</p>
+                        <p className="text-sm opacity-80">{t("monthlyReports.summary.avgDailyExpense")}</p>
                         <p className="text-xl font-bold">
                           Rs. {summary.avgDailyExpense.toLocaleString()}
                         </p>
                       </div>
                       <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-5 text-white">
-                        <p className="text-sm opacity-80">Profit Margin</p>
+                        <p className="text-sm opacity-80">{t("monthlyReports.summary.profitMargin")}</p>
                         <p className="text-xl font-bold">{summary.profitMargin}%</p>
                       </div>
                     </div>
@@ -452,14 +452,14 @@ const MonthlyReports = () => {
                     {/* Daily Trend Chart */}
                     <div className="bg-white rounded-xl shadow p-6 mb-6">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">
-                        📈 Daily Trend
+                        📈 {t("monthlyReports.charts.dailyTrend")}
                       </h3>
                       <ResponsiveContainer width="100%" height={350}>
                         <BarChart data={dailyChartData}>
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis
                             dataKey="date"
-                            label={{ value: "Day", position: "bottom" }}
+                            label={{ value: t("monthlyReports.charts.day"), position: "bottom" }}
                           />
                           <YAxis />
                           <Tooltip
@@ -469,13 +469,13 @@ const MonthlyReports = () => {
                           <Bar
                             dataKey="income"
                             fill="#10b981"
-                            name="Income"
+                            name={t("monthlyReports.charts.income")}
                             radius={[4, 4, 0, 0]}
                           />
                           <Bar
                             dataKey="expenses"
                             fill="#ef4444"
-                            name="Expenses"
+                            name={t("monthlyReports.charts.expenses")}
                             radius={[4, 4, 0, 0]}
                           />
                         </BarChart>
@@ -486,7 +486,7 @@ const MonthlyReports = () => {
                       {fishChartData.length > 0 && (
                         <div className="bg-white rounded-xl shadow p-6">
                           <h3 className="text-lg font-bold text-gray-800 mb-4">
-                            🐟 Fish Income Breakdown
+                            🐟 {t("monthlyReports.charts.fishIncomeBreakdown")}
                           </h3>
                           <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={fishChartData} layout="vertical">
@@ -511,7 +511,7 @@ const MonthlyReports = () => {
                       {expenseChartData.length > 0 && (
                         <div className="bg-white rounded-xl shadow p-6">
                           <h3 className="text-lg font-bold text-gray-800 mb-4">
-                            🥧 Expense Distribution
+                            🥧 {t("monthlyReports.charts.expenseDistribution")}
                           </h3>
                           <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
@@ -547,11 +547,10 @@ const MonthlyReports = () => {
                     {/* Send PDF & WhatsApp Buttons */}
                     <div className="bg-white rounded-xl shadow p-6 text-center">
                       <h3 className="text-lg font-bold text-gray-800 mb-2">
-                        📨 Get Monthly Report Instantly
+                        📨 {t("monthlyReports.delivery.getReportTitle")}
                       </h3>
                       <p className="text-gray-500 text-sm mb-4">
-                        Receive a detailed PDF report with income, expenses, profit
-                        summary and recommendations directly to your inbox or phone.
+                        {t("monthlyReports.delivery.getReportDescription")}
                       </p>
 
                       <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto">
@@ -568,13 +567,13 @@ const MonthlyReports = () => {
                         >
                           {sendingPDF ? (
                             <>
-                              <FaSpinner className="animate-spin" /> Sending Email...
+                              <FaSpinner className="animate-spin" /> {t("monthlyReports.delivery.sendingEmail")}
                             </>
                           ) : pdfSent ? (
-                            "✅ Report Sent to Email!"
+                            `✅ ${t("monthlyReports.delivery.reportSentEmail")}`
                           ) : (
                             <>
-                              <FaEnvelope /> Send PDF Report
+                              <FaEnvelope /> {t("monthlyReports.delivery.sendPdf")}
                             </>
                           )}
                         </button>
@@ -591,10 +590,10 @@ const MonthlyReports = () => {
                                      }`}
                         >
                           {whatsappSent ? (
-                            "✅ Report Sent to WhatsApp!"
+                            `✅ ${t("monthlyReports.delivery.reportSentWhatsApp")}`
                           ) : (
                             <>
-                              <FaWhatsapp className="text-xl" /> Send PDF to WhatsApp
+                              <FaWhatsapp className="text-xl" /> {t("monthlyReports.delivery.sendPdfWhatsApp")}
                             </>
                           )}
                         </button>
@@ -609,10 +608,10 @@ const MonthlyReports = () => {
                     <div className="p-6 border-b border-gray-200">
                       <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                         <FaCalendarAlt className="text-blue-500" />
-                        Daily Sales for {selectedMonthName} {selectedYear}
+                        {t("monthlyReports.daily.salesFor", { month: selectedMonthName, year: selectedYear })}
                       </h3>
                       <p className="text-sm text-gray-500 mt-1">
-                        {entries.length} working days recorded this month
+                        {t("monthlyReports.daily.workingDaysRecorded", { count: entries.length })}
                       </p>
                     </div>
 
@@ -621,22 +620,22 @@ const MonthlyReports = () => {
                         <thead className="bg-gray-50">
                           <tr>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
-                              Date
+                              {t("monthlyReports.daily.date")}
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
-                              Fish Caught
+                              {t("monthlyReports.daily.fishCaught")}
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">
-                              Qty
+                              {t("monthlyReports.daily.quantity")}
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-semibold text-green-700 uppercase">
-                              Income
+                              {t("monthlyReports.daily.income")}
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-semibold text-red-700 uppercase">
-                              Expenses
+                              {t("monthlyReports.daily.expenses")}
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-semibold text-blue-700 uppercase">
-                              Profit
+                              {t("monthlyReports.comparison.profit")}
                             </th>
                           </tr>
                         </thead>
@@ -649,13 +648,13 @@ const MonthlyReports = () => {
                               <td className="px-4 py-4">
                                 <div className="font-medium text-gray-800">
                                   {new Date(entry.date).toLocaleDateString(
-                                    "en-US",
+                                    dateLocale,
                                     { day: "2-digit", month: "short" }
                                   )}
                                 </div>
                                 <div className="text-xs text-gray-500">
                                   {new Date(entry.date).toLocaleDateString(
-                                    "en-US",
+                                    dateLocale,
                                     { weekday: "short" }
                                   )}
                                 </div>
@@ -698,7 +697,7 @@ const MonthlyReports = () => {
                         <tfoot className="bg-gray-100 font-bold">
                           <tr>
                             <td colSpan="2" className="px-4 py-3 text-gray-800">
-                              TOTAL ({entries.length} days)
+                              {t("monthlyReports.daily.totalDays", { count: entries.length })}
                             </td>
                             <td className="px-4 py-3 text-right text-gray-800">
                               {summary.totalFishQuantity} kg
@@ -730,7 +729,7 @@ const MonthlyReports = () => {
                   <>
                     <div className="bg-white rounded-xl shadow p-6 mb-6">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">
-                        📊 6-Month Income vs Expenses Comparison
+                        📊 {t("monthlyReports.charts.sixMonthComparison")}
                       </h3>
                       <ResponsiveContainer width="100%" height={400}>
                         <BarChart data={comparisonData}>
@@ -744,13 +743,13 @@ const MonthlyReports = () => {
                           <Bar
                             dataKey="totalIncome"
                             fill="#10b981"
-                            name="Income"
+                            name={t("monthlyReports.charts.income")}
                             radius={[4, 4, 0, 0]}
                           />
                           <Bar
                             dataKey="totalExpenses"
                             fill="#ef4444"
-                            name="Expenses"
+                            name={t("monthlyReports.charts.expenses")}
                             radius={[4, 4, 0, 0]}
                           />
                         </BarChart>
@@ -759,7 +758,7 @@ const MonthlyReports = () => {
 
                     <div className="bg-white rounded-xl shadow p-6 mb-6">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">
-                        📈 Net Profit Trend
+                        📈 {t("monthlyReports.charts.netProfitTrend")}
                       </h3>
                       <ResponsiveContainer width="100%" height={350}>
                         <LineChart data={comparisonData}>
@@ -775,7 +774,7 @@ const MonthlyReports = () => {
                             dataKey="netProfit"
                             stroke="#8b5cf6"
                             strokeWidth={3}
-                            name="Net Profit"
+                            name={t("monthlyReports.summary.netProfit")}
                             dot={{ r: 6 }}
                           />
                           <Line
@@ -783,7 +782,7 @@ const MonthlyReports = () => {
                             dataKey="totalIncome"
                             stroke="#10b981"
                             strokeWidth={2}
-                            name="Income"
+                            name={t("monthlyReports.charts.income")}
                             strokeDasharray="5 5"
                           />
                         </LineChart>
@@ -795,19 +794,19 @@ const MonthlyReports = () => {
                         <thead className="bg-gray-50">
                           <tr>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                              Month
+                              {t("monthlyReports.comparison.month")}
                             </th>
                             <th className="px-6 py-3 text-right text-sm font-semibold text-green-700">
-                              Income
+                              {t("monthlyReports.daily.income")}
                             </th>
                             <th className="px-6 py-3 text-right text-sm font-semibold text-red-700">
-                              Expenses
+                              {t("monthlyReports.daily.expenses")}
                             </th>
                             <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700">
-                              Profit
+                              {t("monthlyReports.comparison.profit")}
                             </th>
                             <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
-                              Days
+                              {t("monthlyReports.comparison.days")}
                             </th>
                           </tr>
                         </thead>
@@ -849,7 +848,7 @@ const MonthlyReports = () => {
                     <div className="bg-white rounded-xl shadow p-6">
                       <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                         <FaChartLine className="text-blue-500" />
-                        Recommendations & Insights
+                        {t("monthlyReports.analysis.recommendationsInsights")}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {recommendations.map((rec, index) => (
@@ -887,12 +886,12 @@ const MonthlyReports = () => {
 
                     <div className="bg-white rounded-xl shadow p-6">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">
-                        📋 Key Performance Metrics
+                        📋 {t("monthlyReports.analysis.keyMetrics")}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 bg-gray-50 rounded-lg">
                           <p className="text-sm text-gray-500">
-                            Revenue per Working Day
+                            {t("monthlyReports.analysis.revenuePerWorkingDay")}
                           </p>
                           <p className="text-xl font-bold text-gray-800">
                             Rs. {summary.avgDailyIncome.toLocaleString()}
@@ -900,7 +899,7 @@ const MonthlyReports = () => {
                         </div>
                         <div className="p-4 bg-gray-50 rounded-lg">
                           <p className="text-sm text-gray-500">
-                            Cost per Working Day
+                            {t("monthlyReports.analysis.costPerWorkingDay")}
                           </p>
                           <p className="text-xl font-bold text-gray-800">
                             Rs. {summary.avgDailyExpense.toLocaleString()}
@@ -908,14 +907,14 @@ const MonthlyReports = () => {
                         </div>
                         <div className="p-4 bg-gray-50 rounded-lg">
                           <p className="text-sm text-gray-500">
-                            Profit per Working Day
+                            {t("monthlyReports.analysis.profitPerWorkingDay")}
                           </p>
                           <p className="text-xl font-bold text-gray-800">
                             Rs. {summary.avgDailyProfit.toLocaleString()}
                           </p>
                         </div>
                         <div className="p-4 bg-gray-50 rounded-lg">
-                          <p className="text-sm text-gray-500">Total Fish Catch</p>
+                          <p className="text-sm text-gray-500">{t("monthlyReports.analysis.totalFishCatch")}</p>
                           <p className="text-xl font-bold text-gray-800">
                             {summary.totalFishQuantity.toLocaleString()} kg
                           </p>
@@ -937,47 +936,45 @@ const MonthlyReports = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-gray-800">
-                      Automated Monthly Dispatch
+                      {t("monthlyReports.dispatch.title")}
                     </h3>
                     <p className="text-xs text-gray-500">
-                      Final month-end net profit report is emailed to the owner's
-                      registered address automatically
+                      {t("monthlyReports.dispatch.description")}
                     </p>
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1.5 self-start sm:self-auto bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-semibold">
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  Scheduler Active
+                  {t("monthlyReports.dispatch.schedulerActive")}
                 </span>
               </div>
 
               {/* Card Body */}
               <div className="p-6">
                 <p className="text-sm text-gray-600 mb-5">
-                  The system compiles the full-month income, expenses and{" "}
-                  <span className="font-semibold text-gray-800">net profit</span>{" "}
-                  and sends it as a PDF to the owner's registered email on the{" "}
+                  {t("monthlyReports.dispatch.bodyBeforeProfit")} {" "}
+                  <span className="font-semibold text-gray-800">{t("monthlyReports.dispatch.netProfit")}</span>{" "}
+                  {t("monthlyReports.dispatch.bodyAfterProfit")} {" "}
                   <span className="font-semibold text-blue-600">
-                    30th day of every month
-                  </span>
-                  .
+                    {t("monthlyReports.dispatch.thirtiethEveryMonth")}
+                  </span>.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* Current Date */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
                     <p className="text-xs text-gray-500 uppercase tracking-wider flex items-center justify-center gap-1.5">
-                      <FaCalendarAlt className="text-blue-500" /> Current Date
+                      <FaCalendarAlt className="text-blue-500" /> {t("monthlyReports.dispatch.currentDate")}
                     </p>
                     <p className="text-xl font-bold text-gray-800 mt-2">
-                      {currentDate.toLocaleDateString("en-US", {
+                      {currentDate.toLocaleDateString(dateLocale, {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
                       })}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {currentDate.toLocaleDateString("en-US", {
+                      {currentDate.toLocaleDateString(dateLocale, {
                         weekday: "long",
                       })}
                     </p>
@@ -992,26 +989,26 @@ const MonthlyReports = () => {
                     }`}
                   >
                     <p className="text-xs text-gray-500 uppercase tracking-wider flex items-center justify-center gap-1.5">
-                      <FaClock className="text-blue-500" /> Next Dispatch In
+                      <FaClock className="text-blue-500" /> {t("monthlyReports.dispatch.nextDispatchIn")}
                     </p>
                     <p
                       className={`text-3xl font-bold mt-2 ${
                         daysUntil30th === 0 ? "text-green-600" : "text-blue-600"
                       }`}
                     >
-                      {daysUntil30th === 0 ? "Today!" : daysUntil30th}
+                      {daysUntil30th === 0 ? t("monthlyReports.dispatch.today") : daysUntil30th}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
                       {daysUntil30th === 0
-                        ? "Report is being dispatched"
-                        : `day${daysUntil30th > 1 ? "s" : ""} until the 30th`}
+                        ? t("monthlyReports.dispatch.reportBeingDispatched")
+                        : t("monthlyReports.dispatch.daysUntilThirtieth", { count: daysUntil30th })}
                     </p>
                   </div>
 
                   {/* Net Profit */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
                     <p className="text-xs text-gray-500 uppercase tracking-wider">
-                      {selectedMonthName.slice(0, 3)} {selectedYear} Net Profit
+                      {t("monthlyReports.dispatch.monthNetProfit", { month: selectedMonthName.slice(0, 3), year: selectedYear })}
                     </p>
                     <p
                       className={`text-xl font-bold mt-2 ${
@@ -1023,7 +1020,7 @@ const MonthlyReports = () => {
                       Rs. {(summary?.totalNetProfit || 0).toLocaleString()}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {summary?.workingDays || 0} working days recorded
+                      {t("monthlyReports.dispatch.workingDaysRecorded", { count: summary?.workingDays || 0 })}
                     </p>
                   </div>
                 </div>
@@ -1031,7 +1028,7 @@ const MonthlyReports = () => {
                 {/* Progress Bar toward 30th */}
                 <div className="mt-5">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Month progress</span>
+                    <span>{t("monthlyReports.dispatch.monthProgress")}</span>
                     <span>
                       {Math.min(100, Math.round(((30 - daysUntil30th) / 30) * 100))}
                       %
@@ -1058,12 +1055,12 @@ const MonthlyReports = () => {
       {deliverySuccess && (
         <SuccessNotice
           type={deliverySuccess}
-          label="Delivery complete"
-          title="PDF report sent successfully"
+          label={t("monthlyReports.delivery.complete")}
+          title={t("monthlyReports.delivery.sentSuccessfully")}
           message={
             deliverySuccess === "whatsapp"
-              ? "Your monthly finance report has been delivered to the WhatsApp number provided."
-              : "Your monthly finance report has been delivered to your email inbox."
+              ? t("monthlyReports.delivery.whatsappDelivered")
+              : t("monthlyReports.delivery.emailDelivered")
           }
           onClose={() => setDeliverySuccess(null)}
         />
@@ -1085,7 +1082,7 @@ const MonthlyReports = () => {
                 onClick={() => setShowWhatsAppModal(false)}
                 disabled={sendingWhatsApp}
                 className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-white/20 transition-colors disabled:opacity-50"
-                title="Close"
+                title={t("monthlyReports.whatsappModal.close")}
               >
                 <FaTimes />
               </button>
@@ -1094,9 +1091,9 @@ const MonthlyReports = () => {
                   <FaWhatsapp className="text-3xl" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Send via WhatsApp</h3>
+                  <h3 className="text-xl font-bold">{t("monthlyReports.whatsappModal.title")}</h3>
                   <p className="text-sm text-emerald-50">
-                    Enter the recipient's WhatsApp number
+                    {t("monthlyReports.whatsappModal.recipientNumber")}
                   </p>
                 </div>
               </div>
@@ -1105,7 +1102,7 @@ const MonthlyReports = () => {
             {/* Modal Body */}
             <div className="p-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                WhatsApp Number
+                {t("monthlyReports.whatsappModal.number")}
               </label>
               <input
                 type="tel"
@@ -1115,7 +1112,7 @@ const MonthlyReports = () => {
                   setWhatsappError("");
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleSendWhatsApp()}
-                placeholder="+94771234567"
+                placeholder={t("monthlyReports.whatsappModal.placeholder")}
                 className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 
                            transition-all ${
                              whatsappError
@@ -1134,25 +1131,24 @@ const MonthlyReports = () => {
 
               <div className="mt-3 bg-blue-50 border-l-4 border-blue-400 p-3 rounded">
                 <p className="text-xs text-blue-700">
-                  <span className="font-semibold">📌 Format:</span> Include the
-                  country code with a '+' sign
+                  <span className="font-semibold">📌 {t("monthlyReports.whatsappModal.format")}</span> {t("monthlyReports.whatsappModal.formatHelp")}
                 </p>
                 <p className="text-xs text-blue-600 mt-1">
-                  Example: +94771234567 (Sri Lanka), +14155551234 (USA)
+                  {t("monthlyReports.whatsappModal.example")}
                 </p>
               </div>
 
               {/* Report Preview */}
               <div className="mt-4 bg-gray-50 rounded-lg p-3 border border-gray-200">
                 <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
-                  Report Details
+                  {t("monthlyReports.whatsappModal.reportDetails")}
                 </p>
                 <p className="text-sm text-gray-700">
-                  📊 {selectedMonthName} {selectedYear} Monthly Report
+                  📊 {t("monthlyReports.whatsappModal.monthlyReport", { month: selectedMonthName, year: selectedYear })}
                 </p>
                 {summary && (
                   <p className="text-sm text-gray-700 mt-1">
-                    💰 Net Profit:{" "}
+                    💰 {t("monthlyReports.whatsappModal.netProfit")} {" "}
                     <span
                       className={`font-bold ${
                         summary.totalNetProfit >= 0
@@ -1175,7 +1171,7 @@ const MonthlyReports = () => {
                 className="px-5 py-2 text-gray-700 font-medium rounded-lg hover:bg-gray-200 
                            transition-colors disabled:opacity-50"
               >
-                Cancel
+                {t("monthlyReports.whatsappModal.cancel")}
               </button>
               <button
                 onClick={handleSendWhatsApp}
@@ -1186,11 +1182,11 @@ const MonthlyReports = () => {
               >
                 {sendingWhatsApp ? (
                   <>
-                    <FaSpinner className="animate-spin" /> Sending...
+                    <FaSpinner className="animate-spin" /> {t("monthlyReports.whatsappModal.sending")}
                   </>
                 ) : (
                   <>
-                    <FaWhatsapp /> Send Now
+                    <FaWhatsapp /> {t("monthlyReports.whatsappModal.sendNow")}
                   </>
                 )}
               </button>
