@@ -1,4 +1,3 @@
-// client/src/Pages/Public/owner/DailyCalculation.jsx
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -398,7 +397,7 @@ const DailyCalculation = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <input
                         type="text"
-                        placeholder="Fish Name"
+                        placeholder={t("dailyCalculation.fishName")}
                         value={fish.fishName}
                         onChange={(e) =>
                           updateFishEntry(index, "fishName", e.target.value)
@@ -409,7 +408,7 @@ const DailyCalculation = () => {
                       <div className="flex gap-2">
                         <input
                           type="number"
-                          placeholder="Qty"
+                          placeholder={t("dailyCalculation.qty")}
                           value={fish.quantity}
                           onChange={(e) =>
                             updateFishEntry(index, "quantity", e.target.value)
@@ -430,7 +429,7 @@ const DailyCalculation = () => {
                       </div>
                       <input
                         type="number"
-                        placeholder="Price per unit (Rs.)"
+                        placeholder={t("dailyCalculation.pricePerUnit")}
                         value={fish.pricePerUnit}
                         onChange={(e) =>
                           updateFishEntry(index, "pricePerUnit", e.target.value)
@@ -454,15 +453,13 @@ const DailyCalculation = () => {
 
                 <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Total Fish Quantity:</span>
+                    <span className="text-gray-600">{t("dailyCalculation.totalFishQuantity")}</span>
                     <span className="font-bold">
                       {totalFishQuantity.toLocaleString()} kg
                     </span>
                   </div>
                   <div className="flex justify-between text-lg mt-1">
-                    <span className="font-semibold text-green-700">
-                      Total Income:
-                    </span>
+                    <span className="font-semibold text-green-700">{t("dailyCalculation.totalIncome")}</span>
                     <span className="font-bold text-green-700">
                       Rs. {totalIncome.toLocaleString()}
                     </span>
@@ -526,7 +523,7 @@ const DailyCalculation = () => {
                           <FaGasPump className="text-orange-500" />
                           <input
                             type="number"
-                            placeholder="Liters"
+                            placeholder={t("dailyCalculation.liters")}
                             value={exp.fuelLiters}
                             onChange={(e) =>
                               updateExpense(index, "fuelLiters", e.target.value)
@@ -542,7 +539,7 @@ const DailyCalculation = () => {
                       <div className="grid grid-cols-2 gap-3">
                         <input
                           type="text"
-                          placeholder="Description (optional)"
+                          placeholder={t("dailyCalculation.descriptionOptional")}
                           value={exp.description}
                           onChange={(e) =>
                             updateExpense(index, "description", e.target.value)
@@ -552,7 +549,7 @@ const DailyCalculation = () => {
                         />
                         <input
                           type="number"
-                          placeholder="Amount (Rs.)"
+                          placeholder={t("dailyCalculation.amountRs")}
                           value={exp.amount}
                           onChange={(e) =>
                             updateExpense(index, "amount", e.target.value)
@@ -567,9 +564,7 @@ const DailyCalculation = () => {
 
                 <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex justify-between text-lg">
-                    <span className="font-semibold text-red-700">
-                      Total Expenses:
-                    </span>
+                    <span className="font-semibold text-red-700">{t("dailyCalculation.totalExpenses")}</span>
                     <span className="font-bold text-red-700">
                       Rs. {totalExpenses.toLocaleString()}
                     </span>
@@ -586,14 +581,14 @@ const DailyCalculation = () => {
                   : "bg-gradient-to-r from-red-500 to-rose-600"
               }`}
             >
-              <h2 className="text-white text-lg mb-2">Daily Net Profit</h2>
+              <h2 className="text-white text-lg mb-2">{t("dailyCalculation.dailyNetProfit")}</h2>
               <p className="text-4xl font-bold text-white">
                 Rs. {netProfit.toLocaleString()}
               </p>
               <div className="flex justify-center gap-8 mt-3 text-white/80 text-sm">
-                <span>Income: Rs. {totalIncome.toLocaleString()}</span>
+                <span>{t("dailyCalculation.incomeLabel")} {totalIncome.toLocaleString()}</span>
                 <span>|</span>
-                <span>Expenses: Rs. {totalExpenses.toLocaleString()}</span>
+                <span>{t("dailyCalculation.expensesLabel")} {totalExpenses.toLocaleString()}</span>
               </div>
             </div>
 
@@ -611,10 +606,10 @@ const DailyCalculation = () => {
               >
                 <FaSave />
                 {loading
-                  ? "Saving..."
+                  ? t("dailyCalculation.saving")
                   : saved
-                  ? "✅ Saved!"
-                  : "Save Daily Entry"}
+                  ? t("dailyCalculation.saved")
+                  : t("dailyCalculation.saveDailyEntry")}
               </button>
             </div>
 
@@ -623,9 +618,7 @@ const DailyCalculation = () => {
               <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {incomeChartData.length > 0 && (
                   <div className="bg-white rounded-xl shadow p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">
-                      📊 Fish Income Breakdown
-                    </h3>
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">{t("dailyCalculation.fishIncomeBreakdown")}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={incomeChartData}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -646,9 +639,7 @@ const DailyCalculation = () => {
 
                 {expenseChartData.length > 0 && (
                   <div className="bg-white rounded-xl shadow p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">
-                      🥧 Expense Distribution
-                    </h3>
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">{t("dailyCalculation.expenseDistribution")}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
                         <Pie
@@ -681,16 +672,13 @@ const DailyCalculation = () => {
 
             {/* ===== RECOMMENDATIONS ===== */}
             <div className="mt-8 bg-white rounded-xl shadow p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
-                💡 Quick Recommendations
-              </h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-4">{t("dailyCalculation.quickRecommendations")}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {netProfit < 0 && (
                   <div className="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
-                    <p className="font-semibold text-red-700">⚠️ Loss Alert</p>
+                    <p className="font-semibold text-red-700">{t("dailyCalculation.lossAlert")}</p>
                     <p className="text-sm text-red-600">
-                      Today's expenses exceed income. Review your costs and
-                      consider adjusting fish prices.
+                      {t("dailyCalculation.lossAlertDesc")}
                     </p>
                   </div>
                 )}
@@ -703,11 +691,10 @@ const DailyCalculation = () => {
                   ) && (
                     <div className="p-4 bg-orange-50 rounded-lg border-l-4 border-orange-500">
                       <p className="font-semibold text-orange-700">
-                        ⛽ High Fuel Cost
+                        {t("dailyCalculation.highFuelCost")}
                       </p>
                       <p className="text-sm text-orange-600">
-                        Fuel is over 40% of expenses. Optimize routes and check
-                        engine efficiency.
+                        {t("dailyCalculation.highFuelCostDesc")}
                       </p>
                     </div>
                   )}
@@ -715,10 +702,10 @@ const DailyCalculation = () => {
                 {netProfit > 0 && (
                   <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
                     <p className="font-semibold text-green-700">
-                      ✅ Profitable Day
+                      {t("dailyCalculation.profitableDay")}
                     </p>
                     <p className="text-sm text-green-600">
-                      Great job! Consider saving Rs.{" "}
+                      {t("dailyCalculation.profitableDayDesc", { amount: Math.round(netProfit * 0.2).toLocaleString() })}{" "}
                       {Math.round(netProfit * 0.2).toLocaleString()} (20%) for
                       emergencies.
                     </p>
@@ -727,11 +714,10 @@ const DailyCalculation = () => {
 
                 <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
                   <p className="font-semibold text-blue-700">
-                    📈 Track Consistently
+                    {t("dailyCalculation.trackConsistently")}
                   </p>
                   <p className="text-sm text-blue-600">
-                    Record daily to get accurate monthly reports and identify
-                    profitable patterns.
+                    {t("dailyCalculation.trackConsistentlyDesc")}
                   </p>
                 </div>
               </div>
@@ -741,9 +727,9 @@ const DailyCalculation = () => {
         {dailySaveSuccess && (
           <SuccessNotice
             type="daily"
-            label="Save complete"
-            title="Daily entry saved successfully"
-            message="Your fish catch and expense details have been added to the finance records."
+            label={t("dailyCalculation.saveComplete")}
+            title={t("dailyCalculation.dailySavedTitle")}
+            message={t("dailyCalculation.dailySavedMessage")}
             onClose={() => setDailySaveSuccess(false)}
           />
         )}
