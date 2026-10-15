@@ -583,7 +583,6 @@
     "distanceFromBeach": "ඇතුළත ක්‍රියාත්මක වන විට කාලගුණය පරීක්ෂා කළ හැක.",
     "selectedBoat": "තේරූ බෝට්ටුව",
     "registration": "ලියාපදිංචිය:",
-    "status": "තත්ත්වය:",
     "currentGpsLocation": "වර්තමාන GPS ස්ථානය",
     "exactPlaceDetected": "ඔබේ උපාංගයෙන් හඳුනාගත් නිශ්චිත ස්ථානය",
     "place": "ස්ථානය:",
@@ -714,9 +713,29 @@
     "startRecording": "මාසික වාර්තා බැලීමට දෛනික ඇතුළත් කිරීම් වාර්තා කිරීම ආරම්භ කරන්න",
     "addDailyEntry": "➕ දෛනික ඇතුළත් කිරීමක් එකතු කරන්න",
     "overview": "දළ විශ්ලේෂණය",
-    "daily": "දෛනික",
-    "comparison": "සැසඳීම",
-    "analysis": "විශ්ලේෂණය",
+    "daily": {
+      "salesFor": "{{month}} {{year}} සඳහා දෛනික අලෙවිය",
+      "workingDaysRecorded": "මෙම මාසයේ වැඩ කළ දින {{count}}ක් වාර්තා කර ඇත",
+      "date": "දිනය",
+      "fishCaught": "අල්ලාගත් මාළු",
+      "quantity": "ප්‍රමාණය",
+      "income": "ආදායම",
+      "expenses": "වියදම්",
+      "totalDays": "මුළු දින ගණන ({{count}})"
+    },
+    "comparison": {
+      "month": "මාසය",
+      "profit": "ලාභය",
+      "days": "දින"
+    },
+    "analysis": {
+      "recommendationsInsights": "නිර්දේශ සහ විශ්ලේෂණ",
+      "keyMetrics": "ප්‍රධාන කාර්යසාධන මිනුම්",
+      "revenuePerWorkingDay": "වැඩ කළ දිනකට ආදායම",
+      "costPerWorkingDay": "වැඩ කළ දිනකට පිරිවැය",
+      "profitPerWorkingDay": "වැඩ කළ දිනකට ලාභය",
+      "totalFishCatch": "මුළු මාළු අස්වැන්න"
+    },
     "dailyEntries": "📅 දෛනික ඇතුළත් කිරීම්",
     "totalIncome": "මුළු ආදායම",
     "totalExpenses": "මුළු වියදම්",
@@ -793,7 +812,96 @@
     "pdfSentSuccess": "PDF වාර්තාව සාර්ථකව යවන ලදී",
     "whatsappDelivered": "ඔබේ මාසික මූල්‍ය වාර්තාව ලබා දුන් WhatsApp අංකයට සාර්ථකව යවා ඇත.",
     "emailDelivered": "ඔබේ මාසික මූල්‍ය වාර්තාව ඔබේ විද්‍යුත් තැපැල් ලිපිනයට සාර්ථකව යවා ඇත.",
-    "monthProgress": "මාසයේ ප්‍රගතිය"
+    "monthProgress": "මාසයේ ප්‍රගතිය",
+    "tabs": {
+      "overview": "සමස්ත දැක්ම",
+      "daily": "දෛනික",
+      "comparison": "සංසන්දනය",
+      "analysis": "විශ්ලේෂණය"
+    },
+    "summary": {
+      "totalIncome": "මුළු ආදායම",
+      "totalExpenses": "මුළු වියදම්",
+      "netProfit": "ශුද්ධ ලාභය",
+      "workingDays": "වැඩ කළ දින",
+      "avgDailyIncome": "සාමාන්‍ය දෛනික ආදායම",
+      "avgDailyExpense": "සාමාන්‍ය දෛනික වියදම",
+      "profitMargin": "ලාභ ප්‍රතිශතය"
+    },
+    "charts": {
+      "dailyTrend": "දෛනික ප්‍රවණතාව",
+      "day": "දිනය",
+      "income": "ආදායම",
+      "expenses": "වියදම්",
+      "fishIncomeBreakdown": "මාළු ආදායම් විග්‍රහය",
+      "expenseDistribution": "වියදම් බෙදාහැරීම",
+      "sixMonthComparison": "මාස 6ක ආදායම් සහ වියදම් සංසන්දනය",
+      "netProfitTrend": "ශුද්ධ ලාභ ප්‍රවණතාව"
+    },
+    "delivery": {
+      "getReportTitle": "මාසික වාර්තාව දැන් ලබාගන්න",
+      "getReportDescription": "ආදායම්, වියදම්, ලාභ සාරාංශය සහ නිර්දේශ ඇතුළත් PDF වාර්තාවක් ඔබගේ විද්‍යුත් තැපෑලට හෝ දුරකථනයට ලබාගන්න.",
+      "sendingEmail": "විද්‍යුත් තැපෑල යවමින්...",
+      "reportSentEmail": "වාර්තාව විද්‍යුත් තැපෑලට යවා ඇත!",
+      "sendPdf": "PDF වාර්තාව යවන්න",
+      "reportSentWhatsApp": "වාර්තාව WhatsApp වෙත යවා ඇත!",
+      "sendPdfWhatsApp": "WhatsApp වෙත PDF යවන්න",
+      "complete": "බෙදාහැරීම සම්පූර්ණයි",
+      "sentSuccessfully": "PDF වාර්තාව සාර්ථකව යවා ඇත",
+      "whatsappDelivered": "ඔබගේ මාසික මූල්‍ය වාර්තාව ලබාදුන් WhatsApp අංකයට යවා ඇත.",
+      "emailDelivered": "ඔබගේ මාසික මූල්‍ය වාර්තාව ඔබගේ විද්‍යුත් තැපෑලට යවා ඇත."
+    },
+    "dispatch": {
+      "title": "ස්වයංක්‍රීය මාසික වාර්තා යැවීම",
+      "description": "මාසය අවසානයේ ශුද්ධ ලාභ වාර්තාව හිමිකරුගේ ලියාපදිංචි ලිපිනයට ස්වයංක්‍රීයව විද්‍යුත් තැපෑලෙන් යවනු ලැබේ",
+      "schedulerActive": "කාලසටහන සක්‍රීයයි",
+      "bodyBeforeProfit": "පද්ධතිය මුළු මාසයේ ආදායම, වියදම් සහ",
+      "netProfit": "ශුද්ධ ලාභය",
+      "bodyAfterProfit": "එකතු කර PDF ලෙස හිමිකරුගේ ලියාපදිංචි විද්‍යුත් තැපෑලට යවයි:",
+      "thirtiethEveryMonth": "සෑම මාසයකම 30 වැනිදා",
+      "currentDate": "වත්මන් දිනය",
+      "nextDispatchIn": "ඊළඟ යැවීමට",
+      "today": "අද!",
+      "daysUntilThirtieth": "දින {{count}}ක්",
+      "monthNetProfit": "මාසික ශුද්ධ ලාභය",
+      "monthProgress": "මාසයේ ප්‍රගතිය",
+      "reportBeingDispatched": "වාර්තාව යවමින් පවතී",
+      "workingDaysRecorded": "වාර්තා කළ වැඩ කරන දින"
+    },
+    "errors": {
+      "sendPdfFailed": "PDF යැවීමට අසමත් විය"
+    },
+    "expenseCategories": {
+      "fuel": "ඉන්ධන",
+      "salary": "වැටුප",
+      "ice": "අයිස්",
+      "repairs": "අලුත්වැඩියා",
+      "equipment": "උපකරණ",
+      "other": "වෙනත්"
+    },
+    "whatsappModal": {
+      "title": "WhatsApp හරහා යවන්න",
+      "cancel": "අවලංගු කරන්න",
+      "close": "වසන්න",
+      "errors": {
+        "requiredNumber": "කරුණාකර WhatsApp අංකයක් ඇතුළත් කරන්න",
+        "invalidNumber": "අංක ආකෘතිය වැරදියි. ජාත්‍යන්තර ආකෘතිය භාවිතා කරන්න: +94771234567",
+        "sendFailed": "WhatsApp පණිවිඩය යැවීමට අසමත් විය"
+      },
+      "example": "උදාහරණය: +94771234567 (ශ්‍රී ලංකාව), +14155551234 (ඇමරිකා එක්සත් ජනපදය)",
+      "format": "ආකෘතිය:",
+      "formatHelp": "රටේ කේතය '+' ලකුණ සමඟ ඇතුළත් කරන්න",
+      "monthlyReport": "{{month}} {{year}} මාසික වාර්තාව",
+      "netProfit": "ශුද්ධ ලාභය:",
+      "number": "WhatsApp අංකය",
+      "placeholder": "+94771234567",
+      "recipientNumber": "ලබන්නාගේ WhatsApp අංකය ඇතුළත් කරන්න",
+      "reportDetails": "වාර්තා විස්තර",
+      "sendNow": "දැන් යවන්න",
+      "sending": "යවමින්..."
+    },
+    "noDataTitle": "මෙම මාසය සඳහා දත්ත නොමැත",
+    "noDataDescription": "මාසික වාර්තා බැලීමට දෛනික ඇතුළත් කිරීම් වාර්තා කිරීම ආරම්භ කරන්න"
   },
   "saveLocation": {
     "title": "GPS ස්ථානය සුරකින්න",
@@ -1142,16 +1250,28 @@
       "subtitle": "නාවික කළමනාකරණය",
       "tagline": "ආරක්ෂාව. නිරීක්ෂණය. ලාභය. 🌊",
       "stats": {
-        "features": { "count": "7",    "label": "විශේෂාංග"    },
-        "safety":   { "count": "6",    "label": "ආරක්ෂාව"     },
-        "coming":   { "count": "4",    "label": "ළඟදීම"       },
-        "live":     { "count": "24/7", "label": "සජීවී"       }
+        "features": {
+          "count": "7",
+          "label": "විශේෂාංග"
+        },
+        "safety": {
+          "count": "6",
+          "label": "ආරක්ෂාව"
+        },
+        "coming": {
+          "count": "4",
+          "label": "ළඟදීම"
+        },
+        "live": {
+          "count": "24/7",
+          "label": "සජීවී"
+        }
       }
     },
     "core": {
       "badge": "මූලික",
       "title": "වේදිකා විශේෂාංග",
-      "hint":  "👆 විස්තර සඳහා තට්ටු කරන්න"
+      "hint": "👆 විස්තර සඳහා තට්ටු කරන්න"
     },
     "special": {
       "badge": "විශේෂ",
@@ -1162,7 +1282,7 @@
       "title": "ළඟදීම එන්නේ 🔮"
     },
     "cta": {
-      "title":  "අද ඔබේ නාවිකයා ආරක්ෂා කරන්න",
+      "title": "අද ඔබේ නාවිකයා ආරක්ෂා කරන්න",
       "button": "නොමිලේ ආරම්භ කරන්න →"
     }
   },
@@ -1182,10 +1302,26 @@
       }
     },
     "cards": {
-      "phone": { "title": "දුරකථන සහාය", "desc": "තීරණාත්මක සම්බන්ධතා ගැටළු සඳහා 24/7 තාක්ෂණික සහාය.", "linkText": "දැන් අමතන්න" },
-      "email": { "title": "ඊමේල් සහාය", "desc": "සවිස්තරාත්මක දෝෂ නිරාකරණය සහ හදිසි නොවන විමසීම්.", "linkText": "ඊමේල් කරන්න" },
-      "whatsapp": { "title": "WhatsApp සහාය", "desc": "ගමනේදී ඉක්මන් විසඳුම් සඳහා ක්ෂණික පණිවිඩකරණය.", "linkText": "පණිවිඩ" },
-      "global": { "title": "ගෝලීය කාර්යාල", "desc": "අපගේ ජාත්‍යන්තර සහාය මධ්‍යස්ථාන සොයා ගෙන සම්බන්ධ වන්න.", "linkText": "කාර්යාල සොයන්න" }
+      "phone": {
+        "title": "දුරකථන සහාය",
+        "desc": "තීරණාත්මක සම්බන්ධතා ගැටළු සඳහා 24/7 තාක්ෂණික සහාය.",
+        "linkText": "දැන් අමතන්න"
+      },
+      "email": {
+        "title": "ඊමේල් සහාය",
+        "desc": "සවිස්තරාත්මක දෝෂ නිරාකරණය සහ හදිසි නොවන විමසීම්.",
+        "linkText": "ඊමේල් කරන්න"
+      },
+      "whatsapp": {
+        "title": "WhatsApp සහාය",
+        "desc": "ගමනේදී ඉක්මන් විසඳුම් සඳහා ක්ෂණික පණිවිඩකරණය.",
+        "linkText": "පණිවිඩ"
+      },
+      "global": {
+        "title": "ගෝලීය කාර්යාල",
+        "desc": "අපගේ ජාත්‍යන්තර සහාය මධ්‍යස්ථාන සොයා ගෙන සම්බන්ධ වන්න.",
+        "linkText": "කාර්යාල සොයන්න"
+      }
     },
     "operations": {
       "badge": "මෙහෙයුම් සජීවීව",
@@ -1466,6 +1602,199 @@
         "registered": "ලියාපදිංචි කරන ලද්දේ",
         "updated": "යාවත්කාලීන කරන ලද්දේ"
       }
+    },
+    "monthlyReports": {
+      "eyebrow": "මූල්‍ය / විශ්ලේෂණ",
+      "title": "මාසික වාර්තා",
+      "description": "ඔබගේ මාසික මත්ස්‍ය අස්වැන්න, ආදායම සහ ව්‍යාපාරයේ කාර්යසාධනය විශ්ලේෂණය කරන්න.",
+      "finance": "මූල්‍ය",
+      "refreshData": "දත්ත යාවත්කාලීන කරන්න",
+      "refreshing": "යාවත්කාලීන වෙමින්...",
+      "refresh": "යාවත්කාලීන කරන්න",
+      "lastUpdated": "අවසන් වරට යාවත්කාලීන කළේ:",
+      "autoRefreshOn": "ස්වයංක්‍රීය යාවත්කාලීන කිරීම සක්‍රියයි",
+      "noDataTitle": "මෙම මාසය සඳහා දත්ත නොමැත",
+      "noDataDescription": "මාසික වාර්තා බැලීමට දෛනික වාර්තා ඇතුළත් කිරීම ආරම්භ කරන්න",
+      "addDailyEntry": "දෛනික වාර්තාවක් එක් කරන්න",
+      "tabs": {
+        "overview": "සාරාංශය",
+        "daily": "දෛනික වාර්තා",
+        "comparison": "සසඳීම",
+        "analysis": "විශ්ලේෂණය"
+      },
+      "summary": {
+        "totalIncome": "මුළු ආදායම",
+        "totalExpenses": "මුළු වියදම්",
+        "netProfit": "ශුද්ධ ලාභය",
+        "workingDays": "වැඩ කළ දින",
+        "avgDailyIncome": "සාමාන්‍ය දෛනික ආදායම",
+        "avgDailyExpense": "සාමාන්‍ය දෛනික වියදම",
+        "profitMargin": "ලාභ ප්‍රතිශතය"
+      },
+      "charts": {
+        "dailyTrend": "දෛනික ප්‍රවණතාව",
+        "day": "දිනය",
+        "income": "ආදායම",
+        "expenses": "වියදම්",
+        "fishIncomeBreakdown": "මාළු ආදායම් විස්තරය",
+        "expenseDistribution": "වියදම් බෙදීයාම",
+        "sixMonthComparison": "මාස 6ක ආදායම් සහ වියදම් සසඳීම",
+        "netProfitTrend": "ශුද්ධ ලාභ ප්‍රවණතාව"
+      },
+      "expenseCategories": {
+        "fuel": "ඉන්ධන",
+        "salary": "වැටුප්",
+        "ice": "අයිස්",
+        "repairs": "අලුත්වැඩියා",
+        "equipment": "උපකරණ",
+        "other": "වෙනත්"
+      },
+      "delivery": {
+        "getReportTitle": "මාසික වාර්තාව ක්ෂණිකව ලබාගන්න",
+        "getReportDescription": "ආදායම, වියදම්, ලාභ සාරාංශය සහ නිර්දේශ ඇතුළත් සවිස්තරාත්මක PDF වාර්තාව ඔබගේ ඊමේල් ලිපිනයට හෝ දුරකථනයට ලබාගන්න.",
+        "sendingEmail": "ඊමේල් යවමින්...",
+        "reportSentEmail": "වාර්තාව ඊමේල් මඟින් යවා ඇත!",
+        "sendPdf": "PDF වාර්තාව යවන්න",
+        "reportSentWhatsApp": "වාර්තාව WhatsApp මඟින් යවා ඇත!",
+        "sendPdfWhatsApp": "WhatsApp වෙත PDF යවන්න",
+        "complete": "යැවීම සම්පූර්ණයි",
+        "sentSuccessfully": "PDF වාර්තාව සාර්ථකව යවා ඇත",
+        "whatsappDelivered": "ඔබගේ මාසික මූල්‍ය වාර්තාව ලබාදුන් WhatsApp අංකයට යවා ඇත.",
+        "emailDelivered": "ඔබගේ මාසික මූල්‍ය වාර්තාව ඔබගේ ඊමේල් එන ලිපි වෙත යවා ඇත."
+      },
+      "daily": {
+        "salesFor": "{{month}} {{year}} සඳහා දෛනික විකුණුම්",
+        "workingDaysRecorded": "මෙම මාසයේ වැඩ කළ දින {{count}}ක් වාර්තා කර ඇත",
+        "date": "දිනය",
+        "fishCaught": "අල්ලාගත් මාළු",
+        "quantity": "ප්‍රමාණය",
+        "income": "ආදායම",
+        "expenses": "වියදම්",
+        "profit": "ලාභය",
+        "totalDays": "එකතුව (දින {{count}})"
+      },
+      "comparison": {
+        "month": "මාසය",
+        "income": "ආදායම",
+        "expenses": "වියදම්",
+        "profit": "ලාභය",
+        "days": "දින"
+      },
+      "analysis": {
+        "recommendationsInsights": "නිර්දේශ සහ අවබෝධයන්",
+        "keyMetrics": "ප්‍රධාන කාර්යසාධන මිනුම්",
+        "revenuePerWorkingDay": "වැඩ කරන දිනකට ආදායම",
+        "costPerWorkingDay": "වැඩ කරන දිනකට වියදම",
+        "profitPerWorkingDay": "වැඩ කරන දිනකට ලාභය",
+        "totalFishCatch": "මුළු මත්ස්‍ය අස්වැන්න"
+      },
+      "dispatch": {
+        "title": "ස්වයංක්‍රීය මාසික වාර්තා යැවීම",
+        "description": "මාසය අවසානයේ ශුද්ධ ලාභ වාර්තාව හිමිකරුගේ ලියාපදිංචි ඊමේල් ලිපිනයට ස්වයංක්‍රීයව යවනු ලැබේ",
+        "schedulerActive": "කාලසටහන සක්‍රියයි",
+        "bodyBeforeProfit": "පද්ධතිය මුළු මාසයේ ආදායම, වියදම් සහ",
+        "bodyAfterProfit": "එකතු කර PDF වාර්තාවක් ලෙස හිමිකරුගේ ලියාපදිංචි ඊමේල් ලිපිනයට යවන්නේ",
+        "netProfit": "ශුද්ධ ලාභය",
+        "thirtiethEveryMonth": "සෑම මාසයකම 30 වන දින",
+        "currentDate": "අද දිනය",
+        "nextDispatchIn": "ඊළඟ වාර්තාව යැවීමට",
+        "today": "අදයි!",
+        "reportBeingDispatched": "වාර්තාව යවමින් පවතී",
+        "daysUntilThirtieth_one": "30 වන දිනයට තව දින {{count}}යි",
+        "daysUntilThirtieth_other": "30 වන දිනයට තව දින {{count}}යි",
+        "monthNetProfit": "{{month}} {{year}} ශුද්ධ ලාභය",
+        "workingDaysRecorded": "වැඩ කළ දින {{count}}ක් වාර්තා කර ඇත",
+        "monthProgress": "මාසයේ ප්‍රගතිය"
+      },
+      "whatsappModal": {
+        "title": "WhatsApp මඟින් යවන්න",
+        "recipientNumber": "ලබන්නාගේ WhatsApp අංකය ඇතුළත් කරන්න",
+        "number": "WhatsApp අංකය",
+        "placeholder": "+94771234567",
+        "format": "ආකෘතිය:",
+        "formatHelp": " '+' ලකුණ සමඟ රටේ කේතය ඇතුළත් කරන්න",
+        "example": "උදාහරණය: +94771234567 (ශ්‍රී ලංකාව), +14155551234 (ඇමරිකා එක්සත් ජනපදය)",
+        "reportDetails": "වාර්තාවේ විස්තර",
+        "monthlyReport": "{{month}} {{year}} මාසික වාර්තාව",
+        "netProfit": "ශුද්ධ ලාභය:",
+        "cancel": "අවලංගු කරන්න",
+        "sending": "යවමින්...",
+        "sendNow": "දැන් යවන්න",
+        "close": "වසන්න",
+        "errors": {
+          "requiredNumber": "කරුණාකර WhatsApp අංකයක් ඇතුළත් කරන්න",
+          "invalidNumber": "අංක ආකෘතිය වැරදියි. ජාත්‍යන්තර ආකෘතිය භාවිතා කරන්න: +94771234567",
+          "sendFailed": "WhatsApp පණිවිඩය යැවීමට නොහැකි විය"
+        }
+      },
+      "errors": {
+        "sendPdfFailed": "PDF යැවීමට නොහැකි විය"
+      }
+    }
+  },
+  "ownerBoats": {
+    "header": {
+      "eyebrow": "බෝට්ටු සමූහය / බෝට්ටු ලැයිස්තුව",
+      "title": "බෝට්ටු කළමනාකරණය",
+      "description": "ඔබගේ බෝට්ටු පරීක්ෂා කරන්න, රියදුරන් පත් කරන්න සහ බෝට්ටු විස්තර බලන්න."
+    },
+    "addNewBoat": "නව බෝට්ටුවක් එක් කරන්න",
+    "loading": "බෝට්ටු පූරණය වෙමින් පවතී...",
+    "empty": {
+      "beforeAdd": "බෝට්ටු හමු නොවීය. ඔබගේ පළමු බෝට්ටුව ලියාපදිංචි කිරීමට",
+      "afterAdd": "මත ක්ලික් කරන්න."
+    },
+    "labels": {
+      "boat": "බෝට්ටුව",
+      "registrationType": "{{type}} ලියාපදිංචි අංකය",
+      "manufactureYear": "බෝට්ටුව නිෂ්පාදිත වර්ෂය",
+      "engineType": "එන්ජින් වර්ගය",
+      "assignedDriver": "පත් කළ රියදුරු",
+      "noDriver": "රියදුරෙකු පත් කර නැත"
+    },
+    "savingAssignment": "රියදුරු පත් කිරීම සුරැකෙමින්...",
+    "noDrivers": "තවමත් රියදුරන් ලියාපදිංචි කර නැත.",
+    "viewDetails": "විස්තර බලන්න",
+    "errors": {
+      "loadFailed": "බෝට්ටු පූරණය කිරීමට නොහැකි විය",
+      "assignmentFailed": "රියදුරු පත් කිරීම යාවත්කාලීන කිරීමට නොහැකි විය"
+    },
+    "status": {
+      "active": "සක්‍රීයයි",
+      "maintenance": "අලුත්වැඩියාවේ",
+      "inactive": "අක්‍රීයයි",
+      "suspended": "අත්හිටුවා ඇත"
+    }
+  },
+  "notifications": {
+    "header": {
+      "eyebrow": "බෝට්ටු සමූහයේ ඇඟවීම්",
+      "title": "දැනුම්දීම්",
+      "description": "බෝට්ටු සිදුවීම්, ආරක්ෂක ඇඟවීම් සහ බෝට්ටු ක්‍රියාකාරකම් පිළිබඳ යාවත්කාලීනව සිටින්න."
+    },
+    "empty": "තවමත් දැනුම්දීම් නොමැත.",
+    "openEmergencyLocation": "හදිසි ස්ථානය විවෘත කරන්න",
+    "markRead": "දැනුම්දීම කියවූ බව සලකුණු කරන්න",
+    "labels": {
+      "boat": "බෝට්ටුව",
+      "registrationUnavailable": "ලියාපදිංචි අංකය ලබාගත නොහැක",
+      "driver": "රියදුරු",
+      "assignedDriver": "පත් කළ රියදුරු"
+    },
+    "qr": {
+      "sharedWith": "QR කේතය {{name}} සමඟ බෙදාගෙන ඇත",
+      "requestedBy": "ඉල්ලීම කළේ: {{name}}",
+      "sharing": "බෙදාගනිමින්...",
+      "shareButton": "QR කේතය බෙදාගන්න"
+    },
+    "errors": {
+      "shareQrFailed": "මෙම බෝට්ටුවේ QR කේතය බෙදාගත නොහැකි විය."
+    },
+    "messages": {
+      "emergency_sos": "හදිසි SOS ඇඟවීමක් ලැබී ඇත.",
+      "emergency_safe": "හදිසි තත්ත්වය යාවත්කාලීන කර ඇත: රියදුරු ආරක්ෂිතයි.",
+      "connection_warning": "බෝට්ටු රියදුරුගේ අන්තර්ජාල සම්බන්ධතාව දුර්වලයි.",
+      "qr_request": "රියදුරෙකු මෙම බෝට්ටුවේ QR කේතයට ප්‍රවේශය ඉල්ලා ඇත."
     }
   }
 }
