@@ -586,7 +586,6 @@
     "distanceFromBeach": "from the beach/harbour location.",
     "selectedBoat": "Selected Boat",
     "registration": "Registration:",
-    "status": "Status:",
     "currentGpsLocation": "Current GPS Location",
     "exactPlaceDetected": "Exact place detected from your device",
     "place": "Place:",
@@ -717,9 +716,29 @@
     "startRecording": "Start recording daily entries to see monthly reports",
     "addDailyEntry": "➕ Add Daily Entry",
     "overview": "overview",
-    "daily": "daily",
-    "comparison": "comparison",
-    "analysis": "analysis",
+    "daily": {
+      "salesFor": "Daily sales for {{month}} {{year}}",
+      "workingDaysRecorded": "{{count}} working days recorded this month",
+      "date": "Date",
+      "fishCaught": "Fish caught",
+      "quantity": "Quantity",
+      "income": "Income",
+      "expenses": "Expenses",
+      "totalDays": "TOTAL ({{count}} days)"
+    },
+    "comparison": {
+      "month": "Month",
+      "profit": "Profit",
+      "days": "Days"
+    },
+    "analysis": {
+      "recommendationsInsights": "Recommendations & insights",
+      "keyMetrics": "Key performance metrics",
+      "revenuePerWorkingDay": "Revenue per working day",
+      "costPerWorkingDay": "Cost per working day",
+      "profitPerWorkingDay": "Profit per working day",
+      "totalFishCatch": "Total fish catch"
+    },
     "dailyEntries": "📅 Daily Entries",
     "totalIncome": "Total Income",
     "totalExpenses": "Total Expenses",
@@ -796,7 +815,96 @@
     "pdfSentSuccess": "PDF report sent successfully",
     "whatsappDelivered": "Your monthly finance report has been delivered to the WhatsApp number provided.",
     "emailDelivered": "Your monthly finance report has been delivered to your email inbox.",
-    "monthProgress": "Month progress"
+    "monthProgress": "Month progress",
+    "tabs": {
+      "overview": "Overview",
+      "daily": "Daily",
+      "comparison": "Comparison",
+      "analysis": "Analysis"
+    },
+    "summary": {
+      "totalIncome": "Total income",
+      "totalExpenses": "Total expenses",
+      "netProfit": "Net profit",
+      "workingDays": "Working days",
+      "avgDailyIncome": "Avg daily income",
+      "avgDailyExpense": "Avg daily expense",
+      "profitMargin": "Profit margin"
+    },
+    "charts": {
+      "dailyTrend": "Daily trend",
+      "day": "Day",
+      "income": "Income",
+      "expenses": "Expenses",
+      "fishIncomeBreakdown": "Fish income breakdown",
+      "expenseDistribution": "Expense distribution",
+      "sixMonthComparison": "6-month income vs expenses comparison",
+      "netProfitTrend": "Net profit trend"
+    },
+    "delivery": {
+      "getReportTitle": "Get monthly report instantly",
+      "getReportDescription": "Receive a detailed PDF report with income, expenses, profit summary and recommendations directly to your inbox or phone.",
+      "sendingEmail": "Sending email...",
+      "reportSentEmail": "Report sent to email!",
+      "sendPdf": "Send PDF report",
+      "reportSentWhatsApp": "Report sent to WhatsApp!",
+      "sendPdfWhatsApp": "Send PDF to WhatsApp",
+      "complete": "Delivery complete",
+      "sentSuccessfully": "PDF report sent successfully",
+      "whatsappDelivered": "Your monthly finance report has been delivered to the WhatsApp number provided.",
+      "emailDelivered": "Your monthly finance report has been delivered to your email inbox."
+    },
+    "dispatch": {
+      "title": "Automated monthly dispatch",
+      "description": "Final month-end net profit report is emailed to the owner's registered address automatically",
+      "schedulerActive": "Scheduler active",
+      "bodyBeforeProfit": "The system compiles the full-month income, expenses and",
+      "netProfit": "net profit",
+      "bodyAfterProfit": "and sends it as a PDF to the owner's registered email on the",
+      "thirtiethEveryMonth": "30th day of every month",
+      "currentDate": "Current date",
+      "nextDispatchIn": "Next dispatch in",
+      "today": "Today!",
+      "daysUntilThirtieth": "{{count}} days",
+      "monthNetProfit": "Month net profit",
+      "monthProgress": "Month progress",
+      "reportBeingDispatched": "Report is being dispatched",
+      "workingDaysRecorded": "Working days recorded"
+    },
+    "errors": {
+      "sendPdfFailed": "Failed to send PDF"
+    },
+    "expenseCategories": {
+      "fuel": "Fuel",
+      "salary": "Salary",
+      "ice": "Ice",
+      "repairs": "Repairs",
+      "equipment": "Equipment",
+      "other": "Other"
+    },
+    "whatsappModal": {
+      "title": "Send via WhatsApp",
+      "cancel": "Cancel",
+      "close": "Close",
+      "errors": {
+        "requiredNumber": "Please enter a WhatsApp number",
+        "invalidNumber": "Invalid format. Use international format: +94771234567",
+        "sendFailed": "Failed to send WhatsApp message"
+      },
+      "example": "Example: +94771234567 (Sri Lanka), +14155551234 (USA)",
+      "format": "Format:",
+      "formatHelp": "Include the country code with a '+' sign",
+      "monthlyReport": "{{month}} {{year}} Monthly Report",
+      "netProfit": "Net Profit:",
+      "number": "WhatsApp Number",
+      "placeholder": "+94771234567",
+      "recipientNumber": "Enter the recipient's WhatsApp number",
+      "reportDetails": "Report Details",
+      "sendNow": "Send Now",
+      "sending": "Sending..."
+    },
+    "noDataTitle": "No data for this month",
+    "noDataDescription": "Start recording daily entries to see monthly reports"
   },
   "signalIndicator": {
     "title": "Signal coverage",
@@ -1415,73 +1523,266 @@
         "noDriversRegistered": "No drivers are registered yet."
       }
     },
-  "boatOwnerBoatDetails": {
-    "notProvided": "Not provided",
-    "notRecorded": "Not recorded",
-    "locationNotRecorded": "Location has not been recorded",
-    "vesselFallback": "Vessel",
-    "loading": "Loading boat details...",
-    "detailsUnavailable": "Boat details unavailable",
-    "connectionLabel": "connection",
-    "errors": {
-      "notFound": "This boat could not be found in your fleet.",
-      "loadFailed": "Could not load boat details.",
-      "idRequired": "A boat ID is required to view this page.",
-      "notAvailable": "This boat is not available in your fleet."
+    "boatOwnerBoatDetails": {
+      "notProvided": "Not provided",
+      "notRecorded": "Not recorded",
+      "locationNotRecorded": "Location has not been recorded",
+      "vesselFallback": "Vessel",
+      "loading": "Loading boat details...",
+      "detailsUnavailable": "Boat details unavailable",
+      "connectionLabel": "connection",
+      "errors": {
+        "notFound": "This boat could not be found in your fleet.",
+        "loadFailed": "Could not load boat details.",
+        "idRequired": "A boat ID is required to view this page.",
+        "notAvailable": "This boat is not available in your fleet."
+      },
+      "actions": {
+        "backToBoats": "Back to boats",
+        "returnToBoats": "Return to boats",
+        "qrCode": "Boat QR code",
+        "weather": "Weather",
+        "openMap": "Open map"
+      },
+      "header": {
+        "vesselRecord": "Fleet vessel record"
+      },
+      "status": {
+        "active": "ACTIVE",
+        "maintenance": "MAINTENANCE",
+        "nonActive": "NON-ACTIVE",
+        "unknown": "STATUS UNKNOWN"
+      },
+      "connection": {
+        "good": "good",
+        "medium": "medium",
+        "poor": "poor",
+        "offline": "offline"
+      },
+      "labels": {
+        "modelYear": "Model year",
+        "engine": "Engine",
+        "power": "Power",
+        "fuelCapacity": "Fuel capacity",
+        "regNo": "Registration number",
+        "vesselType": "Vessel type",
+        "engineType": "Engine type",
+        "engineSerial": "Engine serial",
+        "horsepower": "Horsepower"
+      },
+      "specs": {
+        "title": "Vessel specifications",
+        "description": "Registration and equipment details"
+      },
+      "driver": {
+        "title": "Assigned driver",
+        "description": "Current vessel assignment",
+        "driverFallback": "Driver",
+        "emailNotProvided": "Email not provided",
+        "noDriver": "No driver is assigned to this boat."
+      },
+      "location": {
+        "title": "Last known location",
+        "description": "GPS coordinates registered to this boat"
+      },
+      "footer": {
+        "recordFleet": "Boat record is part of your owner fleet.",
+        "registered": "Registered",
+        "updated": "Updated"
+      }
     },
-    "actions": {
-      "backToBoats": "Back to boats",
-      "returnToBoats": "Return to boats",
-      "qrCode": "Boat QR code",
-      "weather": "Weather",
-      "openMap": "Open map"
-    },
+    "monthlyReports": {
+      "eyebrow": "Finance / Insights",
+      "title": "Monthly Reports",
+      "description": "Analyze your monthly catch, earnings, and business performance.",
+      "finance": "Finance",
+      "refreshData": "Refresh data",
+      "refreshing": "Refreshing...",
+      "refresh": "Refresh",
+      "lastUpdated": "Last updated:",
+      "autoRefreshOn": "Auto-refresh ON",
+      "noDataTitle": "No data for this month",
+      "noDataDescription": "Start recording daily entries to see monthly reports",
+      "addDailyEntry": "Add Daily Entry",
+      "tabs": {
+        "overview": "Overview",
+        "daily": "Daily Entries",
+        "comparison": "Comparison",
+        "analysis": "Analysis"
+      },
+      "summary": {
+        "totalIncome": "Total Income",
+        "totalExpenses": "Total Expenses",
+        "netProfit": "Net Profit",
+        "workingDays": "Working Days",
+        "avgDailyIncome": "Avg Daily Income",
+        "avgDailyExpense": "Avg Daily Expense",
+        "profitMargin": "Profit Margin"
+      },
+      "charts": {
+        "dailyTrend": "Daily Trend",
+        "day": "Day",
+        "income": "Income",
+        "expenses": "Expenses",
+        "fishIncomeBreakdown": "Fish Income Breakdown",
+        "expenseDistribution": "Expense Distribution",
+        "sixMonthComparison": "6-Month Income vs Expenses Comparison",
+        "netProfitTrend": "Net Profit Trend"
+      },
+      "expenseCategories": {
+        "fuel": "Fuel",
+        "salary": "Salary",
+        "ice": "Ice",
+        "repairs": "Repairs",
+        "equipment": "Equipment",
+        "other": "Other"
+      },
+      "delivery": {
+        "getReportTitle": "Get Monthly Report Instantly",
+        "getReportDescription": "Receive a detailed PDF report with income, expenses, profit summary and recommendations directly to your inbox or phone.",
+        "sendingEmail": "Sending Email...",
+        "reportSentEmail": "Report Sent to Email!",
+        "sendPdf": "Send PDF Report",
+        "reportSentWhatsApp": "Report Sent to WhatsApp!",
+        "sendPdfWhatsApp": "Send PDF to WhatsApp",
+        "complete": "Delivery complete",
+        "sentSuccessfully": "PDF report sent successfully",
+        "whatsappDelivered": "Your monthly finance report has been delivered to the WhatsApp number provided.",
+        "emailDelivered": "Your monthly finance report has been delivered to your email inbox."
+      },
+      "daily": {
+        "salesFor": "Daily Sales for {{month}} {{year}}",
+        "workingDaysRecorded": "{{count}} working days recorded this month",
+        "date": "Date",
+        "fishCaught": "Fish Caught",
+        "quantity": "Qty",
+        "income": "Income",
+        "expenses": "Expenses",
+        "profit": "Profit",
+        "totalDays": "TOTAL ({{count}} days)"
+      },
+      "comparison": {
+        "month": "Month",
+        "income": "Income",
+        "expenses": "Expenses",
+        "profit": "Profit",
+        "days": "Days"
+      },
+      "analysis": {
+        "recommendationsInsights": "Recommendations & Insights",
+        "keyMetrics": "Key Performance Metrics",
+        "revenuePerWorkingDay": "Revenue per Working Day",
+        "costPerWorkingDay": "Cost per Working Day",
+        "profitPerWorkingDay": "Profit per Working Day",
+        "totalFishCatch": "Total Fish Catch"
+      },
+      "dispatch": {
+        "title": "Automated Monthly Dispatch",
+        "description": "Final month-end net profit report is emailed to the owner's registered address automatically",
+        "schedulerActive": "Scheduler Active",
+        "bodyBeforeProfit": "The system compiles the full-month income, expenses and",
+        "bodyAfterProfit": "and sends it as a PDF to the owner's registered email on the",
+        "netProfit": "net profit",
+        "thirtiethEveryMonth": "30th day of every month",
+        "currentDate": "Current Date",
+        "nextDispatchIn": "Next Dispatch In",
+        "today": "Today!",
+        "reportBeingDispatched": "Report is being dispatched",
+        "daysUntilThirtieth_one": "{{count}} day until the 30th",
+        "daysUntilThirtieth_other": "{{count}} days until the 30th",
+        "monthNetProfit": "{{month}} {{year}} Net Profit",
+        "workingDaysRecorded": "{{count}} working days recorded",
+        "monthProgress": "Month progress"
+      },
+      "whatsappModal": {
+        "title": "Send via WhatsApp",
+        "recipientNumber": "Enter the recipient's WhatsApp number",
+        "number": "WhatsApp Number",
+        "placeholder": "+94771234567",
+        "format": "Format:",
+        "formatHelp": "Include the country code with a '+' sign",
+        "example": "Example: +94771234567 (Sri Lanka), +14155551234 (USA)",
+        "reportDetails": "Report Details",
+        "monthlyReport": "{{month}} {{year}} Monthly Report",
+        "netProfit": "Net Profit:",
+        "cancel": "Cancel",
+        "sending": "Sending...",
+        "sendNow": "Send Now",
+        "close": "Close",
+        "errors": {
+          "requiredNumber": "Please enter a WhatsApp number",
+          "invalidNumber": "Invalid format. Use international format: +94771234567",
+          "sendFailed": "Failed to send WhatsApp message"
+        }
+      },
+      "errors": {
+        "sendPdfFailed": "Failed to send PDF"
+      }
+    }
+  },
+  "ownerBoats": {
     "header": {
-      "vesselRecord": "Fleet vessel record"
+      "eyebrow": "Fleet / Vessel list",
+      "title": "Boats Management",
+      "description": "Review your fleet, manage driver assignments, and open vessel records."
+    },
+    "addNewBoat": "Add New Boat",
+    "loading": "Loading boats...",
+    "empty": {
+      "beforeAdd": "No boats found. Click",
+      "afterAdd": "to register your first boat."
+    },
+    "labels": {
+      "boat": "Boat",
+      "registrationType": "{{type}} Registration No",
+      "manufactureYear": "Boat Manufacture Year",
+      "engineType": "Engine Type",
+      "assignedDriver": "Assigned driver",
+      "noDriver": "No driver assigned"
+    },
+    "savingAssignment": "Saving assignment…",
+    "noDrivers": "No drivers are registered yet.",
+    "viewDetails": "View Details",
+    "errors": {
+      "loadFailed": "Failed to load boats",
+      "assignmentFailed": "Could not update driver assignment"
     },
     "status": {
       "active": "ACTIVE",
       "maintenance": "MAINTENANCE",
-      "nonActive": "NON-ACTIVE",
-      "unknown": "STATUS UNKNOWN"
+      "inactive": "INACTIVE",
+      "suspended": "SUSPENDED"
+    }
+  },
+  "notifications": {
+    "header": {
+      "eyebrow": "Fleet alerts",
+      "title": "Notifications",
+      "description": "Stay up to date with vessel events, safety alerts, and fleet activity."
     },
-    "connection": {
-      "good": "good",
-      "medium": "medium",
-      "poor": "poor",
-      "offline": "offline"
-    },
+    "empty": "No notifications yet.",
+    "openEmergencyLocation": "Open emergency location",
+    "markRead": "Mark notification as read",
     "labels": {
-      "modelYear": "Model year",
-      "engine": "Engine",
-      "power": "Power",
-      "fuelCapacity": "Fuel capacity",
-      "regNo": "Registration number",
-      "vesselType": "Vessel type",
-      "engineType": "Engine type",
-      "engineSerial": "Engine serial",
-      "horsepower": "Horsepower"
+      "boat": "Boat",
+      "registrationUnavailable": "Registration unavailable",
+      "driver": "driver",
+      "assignedDriver": "assigned driver"
     },
-    "specs": {
-      "title": "Vessel specifications",
-      "description": "Registration and equipment details"
+    "qr": {
+      "sharedWith": "QR code shared with {{name}}",
+      "requestedBy": "Requested by {{name}}",
+      "sharing": "Sharing…",
+      "shareButton": "Share QR code"
     },
-    "driver": {
-      "title": "Assigned driver",
-      "description": "Current vessel assignment",
-      "driverFallback": "Driver",
-      "emailNotProvided": "Email not provided",
-      "noDriver": "No driver is assigned to this boat."
+    "errors": {
+      "shareQrFailed": "Could not share this boat QR code."
     },
-    "location": {
-      "title": "Last known location",
-      "description": "GPS coordinates registered to this boat"
-    },
-    "footer": {
-      "recordFleet": "Boat record is part of your owner fleet.",
-      "registered": "Registered",
-      "updated": "Updated"
+    "messages": {
+      "emergency_sos": "Emergency SOS alert received.",
+      "emergency_safe": "Emergency status updated: driver is safe.",
+      "connection_warning": "Boat driver has a weak internet connection.",
+      "qr_request": "A driver has requested access to this boat QR code."
     }
   }
-}
 }
