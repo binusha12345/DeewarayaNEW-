@@ -38,7 +38,7 @@ const getBoatImageUrl = (boat) => {
       // then use this instead:
       // setBoats(res.data.boats);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to load boats");
+      setError(err.response?.data?.message || t("ownerBoats.errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ const getBoatImageUrl = (boat) => {
     } catch (err) {
       setAssignmentErrors((current) => ({
         ...current,
-        [boatId]: err.response?.data?.message || "Could not update driver assignment",
+        [boatId]: err.response?.data?.message || t("ownerBoats.errors.assignmentFailed"),
       }));
     } finally {
       setSavingDriver((current) => ({ ...current, [boatId]: false }));
@@ -94,9 +94,9 @@ const getBoatImageUrl = (boat) => {
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-10">
           <DashboardPageHeader
-            eyebrow="Fleet / Vessel list"
-            title="Boats Management"
-            description="Review your fleet, manage driver assignments, and open vessel records."
+            eyebrow={t("ownerBoats.header.eyebrow")}
+            title={t("ownerBoats.header.title")}
+            description={t("ownerBoats.header.description")}
             icon={Anchor}
             theme="cyan"
             action={
@@ -105,7 +105,7 @@ const getBoatImageUrl = (boat) => {
                 className="flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-900 shadow-sm transition hover:bg-blue-50"
               >
                 <Plus size={18} />
-                Add New Boat
+                {t("ownerBoats.addNewBoat")}
               </button>
             }
           />
@@ -114,7 +114,7 @@ const getBoatImageUrl = (boat) => {
           {loading && (
             <div className="flex items-center gap-3 text-slate-600">
               <Loader2 className="animate-spin" size={20} />
-              <span>Loading boats...</span>
+              <span>{t("ownerBoats.loading")}</span>
             </div>
           )}
 
@@ -128,7 +128,7 @@ const getBoatImageUrl = (boat) => {
           {/* No Boats */}
           {!loading && !error && boats.length === 0 && (
             <div className="p-6 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm">
-              No boats found. Click <span className="font-bold">Add New Boat</span> to register your first boat.
+              {t("ownerBoats.empty.beforeAdd")} <span className="font-bold">{t("ownerBoats.addNewBoat")}</span> {t("ownerBoats.empty.afterAdd")}
             </div>
           )}
 
@@ -155,7 +155,7 @@ const getBoatImageUrl = (boat) => {
                             : "bg-red-100 text-red-600"
                         }`}
                       >
-                        {boat.boatStatus}
+                        {t(`ownerBoats.status.${String(boat.boatStatus || "").toLowerCase()}`, { defaultValue: boat.boatStatus })}
 
                       </div>
                   </div>
@@ -163,38 +163,38 @@ const getBoatImageUrl = (boat) => {
                   <div className="p-6">
                     <div className="mb-6">
                       <h3 className="text-[24px] font-bold text-slate-900 mb-1">
-                        Boat: {boat.boatName}
+                        {t("ownerBoats.labels.boat")}: {boat.boatName}
                       </h3>
 
                       <p className="text-[16px] text-slate-600 font-medium">
-                        {boat.boatType} Registration No: {boat.registrationNumber}
+                        {t("ownerBoats.labels.registrationType", { type: boat.boatType })}: {boat.registrationNumber}
                       </p>
 
                       <p className="text-[14px] text-slate-600 mt-2">
-                        Boat Manufacture Year: {boat.modelYear}
+                        {t("ownerBoats.labels.manufactureYear")}: {boat.modelYear}
                       </p>
 
                       <p className="text-[14px] text-slate-600 mt-2">
-                        Engine Type: {boat.engineType}
+                        {t("ownerBoats.labels.engineType")}: {boat.engineType}
                       </p>
                       <label className="mt-5 block border-t border-slate-200 pt-4 text-xs font-bold uppercase tracking-wide text-slate-500">
-                        Assigned driver
+                        {t("ownerBoats.labels.assignedDriver")}
                         <select
                           value={boat.driver?._id || ""}
                           onChange={(event) => handleAssignDriver(boat._id, event.target.value)}
                           disabled={savingDriver[boat._id]}
                           className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium normal-case tracking-normal text-slate-800 outline-none focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100 disabled:opacity-60"
                         >
-                          <option value="">No driver assigned</option>
+                          <option value="">{t("ownerBoats.labels.noDriver")}</option>
                           {drivers.map((driver) => (
                             <option key={driver._id} value={driver._id}>
                               {driver.name} · {driver.email}
                             </option>
                           ))}
                         </select>
-                        {savingDriver[boat._id] && <span className="mt-1 block normal-case tracking-normal">Saving assignment…</span>}
+                        {savingDriver[boat._id] && <span className="mt-1 block normal-case tracking-normal">{t("ownerBoats.savingAssignment")}</span>}
                         {assignmentErrors[boat._id] && <span role="alert" className="mt-1 block normal-case tracking-normal text-red-700">{assignmentErrors[boat._id]}</span>}
-                        {!drivers.length && <span className="mt-1 block normal-case tracking-normal">No drivers are registered yet.</span>}
+                        {!drivers.length && <span className="mt-1 block normal-case tracking-normal">{t("ownerBoats.noDrivers")}</span>}
                       </label>
                     </div>
 
@@ -204,7 +204,7 @@ const getBoatImageUrl = (boat) => {
                         className="flex-1 bg-[#2b4fa9] text-white py-2.5 rounded-lg text-xs font-bold hover:bg-[#004a75] transition flex items-center justify-center gap-2"
                       >
                         <Eye size={16} />
-                        View Details
+                        {t("ownerBoats.viewDetails")}
                       </button>
 
                       <button
