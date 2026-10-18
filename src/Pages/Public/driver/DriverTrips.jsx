@@ -5,6 +5,7 @@ import DriverSidebar from "../../../components/DriverSidebar";
 import DashboardNav from "../../../components/DashboardNav";
 import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api, { apiUrl } from "../../../services/api";
+import { useTranslation } from "react-i18next";
 
 const formatDateTime = (value) => value
   ? new Date(value).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
@@ -39,6 +40,7 @@ const getPosition = () => new Promise((resolve, reject) => {
 });
 
 const DriverTrips = () => {
+  const { t, i18n } = useTranslation();
   const [boats, setBoats] = useState([]);
   const [trips, setTrips] = useState([]);
   const [activeTrip, setActiveTrip] = useState(null);
@@ -66,7 +68,7 @@ const DriverTrips = () => {
       setActiveTrip(tripsResponse.data.activeTrip || null);
       setSelectedBoatId((current) => current || assignedBoats[0]?._id || "");
     } catch {
-      toast.error("Could not load your assigned boats and trips");
+      toast.error(t("driverTrips.loadingError"));
     } finally {
       setLoading(false);
     }
@@ -96,11 +98,11 @@ const DriverTrips = () => {
         });
         setActiveTrip(data.trip);
       } catch {
-        toast.error("GPS point could not be saved. Check your connection.");
+        toast.error(t("driverTrips.gpsSaveFailed"));
       } finally {
         sendingPoint.current = false;
       }
-    }, () => toast.error("GPS access was lost. Allow location access to record trip distance."), {
+    }, () => toast.error(t("driverTrips.gpsLost")), {
       enableHighAccuracy: true,
       maximumAge: 5000,
       timeout: 20000,
@@ -117,9 +119,9 @@ const DriverTrips = () => {
       setActiveTrip(data.trip);
       setTrips((current) => [data.trip, ...current]);
       lastPointAt.current = Date.now();
-      toast.success("Trip started");
+      toast.success(t("driverTrips.tripStarted"));
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Could not start trip");
+      toast.error(error.response?.data?.message || error.message || t("driverTrips.couldNotStart"));
     } finally {
       setBusy(false);
     }
@@ -134,9 +136,9 @@ const DriverTrips = () => {
       const { data } = await api.post(`/trips/${activeTrip._id}/end`, location);
       setTrips((current) => current.map((trip) => trip._id === data.trip._id ? data.trip : trip));
       setActiveTrip(null);
-      toast.success("Trip ended and saved");
+      toast.success(t("driverTrips.tripEnded"));
     } catch (error) {
-      toast.error(error.response?.data?.message || "Could not end trip");
+      toast.error(error.response?.data?.message || t("driverTrips.couldNotEnd"));
     } finally {
       setBusy(false);
     }
@@ -178,8 +180,8 @@ const DriverTrips = () => {
         <main className="flex-1 overflow-y-auto p-5 md:p-8">
           <div className="mx-auto w-full max-w-7xl space-y-7">
             <DashboardPageHeader
-              eyebrow="Driver portal / journeys"
-              title="My Trips"
+              eyebrow={t("driverTrips.eyebrow")}
+              title={t("driverTrips.title")}
               description={`Trip schedule and activity · ${new Date(now).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}`}
               icon={CalendarDays}
               theme="blue"
@@ -187,15 +189,15 @@ const DriverTrips = () => {
             <div className="flex flex-wrap items-center justify-end gap-4">
               {activeTrip ? (
                 <button onClick={finishTrip} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-red-700 px-5 py-3 font-bold text-white shadow-sm transition-colors hover:bg-red-800 disabled:opacity-50">
-                  <Square size={17} /> {busy ? "Saving..." : "End trip"}
+                  <Square size={17} /> {busy ? t("driverTrips.saving") : t("driverTrips.endTrip")}
                 </button>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  <select aria-label="Assigned boat" value={selectedBoatId} onChange={(event) => setSelectedBoatId(event.target.value)} disabled={!boats.length} className="min-w-48 rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm font-medium text-slate-800 outline-none focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100">
-                    {boats.length ? boats.map((boat) => <option key={boat._id} value={boat._id}>{boat.boatName} · {boat.registrationNumber}</option>) : <option value="">No assigned boats</option>}
+                  <select aria-label={t("driverTrips.assignedBoat")} value={selectedBoatId} onChange={(event) => setSelectedBoatId(event.target.value)} disabled={!boats.length} className="min-w-48 rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm font-medium text-slate-800 outline-none focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100">
+                    {boats.length ? boats.map((boat) => <option key={boat._id} value={boat._id}>{boat.boatName} · {boat.registrationNumber}</option>) : <option value="">{t("driverTrips.noAssignedBoats")}</option>}
                   </select>
                   <button onClick={startTrip} disabled={busy || !boats.length} className="inline-flex items-center gap-2 rounded-xl bg-[#005a8d] px-5 py-3 font-bold text-white shadow-sm transition-colors hover:bg-[#004a75] disabled:opacity-50">
-                    <Play size={17} /> {busy ? "Getting GPS..." : "Start trip"}
+                    <Play size={17} /> {busy ? t("driverTrips.gettingGps") : t("driverTrips.startTrip")}
                   </button>
                 </div>
               )}
@@ -206,22 +208,22 @@ const DriverTrips = () => {
                 <div className="flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-[#0f2a4a] to-[#005a8d] px-5 py-4 text-white md:px-6">
                   <div className="flex items-center gap-3">
                     <span className="relative flex h-3 w-3"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-75" /><span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-400" /></span>
-                    <div><p className="text-xs font-bold uppercase tracking-widest text-cyan-100">Trip in progress</p><h2 className="mt-1 text-xl font-bold">{activeTrip.boat?.boatName || "Assigned boat"}</h2></div>
+                    <div><p className="text-xs font-bold uppercase tracking-widest text-cyan-100">{t("driverTrips.tripInProgress")}</p><h2 className="mt-1 text-xl font-bold">{activeTrip.boat?.boatName || t("driverTrips.assignedBoatFallback")}</h2></div>
                   </div>
                   <p className="text-sm text-cyan-100">Started {formatDateTime(activeTrip.startedAt)}</p>
                 </div>
                 <div className="grid gap-px bg-slate-200 sm:grid-cols-3">
-                  <div className="bg-white px-5 py-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Elapsed time</p><p className="mt-1 font-mono text-2xl font-bold text-[#0f2a4a]">{formatDuration(elapsedSeconds)}</p></div>
-                  <div className="bg-white px-5 py-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Distance travelled</p><p className="mt-1 text-2xl font-bold text-[#0f2a4a]">{Number(activeTrip.distanceKm || 0).toFixed(2)} <span className="text-sm">km</span></p></div>
-                  <div className="bg-white px-5 py-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">GPS points recorded</p><p className="mt-1 text-2xl font-bold text-[#0f2a4a]">{activeTrip.points?.length || 0}</p></div>
+                  <div className="bg-white px-5 py-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{t("driverTrips.elapsedTime")}</p><p className="mt-1 font-mono text-2xl font-bold text-[#0f2a4a]">{formatDuration(elapsedSeconds)}</p></div>
+                  <div className="bg-white px-5 py-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{t("driverTrips.distanceTravelled")}</p><p className="mt-1 text-2xl font-bold text-[#0f2a4a]">{Number(activeTrip.distanceKm || 0).toFixed(2)} <span className="text-sm">km</span></p></div>
+                  <div className="bg-white px-5 py-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{t("driverTrips.gpsPointsRecorded")}</p><p className="mt-1 text-2xl font-bold text-[#0f2a4a]">{activeTrip.points?.length || 0}</p></div>
                 </div>
               </section>
             )}
 
             <div className="grid items-stretch gap-y-5 xl:grid-cols-2 xl:gap-x-0 xl:gap-y-0">
             <section className="flex h-full flex-col xl:col-span-1">
-              {loading ? <p className="flex flex-1 items-center justify-center bg-white py-8 text-slate-600">Loading assigned boats...</p> : boats.length === 0 ? (
-                <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-sm text-slate-600 xl:rounded-r-none">No boat has been assigned to your account yet.</div>
+              {loading ? <p className="flex flex-1 items-center justify-center bg-white py-8 text-slate-600">{t("driverTrips.loadingAssignedBoats")}</p> : boats.length === 0 ? (
+                <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-sm text-slate-600 xl:rounded-r-none">{t("driverTrips.noBoatAssigned")}</div>
               ) : (
                 <div className="grid flex-1 auto-rows-fr gap-0">
                   {boats.map((boat) => (
@@ -230,19 +232,19 @@ const DriverTrips = () => {
                         {boat.imageUrl && <img src={apiUrl(boat.imageUrl)} alt={boat.boatName} className="absolute inset-0 h-full w-full object-cover opacity-60" />}
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0f2a4a]/90 via-[#0f2a4a]/25 to-transparent" />
                         <div className="relative z-10 flex w-full items-end justify-between gap-3">
-                          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-widest text-cyan-200">Assigned vessel · {boat.boatType}</p><h3 className="truncate text-2xl font-black">{boat.boatName}</h3><p className="mt-1 text-sm text-cyan-50">Registration {boat.registrationNumber}</p></div>
+                          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-widest text-cyan-200">{t("driverTrips.assignedVessel")} · {boat.boatType}</p><h3 className="truncate text-2xl font-black">{boat.boatName}</h3><p className="mt-1 text-sm text-cyan-50">Registration {boat.registrationNumber}</p></div>
                           <span className={`shrink-0 rounded-md px-2.5 py-1 text-[9px] font-black tracking-widest ${boat.boatStatus === "ACTIVE" ? "bg-blue-100 text-blue-700" : boat.boatStatus === "MAINTENANCE" ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-600"}`}>{boat.boatStatus}</span>
                         </div>
                       </div>
                       <dl className="grid grid-cols-2 gap-x-6 gap-y-4 p-5 text-sm sm:grid-cols-3">
-                        <div><dt className="text-xs text-slate-500">Model year</dt><dd className="mt-1 font-bold text-slate-800">{boat.modelYear || "—"}</dd></div>
-                        <div><dt className="text-xs text-slate-500">Engine type</dt><dd className="mt-1 font-bold text-slate-800">{boat.engineType || "—"}</dd></div>
-                        <div><dt className="text-xs text-slate-500">Horsepower</dt><dd className="mt-1 font-bold text-slate-800">{boat.horsepower ? `${boat.horsepower} HP` : "—"}</dd></div>
-                        <div><dt className="text-xs text-slate-500">Fuel capacity</dt><dd className="mt-1 font-bold text-slate-800">{boat.fuelCapacity ? `${boat.fuelCapacity} L` : "—"}</dd></div>
-                        <div><dt className="text-xs text-slate-500">Engine serial</dt><dd className="mt-1 font-bold text-slate-800">{boat.engineSerial || "—"}</dd></div>
-                        <div><dt className="text-xs text-slate-500">Boat owner</dt><dd className="mt-1 font-bold text-slate-800">{boat.owner?.name || "—"}</dd></div>
+                        <div><dt className="text-xs text-slate-500">{t("driverTrips.modelYear")}</dt><dd className="mt-1 font-bold text-slate-800">{boat.modelYear || "—"}</dd></div>
+                        <div><dt className="text-xs text-slate-500">{t("driverTrips.engineType")}</dt><dd className="mt-1 font-bold text-slate-800">{boat.engineType || "—"}</dd></div>
+                        <div><dt className="text-xs text-slate-500">{t("driverTrips.horsepower")}</dt><dd className="mt-1 font-bold text-slate-800">{boat.horsepower ? `${boat.horsepower} HP` : "—"}</dd></div>
+                        <div><dt className="text-xs text-slate-500">{t("driverTrips.fuelCapacity")}</dt><dd className="mt-1 font-bold text-slate-800">{boat.fuelCapacity ? `${boat.fuelCapacity} L` : "—"}</dd></div>
+                        <div><dt className="text-xs text-slate-500">{t("driverTrips.engineSerial")}</dt><dd className="mt-1 font-bold text-slate-800">{boat.engineSerial || "—"}</dd></div>
+                        <div><dt className="text-xs text-slate-500">{t("driverTrips.boatOwner")}</dt><dd className="mt-1 font-bold text-slate-800">{boat.owner?.name || "—"}</dd></div>
                       </dl>
-                      {!activeTrip && <div className="mt-auto border-t border-slate-100 px-5 py-3"><button onClick={() => setSelectedBoatId(boat._id)} className={`text-sm font-bold transition-colors ${selectedBoatId === boat._id ? "text-cyan-800" : "text-slate-500 hover:text-[#005a8d]"}`}>{selectedBoatId === boat._id ? "Selected for trip" : "Select this vessel"}</button></div>}
+                      {!activeTrip && <div className="mt-auto border-t border-slate-100 px-5 py-3"><button onClick={() => setSelectedBoatId(boat._id)} className={`text-sm font-bold transition-colors ${selectedBoatId === boat._id ? "text-cyan-800" : "text-slate-500 hover:text-[#005a8d]"}`}>{selectedBoatId === boat._id ? t("driverTrips.selectedForTrip") : t("driverTrips.selectThisVessel")}</button></div>}
                     </article>
                   ))}
                 </div>
@@ -254,11 +256,11 @@ const DriverTrips = () => {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15"><CalendarDays size={20} /></span>
-                    <div><p className="text-[10px] font-bold uppercase tracking-widest text-cyan-200">Schedule</p><h2 className="text-lg font-bold">Trip calendar</h2></div>
+                    <div><p className="text-[10px] font-bold uppercase tracking-widest text-cyan-200">{t("driverTrips.schedule")}</p><h2 className="text-lg font-bold">{t("driverTrips.tripCalendar")}</h2></div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button type="button" onClick={() => changeCalendarMonth(-1)} aria-label="Previous month" className="flex h-9 w-9 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/15"><ChevronLeft size={19} /></button>
-                    <button type="button" onClick={() => changeCalendarMonth(1)} aria-label="Next month" className="flex h-9 w-9 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/15"><ChevronRight size={19} /></button>
+                    <button type="button" onClick={() => changeCalendarMonth(-1)} aria-label={t("driverTrips.previousMonth")} className="flex h-9 w-9 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/15"><ChevronLeft size={19} /></button>
+                    <button type="button" onClick={() => changeCalendarMonth(1)} aria-label={t("driverTrips.nextMonth")} className="flex h-9 w-9 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/15"><ChevronRight size={19} /></button>
                   </div>
                 </div>
                 <p className="text-2xl font-black">{calendarMonth.toLocaleDateString([], { month: "long", year: "numeric" })}</p>
@@ -266,7 +268,7 @@ const DriverTrips = () => {
 
               <div className="p-3 sm:p-4">
                 <div className="mb-1 grid grid-cols-7 text-center text-[10px] font-bold uppercase tracking-wide text-slate-400">
-                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => <span key={day} className="py-1">{day}</span>)}
+                  {[t("driverTrips.sun"), t("driverTrips.mon"), t("driverTrips.tue"), t("driverTrips.wed"), t("driverTrips.thu"), t("driverTrips.fri"), t("driverTrips.sat")].map((day) => <span key={day} className="py-1">{day}</span>)}
                 </div>
                 <div className="grid grid-cols-7">
                   {calendarDays.map((date) => {
@@ -313,14 +315,14 @@ const DriverTrips = () => {
 
             <section>
               <div className="mb-4 flex items-end justify-between gap-3">
-                <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-100 text-[#005a8d]"><CalendarDays size={18} /></span><div><h2 className="text-xl font-bold text-slate-900">Recent trips</h2><p className="mt-0.5 text-xs text-slate-500">Your latest completed journeys</p></div></div>
+                <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-100 text-[#005a8d]"><CalendarDays size={18} /></span><div><h2 className="text-xl font-bold text-slate-900">{t("driverTrips.recentTrips")}</h2><p className="mt-0.5 text-xs text-slate-500">{t("driverTrips.latestCompleted")}</p></div></div>
                 <span className="text-xs font-bold text-slate-500">{completedTrips.length} recorded</span>
               </div>
               {completedTrips.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center">
                   <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f0f4f8] text-[#005a8d]"><MapPin size={22} /></span>
-                  <p className="mt-3 font-bold text-slate-800">No completed trips yet</p>
-                  <p className="mt-1 text-sm text-slate-500">Your trip times and distances will be listed here.</p>
+                  <p className="mt-3 font-bold text-slate-800">{t("driverTrips.noCompletedTrips")}</p>
+                  <p className="mt-1 text-sm text-slate-500">{t("driverTrips.tripTimesDistances")}</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm">
