@@ -17,22 +17,24 @@ import DriverSidebar from "../../../components/DriverSidebar";
 import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import api, { API_ORIGIN, apiUrl } from "../../../services/api";
 import { getPublicVesselUrl } from "../../../services/vesselQr";
+import { useTranslation } from "react-i18next";
 
 const formatDate = (date) => date
   ? new Date(date).toLocaleDateString("en-LK", { day: "2-digit", month: "short", year: "numeric" })
   : "Not available";
 
-const detailItems = (boat) => [
-  ["Vessel type", boat.boatType || "Not available"],
-  ["Build year", boat.modelYear || "Not available"],
-  ["Engine type", boat.engineType || "Not available"],
-  ["Engine serial", boat.engineSerial || "Not available"],
-  ["Horsepower", boat.horsepower ? `${boat.horsepower} HP` : "Not available"],
-  ["Fuel capacity", boat.fuelCapacity ? `${boat.fuelCapacity} L` : "Not available"],
-  ["Assigned on", formatDate(boat.createdAt)],
+const detailItems = (boat, t) => [
+  [t("driverAssignedQr.vesselType"), boat.boatType || t("driverAssignedQr.notAvailable")],
+  [t("driverAssignedQr.buildYear"), boat.modelYear || t("driverAssignedQr.notAvailable")],
+  [t("driverAssignedQr.engineType"), boat.engineType || t("driverAssignedQr.notAvailable")],
+  [t("driverAssignedQr.engineSerial"), boat.engineSerial || t("driverAssignedQr.notAvailable")],
+  [t("driverAssignedQr.horsepower"), boat.horsepower ? `${boat.horsepower} HP` : t("driverAssignedQr.notAvailable")],
+  [t("driverAssignedQr.fuelCapacity"), boat.fuelCapacity ? `${boat.fuelCapacity} L` : t("driverAssignedQr.notAvailable")],
+  [t("driverAssignedQr.assignedOn"), formatDate(boat.createdAt)],
 ];
 
 export default function AssignedBoatQR() {
+  const { t } = useTranslation();
   const [boats, setBoats] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +57,7 @@ export default function AssignedBoatQR() {
         setBoats(Array.isArray(boatResponse.data) ? boatResponse.data : []);
         setRequests(Array.isArray(requestResponse.data) ? requestResponse.data : []);
       } catch (error) {
-        if (active) setPageError(error.response?.data?.message || "Could not load your assigned boats.");
+        if (active) setPageError(error.response?.data?.message || t("driverAssignedQr.loadError"));
       } finally {
         if (active) setLoading(false);
       }
@@ -98,7 +100,7 @@ export default function AssignedBoatQR() {
       setCopiedBoatId(boat._id);
       window.setTimeout(() => setCopiedBoatId(""), 2000);
     } catch {
-      setActionError("Could not copy the public vessel link.");
+      setActionError(t("driverAssignedQr.copyError"));
     }
   };
 
@@ -110,9 +112,9 @@ export default function AssignedBoatQR() {
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-9">
           <div className="mx-auto max-w-6xl">
             <DashboardPageHeader
-              eyebrow="Driver fleet access"
-              title="Assigned Boats & QR Codes"
-              description="Review boats assigned to you and request owner approval to access public vessel records."
+              eyebrow={t("driverAssignedQr.eyebrow")}
+              title={t("driverAssignedQr.title")}
+              description={t("driverAssignedQr.description")}
               icon={QrCode}
               theme="violet"
             />
@@ -122,12 +124,12 @@ export default function AssignedBoatQR() {
             {notice && <p role="status" className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900">{notice}</p>}
 
             {loading ? (
-              <div className="flex min-h-64 items-center justify-center text-sm text-slate-500">Loading assigned boats…</div>
+              <div className="flex min-h-64 items-center justify-center text-sm text-slate-500">{t("driverAssignedQr.loading")}</div>
             ) : boats.length === 0 ? (
               <section className="rounded-lg border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
                 <Anchor size={28} className="mx-auto text-cyan-800" />
-                <h2 className="mt-4 text-lg font-bold text-slate-950">No boat assigned yet</h2>
-                <p className="mt-2 text-sm text-slate-600">A boat owner’s assignment will appear here.</p>
+                <h2 className="mt-4 text-lg font-bold text-slate-950">{t("driverAssignedQr.noBoat")}</h2>
+                <p className="mt-2 text-sm text-slate-600">{t("driverAssignedQr.noBoatDesc")}</p>
               </section>
             ) : (
               <div className="space-y-5">
@@ -145,13 +147,13 @@ export default function AssignedBoatQR() {
                             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-950 text-white"><Ship size={21} /></span>
                           )}
                           <div className="min-w-0">
-                            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Assigned vessel</p>
+                            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{t("driverAssignedQr.assignedVessel")}</p>
                             <h2 className="truncate text-lg font-bold text-slate-950">{boat.boatName}</h2>
                             <p className="text-sm text-slate-600">{boat.registrationNumber}</p>
                           </div>
                         </div>
                         <span className={`rounded-md px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${boat.boatStatus === "ACTIVE" ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-700"}`}>
-                          {boat.boatStatus || "Status unavailable"}
+                          {boat.boatStatus || t("driverAssignedQr.statusUnavailable")}
                         </span>
                       </div>
 
@@ -159,11 +161,11 @@ export default function AssignedBoatQR() {
                         <div className="px-5 py-5 sm:px-6">
                           <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-800">
                             <UserRound size={16} className="text-cyan-800" />
-                            <span>Assigned by {boat.owner?.name || "Boat owner"}</span>
+                            <span>{t("driverAssignedQr.assignedBy")} {boat.owner?.name || t("driverAssignedQr.boatOwner")}</span>
                           </div>
                           {boat.owner?.email && <p className="-mt-2 mb-4 pl-6 text-xs text-slate-500">{boat.owner.email}</p>}
                           <dl className="grid gap-x-6 gap-y-4 border-t border-slate-100 pt-4 sm:grid-cols-2 xl:grid-cols-3">
-                            {detailItems(boat).map(([label, value]) => (
+                            {detailItems(boat, t).map(([label, value]) => (
                               <div key={label} className="min-w-0">
                                 <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{label}</dt>
                                 <dd className="mt-1 break-words text-sm font-semibold text-slate-900">{value}</dd>
@@ -180,27 +182,27 @@ export default function AssignedBoatQR() {
                                 <QRCodeCanvas value={qrValue} size={160} level="H" includeMargin />
                               </div>
                               <button onClick={() => copyPublicLink(boat)} className="mt-3 inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-cyan-700 hover:text-blue-950">
-                                <Copy size={14} /> {copiedBoatId === boat._id ? "Link copied" : "Copy vessel link"}
+                                <Copy size={14} /> {copiedBoatId === boat._id ? t("driverAssignedQr.linkCopied") : t("driverAssignedQr.copyLink")}
                               </button>
                             </div>
                           ) : request?.requestStatus === "pending" ? (
                             <div className="flex h-full min-h-36 flex-col items-center justify-center text-center">
                               <Clock3 size={23} className="text-cyan-800" />
                               <p className="mt-3 text-sm font-bold text-slate-900">Request sent</p>
-                              <p className="mt-1 text-xs leading-5 text-slate-600">The boat owner will share the QR code here after approval.</p>
+                              <p className="mt-1 text-xs leading-5 text-slate-600">{t("driverAssignedQr.approvalText")}</p>
                             </div>
                           ) : (
                             <div className="flex h-full min-h-36 flex-col items-center justify-center text-center">
                               <QrCode size={24} className="text-cyan-800" />
-                              <p className="mt-3 text-sm font-bold text-slate-900">Vessel QR access</p>
-                              <p className="mt-1 text-xs leading-5 text-slate-600">Ask the owner to share this boat’s public verification code.</p>
+                              <p className="mt-3 text-sm font-bold text-slate-900">{t("driverAssignedQr.vesselQrAccess")}</p>
+                              <p className="mt-1 text-xs leading-5 text-slate-600">{t("driverAssignedQr.requestText")}</p>
                               <button
                                 onClick={() => requestQr(boat)}
                                 disabled={requestingBoatId === boat._id}
                                 className="mt-4 inline-flex items-center gap-2 rounded-md bg-blue-950 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-cyan-800 disabled:cursor-wait disabled:opacity-60"
                               >
                                 <QrCode size={15} />
-                                {requestingBoatId === boat._id ? "Sending request…" : "Request QR code"}
+                                {requestingBoatId === boat._id ? t("driverAssignedQr.sending") : t("driverAssignedQr.requestQr")}
                               </button>
                             </div>
                           )}
