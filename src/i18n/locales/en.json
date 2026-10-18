@@ -716,29 +716,9 @@
     "startRecording": "Start recording daily entries to see monthly reports",
     "addDailyEntry": "➕ Add Daily Entry",
     "overview": "overview",
-    "daily": {
-      "salesFor": "Daily sales for {{month}} {{year}}",
-      "workingDaysRecorded": "{{count}} working days recorded this month",
-      "date": "Date",
-      "fishCaught": "Fish caught",
-      "quantity": "Quantity",
-      "income": "Income",
-      "expenses": "Expenses",
-      "totalDays": "TOTAL ({{count}} days)"
-    },
-    "comparison": {
-      "month": "Month",
-      "profit": "Profit",
-      "days": "Days"
-    },
-    "analysis": {
-      "recommendationsInsights": "Recommendations & insights",
-      "keyMetrics": "Key performance metrics",
-      "revenuePerWorkingDay": "Revenue per working day",
-      "costPerWorkingDay": "Cost per working day",
-      "profitPerWorkingDay": "Profit per working day",
-      "totalFishCatch": "Total fish catch"
-    },
+    "daily": "daily",
+    "comparison": "comparison",
+    "analysis": "analysis",
     "dailyEntries": "📅 Daily Entries",
     "totalIncome": "Total Income",
     "totalExpenses": "Total Expenses",
@@ -1784,5 +1764,236 @@
       "connection_warning": "Boat driver has a weak internet connection.",
       "qr_request": "A driver has requested access to this boat QR code."
     }
+  },
+  "boatOwnerBoatDetails": {
+    "notProvided": "Not provided",
+    "notRecorded": "Not recorded",
+    "locationNotRecorded": "Location has not been recorded",
+    "vesselFallback": "Vessel",
+    "loading": "Loading boat details...",
+    "detailsUnavailable": "Boat details unavailable",
+    "connectionLabel": "connection",
+    "errors": {
+      "notFound": "This boat could not be found in your fleet.",
+      "loadFailed": "Could not load boat details.",
+      "idRequired": "A boat ID is required to view this page.",
+      "notAvailable": "This boat is not available in your fleet."
+    },
+    "actions": {
+      "backToBoats": "Back to boats",
+      "returnToBoats": "Return to boats",
+      "qrCode": "Boat QR code",
+      "weather": "Weather",
+      "openMap": "Open map"
+    },
+    "header": {
+      "vesselRecord": "Fleet vessel record"
+    },
+    "status": {
+      "active": "ACTIVE",
+      "maintenance": "MAINTENANCE",
+      "nonActive": "NON-ACTIVE",
+      "unknown": "STATUS UNKNOWN"
+    },
+    "connection": {
+      "good": "Good",
+      "medium": "Medium",
+      "poor": "Poor",
+      "offline": "Offline"
+    },
+    "labels": {
+      "modelYear": "Model year",
+      "engine": "Engine",
+      "power": "Power",
+      "fuelCapacity": "Fuel capacity",
+      "regNo": "Registration number",
+      "vesselType": "Vessel type",
+      "engineType": "Engine type",
+      "engineSerial": "Engine serial",
+      "horsepower": "Horsepower"
+    },
+    "specs": {
+      "title": "Vessel specifications",
+      "description": "Registration and equipment details"
+    },
+    "driver": {
+      "title": "Assigned driver",
+      "description": "Current vessel assignment",
+      "driverFallback": "Driver",
+      "emailNotProvided": "Email not provided",
+      "noDriver": "No driver is assigned to this boat."
+    },
+    "location": {
+      "title": "Last known location",
+      "description": "GPS coordinates registered to this boat"
+    },
+    "footer": {
+      "recordFleet": "Boat record is part of your owner fleet.",
+      "registered": "Registered",
+      "updated": "Updated"
+    }
+  },
+  "BOATOWNERBOATDETAILS": {
+    "NOTPROVIDED": "Not provided",
+    "NOTRECORDED": "Not recorded",
+    "LOCATIONNOTRECORDED": "Location has not been recorded",
+    "VESSELFALLBACK": "Vessel",
+    "LOADING": "Loading boat details...",
+    "DETAILSUNAVAILABLE": "Boat details unavailable",
+    "CONNECTIONLABEL": "connection",
+    "ERRORS": {
+      "NOTFOUND": "This boat could not be found in your fleet.",
+      "LOADFAILED": "Could not load boat details.",
+      "IDREQUIRED": "A boat ID is required to view this page.",
+      "NOTAVAILABLE": "This boat is not available in your fleet."
+    },
+    "ACTIONS": {
+      "BACKTOBOATS": "Back to boats",
+      "RETURNTOBOATS": "Return to boats",
+      "QRCODE": "Boat QR code",
+      "WEATHER": "Weather",
+      "OPENMAP": "Open map"
+    },
+    "HEADER": {
+      "VESSELRECORD": "Fleet vessel record"
+    },
+    "STATUS": {
+      "ACTIVE": "ACTIVE",
+      "MAINTENANCE": "MAINTENANCE",
+      "NONACTIVE": "NON-ACTIVE",
+      "UNKNOWN": "STATUS UNKNOWN"
+    },
+    "CONNECTION": {
+      "GOOD": "Good",
+      "MEDIUM": "Medium",
+      "POOR": "Poor",
+      "OFFLINE": "Offline"
+    },
+    "LABELS": {
+      "MODELYEAR": "Model year",
+      "ENGINE": "Engine",
+      "POWER": "Power",
+      "FUELCAPACITY": "Fuel capacity",
+      "REGNO": "Registration number",
+      "VESSELTYPE": "Vessel type",
+      "ENGINETYPE": "Engine type",
+      "ENGINESERIAL": "Engine serial",
+      "HORSEPOWER": "Horsepower"
+    },
+    "SPECS": {
+      "TITLE": "Vessel specifications",
+      "DESCRIPTION": "Registration and equipment details"
+    },
+    "DRIVER": {
+      "TITLE": "Assigned driver",
+      "DESCRIPTION": "Current vessel assignment",
+      "DRIVERFALLBACK": "Driver",
+      "EMAILNOTPROVIDED": "Email not provided",
+      "NODRIVER": "No driver is assigned to this boat."
+    },
+    "LOCATION": {
+      "TITLE": "Last known location",
+      "DESCRIPTION": "GPS coordinates registered to this boat"
+    },
+    "FOOTER": {
+      "RECORDFLEET": "Boat record is part of your owner fleet.",
+      "REGISTERED": "Registered",
+      "UPDATED": "Updated"
+    }
+  },
+  "driverTrips": {
+    "eyebrow": "Driver portal / journeys",
+    "title": "My Trips",
+    "description": "Trip schedule and activity",
+    "saving": "Saving...",
+    "endTrip": "End trip",
+    "assignedBoat": "Assigned boat",
+    "noAssignedBoats": "No assigned boats",
+    "gettingGps": "Getting GPS...",
+    "startTrip": "Start trip",
+    "tripInProgress": "Trip in progress",
+    "assignedBoatFallback": "Assigned boat",
+    "started": "Started",
+    "elapsedTime": "Elapsed time",
+    "distanceTravelled": "Distance travelled",
+    "gpsPointsRecorded": "GPS points recorded",
+    "loadingAssignedBoats": "Loading assigned boats...",
+    "noBoatAssigned": "No boat has been assigned to your account yet.",
+    "assignedVessel": "Assigned vessel",
+    "registration": "Registration",
+    "modelYear": "Model year",
+    "engineType": "Engine type",
+    "horsepower": "Horsepower",
+    "fuelCapacity": "Fuel capacity",
+    "engineSerial": "Engine serial",
+    "boatOwner": "Boat owner",
+    "selectedForTrip": "Selected for trip",
+    "selectThisVessel": "Select this vessel",
+    "schedule": "Schedule",
+    "tripCalendar": "Trip calendar",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "trip": "trip",
+    "trips": "trips",
+    "boatTrip": "Boat trip",
+    "inProgress": "In progress",
+    "noTripsForDay": "No trips recorded for this day.",
+    "recentTrips": "Recent trips",
+    "latestCompleted": "Your latest completed journeys",
+    "recorded": "recorded",
+    "noCompletedTrips": "No completed trips yet",
+    "tripTimesDistances": "Your trip times and distances will be listed here.",
+    "boat": "Boat",
+    "start": "Start",
+    "end": "End",
+    "duration": "Duration",
+    "distance": "Distance",
+    "loadingError": "Could not load your assigned boats and trips",
+    "gpsUnavailable": "GPS is not available in this browser",
+    "gpsFailed": "Could not get your location. Allow GPS access and try again.",
+    "gpsSaveFailed": "GPS point could not be saved. Check your connection.",
+    "gpsLost": "GPS access was lost. Allow location access to record trip distance.",
+    "tripStarted": "Trip started",
+    "tripEnded": "Trip ended and saved",
+    "couldNotStart": "Could not start trip",
+    "couldNotEnd": "Could not end trip"
+  },
+  "driverAssignedQr": {
+    "eyebrow": "Driver fleet access",
+    "title": "Assigned Boats & QR Codes",
+    "description": "Review boats assigned to you and request owner approval to access public vessel records.",
+    "loading": "Loading assigned boats…",
+    "noBoat": "No boat assigned yet",
+    "noBoatDesc": "A boat owner’s assignment will appear here.",
+    "assignedVessel": "Assigned vessel",
+    "statusUnavailable": "Status unavailable",
+    "assignedBy": "Assigned by",
+    "boatOwner": "Boat owner",
+    "vesselType": "Vessel type",
+    "buildYear": "Build year",
+    "engineType": "Engine type",
+    "engineSerial": "Engine serial",
+    "horsepower": "Horsepower",
+    "fuelCapacity": "Fuel capacity",
+    "assignedOn": "Assigned on",
+    "notAvailable": "Not available",
+    "qrShared": "QR code shared",
+    "linkCopied": "Link copied",
+    "copyLink": "Copy vessel link",
+    "requestSent": "Request sent",
+    "approvalText": "The boat owner will share the QR code here after approval.",
+    "vesselQrAccess": "Vessel QR access",
+    "requestText": "Ask the owner to share this boat’s public verification code.",
+    "sending": "Sending request…",
+    "requestQr": "Request QR code",
+    "loadError": "Could not load your assigned boats.",
+    "copyError": "Could not copy the public vessel link."
   }
 }
