@@ -713,29 +713,9 @@
     "startRecording": "මාසික වාර්තා බැලීමට දෛනික ඇතුළත් කිරීම් වාර්තා කිරීම ආරම්භ කරන්න",
     "addDailyEntry": "➕ දෛනික ඇතුළත් කිරීමක් එකතු කරන්න",
     "overview": "දළ විශ්ලේෂණය",
-    "daily": {
-      "salesFor": "{{month}} {{year}} සඳහා දෛනික අලෙවිය",
-      "workingDaysRecorded": "මෙම මාසයේ වැඩ කළ දින {{count}}ක් වාර්තා කර ඇත",
-      "date": "දිනය",
-      "fishCaught": "අල්ලාගත් මාළු",
-      "quantity": "ප්‍රමාණය",
-      "income": "ආදායම",
-      "expenses": "වියදම්",
-      "totalDays": "මුළු දින ගණන ({{count}})"
-    },
-    "comparison": {
-      "month": "මාසය",
-      "profit": "ලාභය",
-      "days": "දින"
-    },
-    "analysis": {
-      "recommendationsInsights": "නිර්දේශ සහ විශ්ලේෂණ",
-      "keyMetrics": "ප්‍රධාන කාර්යසාධන මිනුම්",
-      "revenuePerWorkingDay": "වැඩ කළ දිනකට ආදායම",
-      "costPerWorkingDay": "වැඩ කළ දිනකට පිරිවැය",
-      "profitPerWorkingDay": "වැඩ කළ දිනකට ලාභය",
-      "totalFishCatch": "මුළු මාළු අස්වැන්න"
-    },
+    "daily": "දෛනික",
+    "comparison": "සැසඳීම",
+    "analysis": "විශ්ලේෂණය",
     "dailyEntries": "📅 දෛනික ඇතුළත් කිරීම්",
     "totalIncome": "මුළු ආදායම",
     "totalExpenses": "මුළු වියදම්",
@@ -1796,5 +1776,236 @@
       "connection_warning": "බෝට්ටු රියදුරුගේ අන්තර්ජාල සම්බන්ධතාව දුර්වලයි.",
       "qr_request": "රියදුරෙකු මෙම බෝට්ටුවේ QR කේතයට ප්‍රවේශය ඉල්ලා ඇත."
     }
+  },
+  "boatOwnerBoatDetails": {
+    "notProvided": "සඳහන් කර නැත",
+    "notRecorded": "වාර්තා කර නැත",
+    "locationNotRecorded": "ස්ථානය වාර්තා කර නැත",
+    "vesselFallback": "යාත්‍රාව",
+    "loading": "බෝට්ටුවේ විස්තර පූරණය වෙමින්...",
+    "detailsUnavailable": "බෝට්ටුවේ විස්තර ලබාගත නොහැක",
+    "connectionLabel": "සම්බන්ධතාව",
+    "errors": {
+      "notFound": "මෙම බෝට්ටුව ඔබගේ බෝට්ටු සමූහයේ සොයාගත නොහැක.",
+      "loadFailed": "බෝට්ටුවේ විස්තර ලබාගත නොහැකි විය.",
+      "idRequired": "මෙම පිටුව බැලීමට බෝට්ටු හැඳුනුම් අංකයක් අවශ්‍යයි.",
+      "notAvailable": "මෙම බෝට්ටුව ඔබගේ බෝට්ටු සමූහයේ නොමැත."
+    },
+    "actions": {
+      "backToBoats": "බෝට්ටු වෙත ආපසු",
+      "returnToBoats": "බෝට්ටු වෙත ආපසු යන්න",
+      "qrCode": "බෝට්ටුවේ QR කේතය",
+      "weather": "කාලගුණය",
+      "openMap": "සිතියම විවෘත කරන්න"
+    },
+    "header": {
+      "vesselRecord": "බෝට්ටු සමූහයේ යාත්‍රා වාර්තාව"
+    },
+    "status": {
+      "active": "සක්‍රියයි",
+      "maintenance": "නඩත්තු වෙමින්",
+      "nonActive": "අක්‍රියයි",
+      "unknown": "තත්ත්වය නොදනී"
+    },
+    "connection": {
+      "good": "හොඳයි",
+      "medium": "මධ්‍යමයි",
+      "poor": "දුර්වලයි",
+      "offline": "සම්බන්ධතාව නැත"
+    },
+    "labels": {
+      "modelYear": "නිෂ්පාදිත වර්ෂය",
+      "engine": "එන්ජිම",
+      "power": "බලය",
+      "fuelCapacity": "ඉන්ධන ධාරිතාව",
+      "regNo": "ලියාපදිංචි අංකය",
+      "vesselType": "යාත්‍රා වර්ගය",
+      "engineType": "එන්ජින් වර්ගය",
+      "engineSerial": "එන්ජින් අනුක්‍රමික අංකය",
+      "horsepower": "අශ්වබල"
+    },
+    "specs": {
+      "title": "යාත්‍රාවේ විස්තර",
+      "description": "ලියාපදිංචි සහ උපකරණ විස්තර"
+    },
+    "driver": {
+      "title": "පවරා ඇති රියදුරු",
+      "description": "දැනට පවතින යාත්‍රා පැවරීම",
+      "driverFallback": "රියදුරු",
+      "emailNotProvided": "විද්‍යුත් තැපෑල සඳහන් කර නැත",
+      "noDriver": "මෙම බෝට්ටුවට රියදුරෙකු පවරා නැත."
+    },
+    "location": {
+      "title": "අවසන් වරට දන්නා ස්ථානය",
+      "description": "මෙම බෝට්ටුව සඳහා ලියාපදිංචි GPS ඛණ්ඩාංක"
+    },
+    "footer": {
+      "recordFleet": "මෙම බෝට්ටු වාර්තාව හිමිකරුගේ බෝට්ටු සමූහයට අයත් වේ.",
+      "registered": "ලියාපදිංචි කළ දිනය",
+      "updated": "යාවත්කාලීන කළ දිනය"
+    }
+  },
+  "BOATOWNERBOATDETAILS": {
+    "NOTPROVIDED": "සඳහන් කර නැත",
+    "NOTRECORDED": "වාර්තා කර නැත",
+    "LOCATIONNOTRECORDED": "ස්ථානය වාර්තා කර නැත",
+    "VESSELFALLBACK": "යාත්‍රාව",
+    "LOADING": "බෝට්ටුවේ විස්තර පූරණය වෙමින්...",
+    "DETAILSUNAVAILABLE": "බෝට්ටුවේ විස්තර ලබාගත නොහැක",
+    "CONNECTIONLABEL": "සම්බන්ධතාව",
+    "ERRORS": {
+      "NOTFOUND": "මෙම බෝට්ටුව ඔබගේ බෝට්ටු සමූහයේ සොයාගත නොහැක.",
+      "LOADFAILED": "බෝට්ටුවේ විස්තර ලබාගත නොහැකි විය.",
+      "IDREQUIRED": "මෙම පිටුව බැලීමට බෝට්ටු හැඳුනුම් අංකයක් අවශ්‍යයි.",
+      "NOTAVAILABLE": "මෙම බෝට්ටුව ඔබගේ බෝට්ටු සමූහයේ නොමැත."
+    },
+    "ACTIONS": {
+      "BACKTOBOATS": "බෝට්ටු වෙත ආපසු",
+      "RETURNTOBOATS": "බෝට්ටු වෙත ආපසු යන්න",
+      "QRCODE": "බෝට්ටුවේ QR කේතය",
+      "WEATHER": "කාලගුණය",
+      "OPENMAP": "සිතියම විවෘත කරන්න"
+    },
+    "HEADER": {
+      "VESSELRECORD": "බෝට්ටු සමූහයේ යාත්‍රා වාර්තාව"
+    },
+    "STATUS": {
+      "ACTIVE": "සක්‍රියයි",
+      "MAINTENANCE": "නඩත්තු වෙමින්",
+      "NONACTIVE": "අක්‍රියයි",
+      "UNKNOWN": "තත්ත්වය නොදනී"
+    },
+    "CONNECTION": {
+      "GOOD": "හොඳයි",
+      "MEDIUM": "මධ්‍යමයි",
+      "POOR": "දුර්වලයි",
+      "OFFLINE": "සම්බන්ධතාව නැත"
+    },
+    "LABELS": {
+      "MODELYEAR": "නිෂ්පාදිත වර්ෂය",
+      "ENGINE": "එන්ජිම",
+      "POWER": "බලය",
+      "FUELCAPACITY": "ඉන්ධන ධාරිතාව",
+      "REGNO": "ලියාපදිංචි අංකය",
+      "VESSELTYPE": "යාත්‍රා වර්ගය",
+      "ENGINETYPE": "එන්ජින් වර්ගය",
+      "ENGINESERIAL": "එන්ජින් අනුක්‍රමික අංකය",
+      "HORSEPOWER": "අශ්වබල"
+    },
+    "SPECS": {
+      "TITLE": "යාත්‍රාවේ විස්තර",
+      "DESCRIPTION": "ලියාපදිංචි සහ උපකරණ විස්තර"
+    },
+    "DRIVER": {
+      "TITLE": "පවරා ඇති රියදුරු",
+      "DESCRIPTION": "දැනට පවතින යාත්‍රා පැවරීම",
+      "DRIVERFALLBACK": "රියදුරු",
+      "EMAILNOTPROVIDED": "විද්‍යුත් තැපෑල සඳහන් කර නැත",
+      "NODRIVER": "මෙම බෝට්ටුවට රියදුරෙකු පවරා නැත."
+    },
+    "LOCATION": {
+      "TITLE": "අවසන් වරට දන්නා ස්ථානය",
+      "DESCRIPTION": "මෙම බෝට්ටුව සඳහා ලියාපදිංචි GPS ඛණ්ඩාංක"
+    },
+    "FOOTER": {
+      "RECORDFLEET": "මෙම බෝට්ටු වාර්තාව හිමිකරුගේ බෝට්ටු සමූහයට අයත් වේ.",
+      "REGISTERED": "ලියාපදිංචි කළ දිනය",
+      "UPDATED": "යාවත්කාලීන කළ දිනය"
+    }
+  },
+  "driverTrips": {
+    "eyebrow": "රියදුරු ද්වාරය / මුහුදු ගමන්",
+    "title": "මගේ මුහුදු ගමන්",
+    "description": "ගමන් කාලසටහන සහ ක්‍රියාකාරකම්",
+    "saving": "සුරකිමින්...",
+    "endTrip": "ගමන අවසන් කරන්න",
+    "assignedBoat": "පවරා ඇති බෝට්ටුව",
+    "noAssignedBoats": "පවරා ඇති බෝට්ටු නැත",
+    "gettingGps": "GPS ලබාගනිමින්...",
+    "startTrip": "ගමන ආරම්භ කරන්න",
+    "tripInProgress": "ගමන සිදුවෙමින් පවතී",
+    "assignedBoatFallback": "පවරා ඇති බෝට්ටුව",
+    "started": "ආරම්භ කළේ",
+    "elapsedTime": "ගත වූ කාලය",
+    "distanceTravelled": "ගමන් කළ දුර",
+    "gpsPointsRecorded": "වාර්තා කළ GPS ස්ථාන",
+    "loadingAssignedBoats": "පවරා ඇති බෝට්ටු පූරණය වෙමින්...",
+    "noBoatAssigned": "ඔබගේ ගිණුමට තවම බෝට්ටුවක් පවරා නැත.",
+    "assignedVessel": "පවරා ඇති යාත්‍රාව",
+    "registration": "ලියාපදිංචිය",
+    "modelYear": "නිෂ්පාදිත වර්ෂය",
+    "engineType": "එන්ජින් වර්ගය",
+    "horsepower": "අශ්වබල",
+    "fuelCapacity": "ඉන්ධන ධාරිතාව",
+    "engineSerial": "එන්ජින් අනුක්‍රමික අංකය",
+    "boatOwner": "බෝට්ටු හිමිකරු",
+    "selectedForTrip": "ගමන සඳහා තෝරා ඇත",
+    "selectThisVessel": "මෙම යාත්‍රාව තෝරන්න",
+    "schedule": "කාලසටහන",
+    "tripCalendar": "ගමන් දින දර්ශනය",
+    "previousMonth": "පෙර මාසය",
+    "nextMonth": "ඊළඟ මාසය",
+    "sun": "ඉරිදා",
+    "mon": "සඳුදා",
+    "tue": "අඟහරුවාදා",
+    "wed": "බදාදා",
+    "thu": "බ්‍රහස්පතින්දා",
+    "fri": "සිකුරාදා",
+    "sat": "සෙනසුරාදා",
+    "trip": "ගමන",
+    "trips": "ගමන්",
+    "boatTrip": "බෝට්ටු ගමන",
+    "inProgress": "සිදුවෙමින් පවතී",
+    "noTripsForDay": "මෙම දිනය සඳහා ගමන් වාර්තා නැත.",
+    "recentTrips": "මෑත ගමන්",
+    "latestCompleted": "ඔබගේ මෑතකදී අවසන් කළ ගමන්",
+    "recorded": "වාර්තා කර ඇත",
+    "noCompletedTrips": "තවම අවසන් කළ ගමන් නැත",
+    "tripTimesDistances": "ඔබගේ ගමන් වේලාවන් සහ දුර මෙහි පෙන්වනු ඇත.",
+    "boat": "බෝට්ටුව",
+    "start": "ආරම්භය",
+    "end": "අවසානය",
+    "duration": "කාලය",
+    "distance": "දුර",
+    "loadingError": "ඔබට පවරා ඇති බෝට්ටු සහ ගමන් පූරණය කළ නොහැකි විය",
+    "gpsUnavailable": "මෙම බ්‍රවුසරයේ GPS පහසුකම නොමැත",
+    "gpsFailed": "ඔබගේ ස්ථානය ලබාගත නොහැකි විය. GPS අවසර ලබාදී නැවත උත්සාහ කරන්න.",
+    "gpsSaveFailed": "GPS ස්ථානය සුරැකිය නොහැකි විය. සම්බන්ධතාව පරීක්ෂා කරන්න.",
+    "gpsLost": "GPS ප්‍රවේශය නැති විය. ගමන් දුර වාර්තා කිරීමට ස්ථාන අවසර ලබාදෙන්න.",
+    "tripStarted": "ගමන ආරම්භ විය",
+    "tripEnded": "ගමන අවසන් කර සුරකින ලදී",
+    "couldNotStart": "ගමන ආරම්භ කළ නොහැකි විය",
+    "couldNotEnd": "ගමන අවසන් කළ නොහැකි විය"
+  },
+  "driverAssignedQr": {
+    "eyebrow": "රියදුරු බෝට්ටු ප්‍රවේශය",
+    "title": "පවරා ඇති බෝට්ටු සහ QR කේත",
+    "description": "ඔබට පවරා ඇති බෝට්ටු බලන්න සහ පොදු යාත්‍රා වාර්තා වෙත ප්‍රවේශ වීමට හිමිකරුගේ අනුමැතිය ඉල්ලන්න.",
+    "loading": "පවරා ඇති බෝට්ටු පූරණය වෙමින්…",
+    "noBoat": "තවම බෝට්ටුවක් පවරා නැත",
+    "noBoatDesc": "බෝට්ටු හිමිකරු විසින් පවරන බෝට්ටුව මෙහි දිස්වනු ඇත.",
+    "assignedVessel": "පවරා ඇති යාත්‍රාව",
+    "statusUnavailable": "තත්ත්වය ලබාගත නොහැක",
+    "assignedBy": "පවරා ඇත්තේ",
+    "boatOwner": "බෝට්ටු හිමිකරු",
+    "vesselType": "යාත්‍රා වර්ගය",
+    "buildYear": "නිෂ්පාදිත වර්ෂය",
+    "engineType": "එන්ජින් වර්ගය",
+    "engineSerial": "එන්ජින් අනුක්‍රමික අංකය",
+    "horsepower": "අශ්වබල",
+    "fuelCapacity": "ඉන්ධන ධාරිතාව",
+    "assignedOn": "පවරා ඇති දිනය",
+    "notAvailable": "ලබාගත නොහැක",
+    "qrShared": "QR කේතය බෙදාගෙන ඇත",
+    "linkCopied": "සබැඳිය පිටපත් කළා",
+    "copyLink": "යාත්‍රා සබැඳිය පිටපත් කරන්න",
+    "requestSent": "ඉල්ලීම යවා ඇත",
+    "approvalText": "අනුමැතියෙන් පසු බෝට්ටු හිමිකරු QR කේතය මෙහි බෙදාගනී.",
+    "vesselQrAccess": "යාත්‍රාවේ QR ප්‍රවේශය",
+    "requestText": "මෙම බෝට්ටුවේ පොදු සත්‍යාපන කේතය බෙදාගන්නා ලෙස හිමිකරුගෙන් ඉල්ලන්න.",
+    "sending": "ඉල්ලීම යවමින්…",
+    "requestQr": "QR කේතය ඉල්ලන්න",
+    "loadError": "ඔබට පවරා ඇති බෝට්ටු පූරණය කළ නොහැකි විය.",
+    "copyError": "පොදු යාත්‍රා සබැඳිය පිටපත් කළ නොහැකි විය."
   }
 }
