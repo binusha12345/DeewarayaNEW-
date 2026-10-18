@@ -454,7 +454,7 @@ const WeatherDashboard = () => {
         <DashboardNav />
 
         <main className="flex-1 min-h-0 overflow-y-auto px-6 lg:px-10 py-8">
-          <div className="max-w-6xl mx-auto">
+          <div className="mx-auto max-w-7xl space-y-6">
 
             <DashboardPageHeader
               eyebrow={t('weatherDashboard.eyebrow')}
