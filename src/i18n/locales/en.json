@@ -834,6 +834,32 @@
       "whatsappDelivered": "Your monthly finance report has been delivered to the WhatsApp number provided.",
       "emailDelivered": "Your monthly finance report has been delivered to your email inbox."
     },
+      "daily": {
+    "salesFor": "Daily Sales for {{month}} {{year}}",
+    "workingDaysRecorded": "{{count}} working days recorded this month",
+    "date": "Date",
+    "fishCaught": "Fish Caught",
+    "quantity": "Quantity",
+    "income": "Income",
+    "expenses": "Expenses",
+    "profit": "Profit",
+    "totalDays": "TOTAL ({{count}} days)"
+  },
+  "comparison": {
+    "month": "Month",
+    "income": "Income",
+    "expenses": "Expenses",
+    "profit": "Profit",
+    "days": "Working Days"
+  },
+  "analysis": {
+    "recommendationsInsights": "Recommendations & Insights",
+    "keyMetrics": "Key Performance Metrics",
+    "revenuePerWorkingDay": "Revenue per Working Day",
+    "costPerWorkingDay": "Cost per Working Day",
+    "profitPerWorkingDay": "Profit per Working Day",
+    "totalFishCatch": "Total Fish Catch"
+  },
     "dispatch": {
       "title": "Automated monthly dispatch",
       "description": "Final month-end net profit report is emailed to the owner's registered address automatically",
