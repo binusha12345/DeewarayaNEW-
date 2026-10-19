@@ -799,6 +799,32 @@
       "comparison": "සංසන්දනය",
       "analysis": "විශ්ලේෂණය"
     },
+      "daily": {
+    "salesFor": "{{month}} {{year}} සඳහා දෛනික විකුණුම්",
+    "workingDaysRecorded": "මෙම මාසයේ වැඩ කළ දින ගණන: {{count}}",
+    "date": "දිනය",
+    "fishCaught": "අල්ලාගත් මාළු",
+    "quantity": "ප්‍රමාණය",
+    "income": "ආදායම",
+    "expenses": "වියදම්",
+    "profit": "ලාභය",
+    "totalDays": "එකතුව (දින {{count}})"
+  },
+  "comparison": {
+    "month": "මාසය",
+    "income": "ආදායම",
+    "expenses": "වියදම්",
+    "profit": "ලාභය",
+    "days": "වැඩ කළ දින"
+  },
+  "analysis": {
+    "recommendationsInsights": "නිර්දේශ සහ විශ්ලේෂණ",
+    "keyMetrics": "ප්‍රධාන කාර්ය සාධන මිනුම්",
+    "revenuePerWorkingDay": "වැඩ කළ දිනකට ආදායම",
+    "costPerWorkingDay": "වැඩ කළ දිනකට වියදම",
+    "profitPerWorkingDay": "වැඩ කළ දිනකට ලාභය",
+    "totalFishCatch": "මුළු මත්ස්‍ය අස්වැන්න"
+  },
     "summary": {
       "totalIncome": "මුළු ආදායම",
       "totalExpenses": "මුළු වියදම්",
