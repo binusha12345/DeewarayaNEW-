@@ -7,6 +7,7 @@ import DashboardPageHeader from "../../../components/DashboardPageHeader";
 import { Wallet } from "lucide-react";
 import api from "../../../services/api";
 import cfhcLogo from '../../../assets/cfhc.png';
+import cepetcoLogo from '../../../assets/images.jpeg';
 import {
   FaCalculator,
   FaChartBar,
@@ -102,14 +103,14 @@ const MarketPricesWidget = () => {
         <p className="mb-3 text-xs font-bold uppercase text-slate-500">{t('finance.marketPrices.priceDataSources')}</p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <a
-            href={marketData.fuel_source || "https://ceypetco.gov.lk/marketing-sales/"}
+            href="https://ceypetco.gov.lk/"
             target="_blank"
             rel="noreferrer"
             className="flex min-w-0 items-center gap-3 rounded-lg border border-slate-200 p-3 transition-colors hover:bg-slate-50"
           >
             <img
-              src="https://ceypetco.gov.lk/wp-content/uploads/2024/02/Ceylon_Petroleum_Corporation_logo.png"
-              alt=""
+              src={cepetcoLogo}
+              alt="cepetco"
               className="h-12 w-20 shrink-0 object-contain"
               loading="lazy"
             />
@@ -119,14 +120,14 @@ const MarketPricesWidget = () => {
             </span>
           </a>
           <a
-            src="src/assets/cfhc.png"
+            href="https://cfc.gov.lk/"
             target="_blank"
             rel="noreferrer"
             className="flex min-w-0 items-center gap-3 rounded-lg border border-slate-200 p-3 transition-colors hover:bg-slate-50"
           >
             <img
               src={cfhcLogo}
-              alt=""
+              alt="ceylon fishery harbor corporation"
               className="h-12 w-20 shrink-0 object-contain"
               loading="lazy"
             />
