@@ -10,7 +10,12 @@ import {
   HeartPulse,
   LifeBuoy,
   MapPin,
+  Mic,
+  Pause,
   Phone,
+  Play,
+  Square,
+  Trash2,
   X,
   ShieldCheck,
   Siren,
@@ -47,7 +52,6 @@ const getCurrentLocation = () => new Promise((resolve, reject) => {
     reject(new Error("GPS is not available in this browser."));
     return;
   }
-
   navigator.geolocation.getCurrentPosition(
     ({ coords }) => resolve({
       lat: coords.latitude,
@@ -59,10 +63,29 @@ const getCurrentLocation = () => new Promise((resolve, reject) => {
   );
 });
 
+const formatRecordingTime = (seconds) => {
+  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const s = (seconds % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+};
+
+const blobToBase64 = (blob) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const dataUrl = reader.result;
+      const base64 = typeof dataUrl === "string" ? dataUrl.split(",")[1] : "";
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+
 const Emergency = () => {
   const { t } = useTranslation();
   const EMERGENCY_TYPES = getEmergencyTypes(t);
   const EMERGENCY_CONTACTS = getEmergencyContacts(t);
+
   const [selectedType, setSelectedType] = useState("");
   const [location, setLocation] = useState({ lat: null, lng: null, place: "" });
   const [locationLoading, setLocationLoading] = useState(true);
@@ -80,12 +103,148 @@ const Emergency = () => {
     fuelOk: false,
     crewConfirmed: false,
   });
+
   const [callMenuHovered, setCallMenuHovered] = useState(false);
   const [callMenuPinned, setCallMenuPinned] = useState(false);
+
+  /* ── Voice Recording State & Refs ── */
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [micError, setMicError] = useState("");
+
+  const latestAudioBlobRef = useRef(null);
   const countdownTimer = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordingTimerRef = useRef(null);
+  const audioElementRef = useRef(null);
 
   const formatEmergencyType = (type) =>
     EMERGENCY_TYPES.find((item) => item.id === type)?.label || t('emergency.other');
+
+  const cleanupAudioUrl = () => {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+      setAudioUrl(null);
+    }
+  };
+
+  const startRecording = async () => {
+    setMicError("");
+    cleanupAudioUrl();
+    latestAudioBlobRef.current = null;
+    setAudioBlob(null);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      let mimeType = "";
+      if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+        mimeType = "audio/webm;codecs=opus";
+      } else if (MediaRecorder.isTypeSupported("audio/webm")) {
+        mimeType = "audio/webm";
+      } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+        mimeType = "audio/mp4";
+      }
+
+      const recorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream);
+
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        const finalMime = recorder.mimeType || mimeType || "audio/webm";
+        const blob = new Blob(audioChunksRef.current, { type: finalMime });
+        latestAudioBlobRef.current = blob;
+        setAudioBlob(blob);
+        setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      recorder.start(250);
+      mediaRecorderRef.current = recorder;
+      setIsRecording(true);
+      setRecordingTime(0);
+
+      recordingTimerRef.current = window.setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch {
+      setMicError(t('emergency.micPermissionDenied', 'Microphone access denied. Please allow microphone permission.'));
+      toast.error(t('emergency.micPermissionDenied', 'Microphone access denied.'));
+    }
+  };
+
+  const stopRecording = () => {
+    return new Promise((resolve) => {
+      window.clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+      setIsRecording(false);
+
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.onstop = () => {
+          const finalMime = mediaRecorderRef.current.mimeType || "audio/webm";
+          const blob = new Blob(audioChunksRef.current, { type: finalMime });
+          latestAudioBlobRef.current = blob;
+          setAudioBlob(blob);
+          setAudioUrl(URL.createObjectURL(blob));
+          if (mediaRecorderRef.current.stream) {
+            mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+          }
+          resolve(blob);
+        };
+        mediaRecorderRef.current.stop();
+      } else {
+        resolve(latestAudioBlobRef.current);
+      }
+    });
+  };
+
+  const deleteRecording = () => {
+    if (isRecording) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+      window.clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+      setIsRecording(false);
+    }
+    cleanupAudioUrl();
+    latestAudioBlobRef.current = null;
+    setAudioBlob(null);
+    setRecordingTime(0);
+    setIsPlaying(false);
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current = null;
+    }
+  };
+
+  const togglePlayback = () => {
+    if (!audioUrl) return;
+
+    if (!audioElementRef.current) {
+      const audio = new Audio(audioUrl);
+      audioElementRef.current = audio;
+      audio.onended = () => setIsPlaying(false);
+    }
+
+    if (isPlaying) {
+      audioElementRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioElementRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   const loadEmergencyData = async () => {
     setLoading(true);
@@ -119,32 +278,62 @@ const Emergency = () => {
       .then(setLocation)
       .catch(() => setLocation({ lat: null, lng: null, place: "" }))
       .finally(() => setLocationLoading(false));
-    return () => window.clearInterval(countdownTimer.current);
+
+    return () => {
+      window.clearInterval(countdownTimer.current);
+      window.clearInterval(recordingTimerRef.current);
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current = null;
+      }
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+    };
   }, []);
 
   const sendSOS = async () => {
+    let activeBlob = latestAudioBlobRef.current;
+    if (isRecording) {
+      activeBlob = await stopRecording();
+    }
+
     setSending(true);
     let currentLocation = location;
     try {
       currentLocation = await getCurrentLocation();
       setLocation(currentLocation);
     } catch {
-      // Continue with the latest known location; SOS should not depend on GPS.
+      // Continue with known location
     }
 
     try {
-      const { data } = await api.post("/emergency/sos", {
+      const payload = {
         emergencyType: selectedType,
         latitude: currentLocation.lat,
         longitude: currentLocation.lng,
         placeName: currentLocation.place,
         message: note.trim(),
         checklist,
-      });
+      };
+
+      if (activeBlob) {
+        const base64Audio = await blobToBase64(activeBlob);
+        if (base64Audio) {
+          payload.voiceNoteBase64 = base64Audio;
+          payload.voiceNoteMimeType = activeBlob.type || "audio/webm";
+        }
+      }
+
+      const { data } = await api.post("/emergency/sos", payload);
+
       setActiveEmergency(data.data);
       setHistory((current) => [data.data, ...current.filter((item) => item._id !== data.data._id)]);
       setSelectedType("");
       setNote("");
+      deleteRecording();
+
       if (data.whatsappSent) {
         toast.success(data.message);
       } else {
@@ -286,6 +475,7 @@ const Emergency = () => {
                     </label>
                     <span className="text-xs font-medium text-slate-400">{note.length}/500</span>
                   </div>
+
                   <textarea
                     id="emergency-note"
                     value={note}
@@ -295,8 +485,85 @@ const Emergency = () => {
                     placeholder={t('emergency.whatHappened')}
                     className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-700 focus:bg-white focus:ring-2 focus:ring-cyan-100"
                   />
-                </section>
 
+                  {/* ── Voice Controls ── */}
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    {!audioBlob && !isRecording && (
+                      <button
+                        type="button"
+                        onClick={startRecording}
+                        className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800"
+                      >
+                        <Mic size={16} />
+                        {t('emergency.recordVoiceNote', 'Record Voice Note')}
+                      </button>
+                    )}
+
+                    {isRecording && (
+                      <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5">
+                        <span className="relative flex h-3 w-3">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                          <span className="relative inline-flex h-3 w-3 rounded-full bg-red-600" />
+                        </span>
+                        <span className="font-mono text-sm font-bold text-red-700">
+                          {formatRecordingTime(recordingTime)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={stopRecording}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-700"
+                        >
+                          <Square size={12} />
+                          {t('emergency.stopRecording', 'Stop')}
+                        </button>
+                      </div>
+                    )}
+
+                    {audioBlob && !isRecording && (
+                      <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={togglePlayback}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white transition hover:bg-emerald-700"
+                          aria-label={isPlaying ? "Pause" : "Play"}
+                        >
+                          {isPlaying ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
+                        </button>
+                        <span className="text-sm font-semibold text-emerald-800">
+                          {t('emergency.voiceNoteAttached', 'Voice note attached')}
+                          <span className="ml-1.5 font-mono text-xs text-emerald-600">
+                            ({formatRecordingTime(recordingTime)})
+                          </span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={deleteRecording}
+                          className="ml-1 rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )}
+
+                    {audioBlob && !isRecording && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          deleteRecording();
+                          startRecording();
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-cyan-700"
+                      >
+                        <Mic size={13} />
+                        {t('emergency.reRecord', 'Re-record')}
+                      </button>
+                    )}
+                  </div>
+
+                  {micError && (
+                    <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{micError}</p>
+                  )}
+                </section>
               </div>
 
               <aside className="space-y-6">
@@ -399,7 +666,6 @@ const Emergency = () => {
                     <p className="mt-1 text-sm text-slate-500">{t('emergency.recordOfAlerts')}</p>
                   </div>
                 </div>
-                <span className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 sm:inline-flex">{t('emergency.last5Records')}</span>
               </div>
               {loading ? (
                 <p className="py-6 text-center text-sm text-slate-500">{t('emergency.loadingHistory')}</p>
@@ -427,6 +693,7 @@ const Emergency = () => {
           </div>
         </main>
       </div>
+
       {callMenuOpen && (
         <button
           type="button"
@@ -448,11 +715,7 @@ const Emergency = () => {
         }}
       >
         {callMenuOpen && (
-          <section
-            id="emergency-call-menu"
-            aria-label={t('emergency.callForHelp')}
-            className="mb-4 w-[min(22rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-white/70 bg-white/80 text-slate-900 shadow-2xl shadow-slate-950/20 backdrop-blur-2xl"
-          >
+          <section className="mb-4 w-[min(22rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-white/70 bg-white/80 text-slate-900 shadow-2xl shadow-slate-950/20 backdrop-blur-2xl">
             <div className="flex items-center justify-between border-b border-white/60 bg-white/50 px-4 py-3">
               <div>
                 <h2 className="text-base font-extrabold">{t('emergency.callForHelp')}</h2>
@@ -461,8 +724,7 @@ const Emergency = () => {
               <button
                 type="button"
                 onClick={() => setCallMenuPinned(false)}
-                aria-label={t('emergency.callForHelp')}
-                className="rounded-lg p-2 text-slate-500 transition hover:bg-white/80 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                className="rounded-lg p-2 text-slate-500 transition hover:bg-white/80 hover:text-slate-900"
               >
                 <X size={18} />
               </button>
@@ -474,7 +736,7 @@ const Emergency = () => {
               {contacts.owner?.phone && (
                 <a
                   href={`tel:${contacts.owner.phone}`}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-blue-200/80 bg-blue-50/80 px-3 py-3 text-sm text-blue-950 transition hover:bg-blue-100/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-blue-200/80 bg-blue-50/80 px-3 py-3 text-sm text-blue-950 transition hover:bg-blue-100/90"
                 >
                   <span><span className="block font-bold">{t('emergency.assignedBoatOwner')}</span><span className="text-xs">{contacts.owner.name}</span></span>
                   <span className="flex shrink-0 items-center gap-2 font-semibold"><span>{contacts.owner.phone}</span><Phone size={16} /></span>
@@ -485,25 +747,19 @@ const Emergency = () => {
                 <a
                   key={contact.name}
                   href={contact.href}
-                  className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-3 text-sm transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${contact.color}`}
+                  className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-3 text-sm transition hover:brightness-95 ${contact.color}`}
                 >
                   <span className="font-bold">{contact.name}</span>
                   <span className="flex shrink-0 items-center gap-2 font-semibold">{contact.number}<Phone size={16} /></span>
                 </a>
               ))}
-              {!loading && !contacts.owner?.phone && (
-                <p className="rounded-lg bg-amber-50/90 px-3 py-2 text-xs text-amber-800">{t('emergency.noPhoneOnFile')}</p>
-              )}
             </div>
           </section>
         )}
         <button
           type="button"
-          aria-label={callMenuOpen ? t('emergency.callForHelp') : t('emergency.callForHelp')}
-          aria-expanded={callMenuOpen}
-          aria-controls="emergency-call-menu"
           onClick={() => setCallMenuPinned((current) => !current)}
-          className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-emerald-700 text-white shadow-xl shadow-emerald-950/30 transition hover:scale-105 hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300"
+          className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-emerald-700 text-white shadow-xl shadow-emerald-950/30 transition hover:scale-105 hover:bg-emerald-800"
         >
           {callMenuOpen ? <X size={23} /> : <Phone size={23} />}
         </button>
