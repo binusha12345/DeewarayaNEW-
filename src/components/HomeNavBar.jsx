@@ -67,6 +67,8 @@ const HomeNavBar = ({ opaqueBackground = false }) => {
       navigate("/BoatOwnerDashboard");
     } else if (user?.role === "driver") {
       navigate("/BoatDriverDashboard");
+    } else if (user?.role === "transport_manager") {
+      navigate("/transport");
     }
   };
 
@@ -221,6 +223,8 @@ const HomeNavBar = ({ opaqueBackground = false }) => {
                         <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold border border-white/30">
                           {user?.role === "owner"
                             ? `🚤 ${t('navbar.boatOwner')}`
+                            : user?.role === "transport_manager"
+                            ? "🚚 Transport Manager"
                             : `⚓ ${t('navbar.boatDriver')}`}
                         </span>
                       </div>

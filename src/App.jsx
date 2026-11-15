@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 
 // Public Pages
@@ -52,6 +53,9 @@ import AdminBoats from './Pages/AdminBoats';
 import AdminUsers from './Pages/AdminUsers';
 import AdminEmergencies from './Pages/AdminEmergencies';
 import AdminWeather from './Pages/AdminWeather';
+
+// Fish transportation module (transport manager dashboard), loaded on demand
+const TransportApp = lazy(() => import('./Pages/transport/TransportApp'));
 
 import './App.css'
 import TourOverlay from './components/TourOverlay';
@@ -305,6 +309,17 @@ function App() {
           }
         />
 
+        {/* ============ TRANSPORT MANAGER ============ */}
+        <Route
+          path="/transport/*"
+          element={
+            <ProtectedRoute allowedRoles={["transport_manager"]}>
+              <Suspense fallback={<div className="p-10 text-center text-sm text-slate-500">Loading…</div>}>
+                <TransportApp />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
           <TourOverlay />
       <Toaster position="top-right" reverseOrder={false} />

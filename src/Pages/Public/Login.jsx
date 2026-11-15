@@ -46,7 +46,7 @@ const Login = () => {
       setLoading(true);
       const res = await api.post("/auth/login", formData);
       login(res.data);
-      navigate("/");
+      navigate(res.data.user?.role === "transport_manager" ? "/transport" : "/");
     } catch (err) {
       setError(err.response?.data?.message || t('login.loginFailed'));
     } finally {

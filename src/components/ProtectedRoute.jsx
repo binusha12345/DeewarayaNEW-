@@ -38,6 +38,8 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
       return <Navigate to="/boatownerdashboard" replace />;
     } else if (user.role === 'driver') {
       return <Navigate to="/boatdriverdashboard" replace />;
+    } else if (user.role === 'transport_manager') {
+      return <Navigate to="/transport" replace />;
     }
     return <Navigate to="/" replace />;
   }
