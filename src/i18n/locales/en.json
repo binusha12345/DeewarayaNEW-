@@ -2097,6 +2097,20 @@
     "unpinned": "Unpinned",
     "viaWhatsApp": "Also sent by WhatsApp",
     "voice": "Voice note",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "showOriginal": "Translated · Show original",
+    "showTranslation": "Show translation",
+    "original": "Show original",
+    "durationHM": "{{h}} h {{m}} min",
+    "durationM": "{{m}} min",
+    "sys": {
+      "tripStarted": "🚤 Trip started by {{name}}.",
+      "tripEnded": "⚓ Trip ended — {{duration}}, {{km}} km.",
+      "markedSafe": "✅ {{name}} marked safe.",
+      "weather": "⚠️ Weather warning{{place}}: wind {{wind}} kts{{dir}}{{waves}}. Not safe for fishing — return to harbour if you are at sea.",
+      "near": " near {{place}}",
+      "from": " from {{dir}}",
+      "waves": ", waves about {{m}} m"
+    }
   }
 }

@@ -11,6 +11,7 @@ export const messagesApi = {
   pin: (id) => api.patch(`/messages/${id}/pin`).then((r) => r.data.data),
   remove: (id) => api.delete(`/messages/${id}`).then((r) => r.data.data),
   translate: (id, to) => api.post(`/messages/${id}/translate`, { to }).then((r) => r.data.data),
+  translateBatch: (ids, to) => api.post("/messages/translate", { ids, to }).then((r) => r.data.data || {}),
   toFinance: (id, pricePerKg) => api.post(`/messages/${id}/finance`, { pricePerKg }).then((r) => r.data.data),
   broadcast: (text) => api.post("/messages/broadcast", { text }).then((r) => r.data),
   unreadCount: () => api.get("/messages/unread-count").then((r) => r.data.count),

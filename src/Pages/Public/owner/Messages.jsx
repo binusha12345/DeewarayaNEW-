@@ -8,6 +8,7 @@ import DashboardNav from "../../../components/DashboardNav";
 import ChatPanel from "../../../components/messages/ChatPanel";
 import { useAuth } from "../../../context/AuthContext";
 import { errorText, messagesApi } from "../../../services/messagesApi";
+import { previewText, uiLang } from "../../../components/messages/messageText";
 
 const shortTime = (d) => {
   if (!d) return "";
@@ -16,7 +17,8 @@ const shortTime = (d) => {
 };
 
 export default function OwnerMessages() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = uiLang(i18n);
   const { user } = useAuth();
   const [threads, setThreads] = useState(null);
   const [activeId, setActiveId] = useState(null);
@@ -113,7 +115,7 @@ export default function OwnerMessages() {
                         </div>
                         <div className="flex items-center justify-between gap-2">
                           <p className="truncate text-sm text-slate-500">
-                            {th.type === "boat" && !th.counterpart ? t("messages.noDriver", "No driver assigned") : th.lastMessage?.preview || th.counterpart?.name}
+                            {th.type === "boat" && !th.counterpart ? t("messages.noDriver", "No driver assigned") : (th.lastMessage ? previewText(th.lastMessage, t, lang) : th.counterpart?.name)}
                           </p>
                           {th.unread > 0 && <span className="shrink-0 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">{th.unread}</span>}
                         </div>

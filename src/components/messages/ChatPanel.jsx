@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2, Pin, Search, ShieldAlert, Siren, X } from "lucide-r
 import MessageBubble from "./MessageBubble";
 import Composer from "./Composer";
 import { discardPending, errorText, getMessageSocket, messagesApi, pendingFor } from "../../services/messagesApi";
+import { needsTranslation, previewText, uiLang } from "./messageText";
 
 const sameThread = (thread, m, myId) =>
   thread.type === "admin" ? !m.boat && String(m.recipient) === myId : String(m.boat?._id || m.boat) === thread.id;
@@ -35,7 +36,10 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
   const [loading, setLoading] = useState(true);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [pending, setPending] = useState(() => pendingFor(thread.id));
-  const [translations, setTranslations] = useState({});
+  const lang = uiLang(i18n);
+  const [auto, setAuto] = useState({}); // id -> machine translation in the current language
+  const [original, setOriginal] = useState(() => new Set()); // ids the user switched back to original
+  const requested = useRef(new Set());
   const [searchOpen, setSearchOpen] = useState(false);
   const [search, setSearch] = useState({ q: "", date: "" });
   const [results, setResults] = useState(null);
@@ -79,6 +83,26 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
   useEffect(() => {
     messagesApi.fishPrices().then(setPrices).catch(() => {});
   }, []);
+
+  // Language changed -> forget translations made for the other language.
+  useEffect(() => {
+    requested.current = new Set();
+    setAuto({});
+  }, [lang]);
+
+  // Show typed messages in the site's language (English / Sinhala) automatically.
+  useEffect(() => {
+    const ids = [...items, ...(results || [])]
+      .filter((m) => needsTranslation(m, lang) && !m.translations?.[lang] && !requested.current.has(m._id))
+      .map((m) => m._id)
+      .slice(-40);
+    if (!ids.length) return;
+    ids.forEach((id) => requested.current.add(id));
+    messagesApi
+      .translateBatch(ids, lang)
+      .then((map) => setAuto((cur) => ({ ...cur, ...map })))
+      .catch(() => ids.forEach((id) => requested.current.delete(id)));
+  }, [items, results, lang]);
 
   // Outbox changes (queued / flushed)
   useEffect(() => {
@@ -172,15 +196,13 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
     }
   };
 
-  const translate = async (m) => {
-    const to = i18n.language?.startsWith("si") ? "si" : "en";
-    try {
-      const r = await messagesApi.translate(m._id, to === "si" && /[඀-෿]/.test(m.text || "") ? "en" : to);
-      setTranslations((cur) => ({ ...cur, [m._id]: r.text }));
-    } catch (e) {
-      toast.error(errorText(e));
-    }
-  };
+  const toggleOriginal = (m) =>
+    setOriginal((cur) => {
+      const next = new Set(cur);
+      if (next.has(m._id)) next.delete(m._id);
+      else next.add(m._id);
+      return next;
+    });
 
   const sendSos = async () => {
     setSosBusy(true);
@@ -255,7 +277,7 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
           <div className="min-w-0 flex-1">
             {pinned.slice(0, 2).map((p) => (
               <p key={p._id} className="truncate">
-                <span className="font-semibold">{p.kind === "sos" ? "🆘 SOS" : p.sender?.name || "Deewaraya"}:</span> {p.text || (p.kind === "catch" ? `${p.catch?.fishName} ${p.catch?.quantityKg} kg` : p.kind)}
+                <span className="font-semibold">{p.sender?.name || "Deewaraya"}:</span> {auto[p._id] && !original.has(p._id) ? auto[p._id] : previewText(p, t, lang)}
               </p>
             ))}
           </div>
@@ -295,16 +317,17 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
                     mine={String(m.sender?._id || "") === myId}
                     role={role}
                     prices={prices}
-                    translation={translations[m._id]}
+                    translated={auto[m._id]}
+                    showOriginal={original.has(m._id)}
                     onPin={(x) => act(() => messagesApi.pin(x._id), x.pinned ? t("messages.unpinned", "Unpinned") : t("messages.pinned", "Pinned"))}
                     onDelete={(x) => act(() => messagesApi.remove(x._id))}
-                    onTranslate={translate}
+                    onToggleOriginal={toggleOriginal}
                     onFinance={(x, price) => act(() => messagesApi.toFinance(x._id, price), t("messages.addedToFinance", "Added to daily finance"))}
                   />
                 </div>
               );
             })}
-            {!results && pendingItems.map((m) => <MessageBubble key={m._id} m={m} mine pending role={role} onPin={() => {}} onDelete={() => {}} onTranslate={() => {}} onFinance={() => {}} />)}
+            {!results && pendingItems.map((m) => <MessageBubble key={m._id} m={m} mine pending role={role} onPin={() => {}} onDelete={() => {}} onToggleOriginal={() => {}} onFinance={() => {}} />)}
           </>
         )}
       </div>

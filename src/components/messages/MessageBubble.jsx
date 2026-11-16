@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, CheckCheck, Clock, Fish, Languages, Megaphone, MapPin, MoreVertical, Pin, PinOff, ShieldAlert, Siren, Trash2 } from "lucide-react";
 import { apiUrl } from "../../services/api";
+import { displayText, needsTranslation, uiLang } from "./messageText";
 
 const time = (d) => new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 const DELETE_WINDOW_MS = 5 * 60 * 1000;
@@ -14,8 +15,11 @@ function Ticks({ m, pending }) {
   return <Check size={15} className="text-blue-100" aria-label="Sent" />;
 }
 
-export default function MessageBubble({ m, mine, pending, role, onPin, onDelete, onTranslate, onFinance, translation, prices }) {
-  const { t } = useTranslation();
+export default function MessageBubble({ m, mine, pending, role, onPin, onDelete, onToggleOriginal, onFinance, translated, showOriginal, prices }) {
+  const { t, i18n } = useTranslation();
+  const lang = uiLang(i18n);
+  const shown = displayText(m, { t, lang, translated, showOriginal });
+  const translatable = !pending && needsTranslation(m, lang);
   const [menuAt, setMenuAt] = useState(null); // time the actions menu was opened
   const menu = menuAt !== null;
   const setMenu = (open) => setMenuAt(open ? Date.now() : null);
@@ -27,7 +31,7 @@ export default function MessageBubble({ m, mine, pending, role, onPin, onDelete,
     return (
       <div className="my-2 flex justify-center">
         <span className={`max-w-[85%] rounded-full px-4 py-1.5 text-center text-xs font-medium ${m.important ? "bg-amber-100 text-amber-800" : "bg-slate-200/70 text-slate-600"}`}>
-          {m.text} · {time(m.createdAt)}
+          {shown.text} · {time(m.createdAt)}
         </span>
       </div>
     );
@@ -122,8 +126,12 @@ export default function MessageBubble({ m, mine, pending, role, onPin, onDelete,
                 ) : null}
               </div>
             )}
-            {m.text && m.kind !== "catch" && <p className="whitespace-pre-wrap break-words text-[15px] leading-snug">{m.text}</p>}
-            {translation && <p className={`mt-1 border-t pt-1 text-sm italic ${mine || isSos ? "border-white/20" : "border-slate-100 text-slate-600"}`}>{translation}</p>}
+            {shown.text && m.kind !== "catch" && <p className="whitespace-pre-wrap break-words text-[15px] leading-snug">{shown.text}</p>}
+            {translatable && (shown.isTranslation || showOriginal) && (
+              <button type="button" onClick={() => onToggleOriginal(m)} className={`mt-0.5 flex items-center gap-1 text-[11px] underline-offset-2 hover:underline ${sub}`}>
+                <Languages size={11} /> {shown.isTranslation ? t("messages.showOriginal", "Translated · Show original") : t("messages.showTranslation", "Show translation")}
+              </button>
+            )}
           </>
         )}
 
@@ -150,9 +158,9 @@ export default function MessageBubble({ m, mine, pending, role, onPin, onDelete,
                 <button type="button" className="flex w-full items-center gap-2 px-3 py-2 hover:bg-slate-50" onClick={() => { setMenu(false); onPin(m); }}>
                   {m.pinned ? <PinOff size={14} /> : <Pin size={14} />} {m.pinned ? t("messages.unpin", "Unpin") : t("messages.pin", "Pin")}
                 </button>
-                {(m.text || m.kind === "catch") && (
-                  <button type="button" className="flex w-full items-center gap-2 px-3 py-2 hover:bg-slate-50" onClick={() => { setMenu(false); onTranslate(m); }}>
-                    <Languages size={14} /> {t("messages.translate", "Translate")}
+                {translatable && (
+                  <button type="button" className="flex w-full items-center gap-2 px-3 py-2 hover:bg-slate-50" onClick={() => { setMenu(false); onToggleOriginal(m); }}>
+                    <Languages size={14} /> {shown.isTranslation ? t("messages.original", "Show original") : t("messages.translate", "Translate")}
                   </button>
                 )}
                 {canDelete && (

@@ -3,19 +3,11 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
+import i18n from "../i18n/i18n";
+import { previewText, uiLang } from "../components/messages/messageText";
 import { flushOutbox, getMessageSocket, messagesApi, playMessageTone } from "../services/messagesApi";
 
-const preview = (m) => {
-  if (m.deletedAt) return "";
-  switch (m.kind) {
-    case "photo": return "📷 Photo";
-    case "voice": return "🎤 Voice note";
-    case "location": return "📍 Location";
-    case "catch": return `🐟 ${m.catch?.fishName} ${m.catch?.quantityKg} kg`;
-    case "sos": return `🆘 SOS ${m.text || ""}`;
-    default: return m.text || "";
-  }
-};
+const preview = (m) => previewText(m, i18n.t.bind(i18n), uiLang(i18n));
 
 export default function useMessageBadge(user) {
   const [count, setCount] = useState(0);
