@@ -33,6 +33,7 @@ import BoatDriverDashboard from "./Pages/Public/driver/BoatDriverDashboard";
 import AssignedBoatQR from "./Pages/Public/driver/AssignedBoatQR";
 import DriverTrips from "./Pages/Public/driver/DriverTrips";
 import Emergency from "./Pages/Public/driver/Emergency";
+import DriverMessages from "./Pages/Public/driver/Messages";
 
 // Shared
 import WeatherDashboard from "./Pages/Public/WeatherDashboard";
@@ -42,6 +43,7 @@ import Profile from "./Pages/Public/Profile";
 import Settings from "./Pages/Public/Settings";
 import SignalIndicator from "./Pages/Public/SignalIndicator";
 import Notifications from "./Pages/Public/owner/Notifications";
+import OwnerMessages from "./Pages/Public/owner/Messages";
 
 // Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -203,6 +205,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/driver/messages"
+          element={
+            <ProtectedRoute allowedRoles={["driver"]}>
+              <DriverMessages />
+            </ProtectedRoute>
+          }
+        />
 
         {/* ============ SHARED PROTECTED (Owner + Driver) ============ */}
         <Route
@@ -258,6 +268,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["owner"]}>
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner/messages"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerMessages />
             </ProtectedRoute>
           }
         />

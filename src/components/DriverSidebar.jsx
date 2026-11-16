@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import useMessageBadge from "../hooks/useMessageBadge";
 import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
@@ -71,7 +73,7 @@ const getNavItems = (t) => [
 /* ─────────────────────────────────────────────
    SIDEBAR LINK
    ───────────────────────────────────────────── */
-const SidebarLink = ({ item, onNavigate }) => {
+const SidebarLink = ({ item, onNavigate, badge = 0 }) => {
   const location = useLocation();
   const isActive = location.pathname === item.to;
   const Icon = item.icon;
@@ -100,6 +102,12 @@ const SidebarLink = ({ item, onNavigate }) => {
       <span className="text-[15px] font-medium tracking-wide">
         {item.label}
       </span>
+
+      {badge > 0 && (
+        <span className="ml-auto min-w-5 rounded-full bg-red-500 px-1.5 text-center text-[11px] font-bold leading-5 text-white shadow">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      )}
     </Link>
   );
 };
@@ -107,7 +115,7 @@ const SidebarLink = ({ item, onNavigate }) => {
 /* ─────────────────────────────────────────────
    SIDEBAR CONTENT
    ───────────────────────────────────────────── */
-const SidebarContent = ({ onNavigate }) => {
+const SidebarContent = ({ onNavigate, messageCount = 0 }) => {
   const { t } = useTranslation();
   const navItems = getNavItems(t);
 
@@ -132,6 +140,7 @@ const SidebarContent = ({ onNavigate }) => {
             key={item.to}
             item={item}
             onNavigate={onNavigate}
+            badge={item.to === "/driver/messages" ? messageCount : 0}
           />
         ))}
       </nav>
@@ -151,6 +160,8 @@ const SidebarContent = ({ onNavigate }) => {
    ───────────────────────────────────────────── */
 const DriverSidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user } = useAuth();
+  const messageCount = useMessageBadge(user);
 
   const openMobile = () => setIsMobileOpen(true);
   const closeMobile = () => setIsMobileOpen(false);
@@ -196,12 +207,12 @@ const DriverSidebar = () => {
           <X size={18} />
         </button>
 
-        <SidebarContent onNavigate={closeMobile} />
+        <SidebarContent onNavigate={closeMobile} messageCount={messageCount} />
       </aside>
 
       {/* ═════════════ DESKTOP SIDEBAR ═════════════ */}
       <aside className="hidden h-full w-72 shrink-0 shadow-xl lg:flex lg:flex-col">
-        <SidebarContent />
+        <SidebarContent messageCount={messageCount} />
       </aside>
     </>
   );
