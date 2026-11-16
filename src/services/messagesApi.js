@@ -15,9 +15,19 @@ export const messagesApi = {
   toFinance: (id, pricePerKg) => api.post(`/messages/${id}/finance`, { pricePerKg }).then((r) => r.data.data),
   broadcast: (text) => api.post("/messages/broadcast", { text }).then((r) => r.data),
   unreadCount: () => api.get("/messages/unread-count").then((r) => r.data.count),
+  react: (id, emoji) => api.post(`/messages/${id}/react`, { emoji }).then((r) => r.data.data),
+  exportThread: (threadId, params) => api.get(`/messages/threads/${threadId}/export`, { params }).then((r) => r.data),
+  scheduled: (threadId) => api.get(`/messages/threads/${threadId}/scheduled`).then((r) => r.data.data),
+  schedule: (threadId, body) => api.post(`/messages/threads/${threadId}/schedule`, body).then((r) => r.data.data),
+  cancelScheduled: (id) => api.delete(`/messages/scheduled/${id}`).then((r) => r.data.data),
+  files: (threadId) => api.get(`/messages/threads/${threadId}/files`).then((r) => r.data.data),
+  uploadFile: (threadId, form) => api.post(`/messages/threads/${threadId}/files`, form, { headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data.data),
+  deleteFile: (id) => api.delete(`/messages/files/${id}`),
   fishPrices: () => api.get("/fish-prices").then((r) => r.data?.data?.fish_prices || []),
   sos: (body) => api.post("/emergency/sos", body).then((r) => r.data),
 };
+
+export const REACTIONS = ["👍", "✅", "❤️", "😂", "😮", "🙏"];
 
 export const errorText = (e, fallback = "Something went wrong") => e?.response?.data?.message || fallback;
 

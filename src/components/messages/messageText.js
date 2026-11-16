@@ -25,7 +25,7 @@ export function systemText(m, t) {
       waves: params.waves ? t("messages.sys.waves", { m: params.waves }) : "",
     });
   }
-  return t(`messages.sys.${key}`, { name: params.name || "", defaultValue: m.text });
+  return t(`messages.sys.${key}`, { ...params, name: params.name || "", defaultValue: m.text });
 }
 
 export const quickText = (m, lang) => (m.kind === "quick" && QUICK_BY_KEY[m.quickKey] ? QUICK_BY_KEY[m.quickKey][lang] : null);

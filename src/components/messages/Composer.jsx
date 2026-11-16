@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Camera, Fish, Loader2, MapPin, Mic, Plus, Send, Square, X, Zap } from "lucide-react";
+import { Camera, Clock, Fish, Loader2, MapPin, Mic, Plus, Send, Square, X, Zap } from "lucide-react";
 import { QUICK_REPLIES, errorText, messagesApi, newClientId, sendOrQueue } from "../../services/messagesApi";
 
 const pickMime = () => {
@@ -10,7 +10,7 @@ const pickMime = () => {
   return types.find((t) => window.MediaRecorder?.isTypeSupported?.(t)) || "";
 };
 
-export default function Composer({ threadId, role, onSent, fishNames = [] }) {
+export default function Composer({ threadId, role, onSent, onScheduled, fishNames = [], allowCatch = true }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.startsWith("si") ? "si" : "en";
   const [text, setText] = useState("");
@@ -24,6 +24,11 @@ export default function Composer({ threadId, role, onSent, fishNames = [] }) {
   const fileRef = useRef(null);
   const chunks = useRef([]);
   const cancelRec = useRef(false);
+  const recognition = useRef(null);
+  const transcript = useRef("");
+  const [liveText, setLiveText] = useState("");
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [scheduleAt, setScheduleAt] = useState("");
 
   useEffect(() => {
     if (!recording) return undefined;
@@ -86,6 +91,53 @@ export default function Composer({ threadId, role, onSent, fishNames = [] }) {
     );
   };
 
+  // Voice-to-text: the browser's built-in speech recognition (Chrome / Edge), Sinhala or English.
+  const startSpeechToText = () => {
+    transcript.current = "";
+    setLiveText("");
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    try {
+      const r = new SR();
+      r.lang = lang === "si" ? "si-LK" : "en-US";
+      r.continuous = true;
+      r.interimResults = true;
+      r.onresult = (e) => {
+        let finalText = "";
+        let interim = "";
+        for (let i = 0; i < e.results.length; i += 1) {
+          if (e.results[i].isFinal) finalText += `${e.results[i][0].transcript} `;
+          else interim += e.results[i][0].transcript;
+        }
+        transcript.current = finalText;
+        setLiveText((finalText + interim).trim());
+      };
+      r.onerror = () => {};
+      r.start();
+      recognition.current = r;
+    } catch {
+      recognition.current = null;
+    }
+  };
+
+  const scheduleText = async () => {
+    const value = text.trim();
+    if (!value || !scheduleAt) return;
+    setBusy(true);
+    try {
+      await messagesApi.schedule(threadId, { text: value, scheduledFor: new Date(scheduleAt).toISOString() });
+      toast.success(t("messages.scheduledOk", "Message scheduled"));
+      setText("");
+      setScheduleOpen(false);
+      setScheduleAt("");
+      onScheduled?.();
+    } catch (e) {
+      toast.error(errorText(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const startVoice = async () => {
     setMenu(false);
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return toast.error(t("messages.noMic", "Voice notes aren't supported in this browser"));
@@ -99,12 +151,21 @@ export default function Composer({ threadId, role, onSent, fishNames = [] }) {
       recorder.onstop = () => {
         stream.getTracks().forEach((tr) => tr.stop());
         const duration = Math.round((Date.now() - startedAt) / 1000);
+        try {
+          recognition.current?.stop();
+        } catch {
+          /* already stopped */
+        }
         setRecording(null);
+        setLiveText("");
         if (cancelRec.current || !chunks.current.length) return;
         const type = (recorder.mimeType || "audio/webm").split(";")[0];
         const ext = type.includes("ogg") ? "ogg" : type.includes("mp4") ? "m4a" : "webm";
-        sendFile("voice", new File(chunks.current, `voice.${ext}`, { type }), { durationSec: duration });
+        const file = new File(chunks.current, `voice.${ext}`, { type });
+        // Give speech recognition a moment to deliver its last words, then send audio + text.
+        setTimeout(() => sendFile("voice", file, { durationSec: duration, text: transcript.current.trim().slice(0, 2000) }), 600);
       };
+      startSpeechToText();
       const startedAt = Date.now();
       recorder.start();
       setSeconds(0);
@@ -136,7 +197,10 @@ export default function Composer({ threadId, role, onSent, fishNames = [] }) {
     return (
       <div className="flex items-center gap-3 border-t border-slate-200 bg-white px-4 py-3">
         <span className="h-3 w-3 animate-pulse rounded-full bg-red-500" />
-        <span className="flex-1 text-sm font-medium text-slate-700">{t("messages.recording", "Recording")} · {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}</span>
+        <span className="min-w-0 flex-1 text-sm font-medium text-slate-700">
+          {t("messages.recording", "Recording")} · {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}
+          {liveText && <span className="block truncate text-xs font-normal italic text-slate-500">“{liveText}”</span>}
+        </span>
         <button type="button" onClick={() => stopVoice(true)} className="rounded-full p-2 text-slate-500 hover:bg-slate-100" aria-label={t("messages.cancel", "Cancel")}><X size={20} /></button>
         <button type="button" onClick={() => stopVoice(false)} className="flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"><Square size={14} /> {t("messages.send", "Send")}</button>
       </div>
@@ -187,7 +251,7 @@ export default function Composer({ threadId, role, onSent, fishNames = [] }) {
               <button type="button" onClick={() => { setMenu(false); fileRef.current?.click(); }} className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50"><Camera size={17} className="text-blue-600" /> {t("messages.photo", "Photo")}</button>
               <button type="button" onClick={shareLocation} className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50"><MapPin size={17} className="text-emerald-600" /> {t("messages.location", "My location")}</button>
               <button type="button" onClick={startVoice} className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50"><Mic size={17} className="text-pink-600" /> {t("messages.voice", "Voice note")}</button>
-              {role === "driver" && (
+              {role === "driver" && allowCatch && (
                 <button type="button" onClick={() => { setMenu(false); setCatchOpen(true); }} className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50"><Fish size={17} className="text-cyan-600" /> {t("messages.catchReport", "Catch report")}</button>
               )}
             </div>
@@ -223,6 +287,33 @@ export default function Composer({ threadId, role, onSent, fishNames = [] }) {
           aria-label={t("messages.typeMessage", "Type a message…")}
           className="max-h-32 min-h-10 flex-1 resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[15px] text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
         />
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setScheduleOpen((v) => !v)}
+            disabled={!text.trim()}
+            aria-label={t("messages.schedule", "Send later")}
+            title={t("messages.schedule", "Send later")}
+            className={`flex h-10 w-10 items-center justify-center rounded-full transition disabled:opacity-40 ${scheduleOpen ? "bg-violet-100 text-violet-600" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+          >
+            <Clock size={18} />
+          </button>
+          {scheduleOpen && text.trim() && (
+            <div className="absolute bottom-12 right-0 z-20 w-64 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+              <p className="mb-2 text-sm font-semibold text-slate-700">{t("messages.schedule", "Send later")}</p>
+              <input
+                type="datetime-local"
+                value={scheduleAt}
+                onChange={(e) => setScheduleAt(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+                aria-label={t("messages.scheduleTime", "Date and time")}
+              />
+              <button type="button" onClick={scheduleText} disabled={!scheduleAt || busy} className="mt-2 w-full rounded-lg bg-violet-600 py-1.5 text-sm font-semibold text-white disabled:opacity-50">
+                {t("messages.scheduleBtn", "Schedule")}
+              </button>
+            </div>
+          )}
+        </div>
         <button type="button" onClick={sendText} disabled={!text.trim() || busy} aria-label={t("messages.send", "Send")} className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow transition hover:bg-blue-700 disabled:opacity-40">
           {busy ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
         </button>

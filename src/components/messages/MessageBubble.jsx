@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, CheckCheck, Clock, Fish, Languages, Megaphone, MapPin, MoreVertical, Pin, PinOff, ShieldAlert, Siren, Trash2 } from "lucide-react";
 import { apiUrl } from "../../services/api";
+import { REACTIONS } from "../../services/messagesApi";
 import { displayText, needsTranslation, uiLang } from "./messageText";
 
 const time = (d) => new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -15,7 +16,7 @@ function Ticks({ m, pending }) {
   return <Check size={15} className="text-blue-100" aria-label="Sent" />;
 }
 
-export default function MessageBubble({ m, mine, pending, role, onPin, onDelete, onToggleOriginal, onFinance, translated, showOriginal, prices }) {
+export default function MessageBubble({ m, mine, pending, role, onPin, onDelete, onToggleOriginal, onFinance, onReact, translated, showOriginal, prices, showSender, myId }) {
   const { t, i18n } = useTranslation();
   const lang = uiLang(i18n);
   const shown = displayText(m, { t, lang, translated, showOriginal });
@@ -48,9 +49,10 @@ export default function MessageBubble({ m, mine, pending, role, onPin, onDelete,
   const suggestedPrice = m.kind === "catch" ? prices?.find((p) => p.name?.toLowerCase().startsWith(String(m.catch?.fishName || "").toLowerCase().split(" (")[0]))?.price_lkr : null;
 
   return (
-    <div className={`group my-1.5 flex ${mine ? "justify-end" : "justify-start"}`}>
+    <div className={`group my-1.5 flex ${mine ? "justify-end" : "justify-start"} ${!deleted && m.reactions?.length ? "mb-5" : ""}`}>
       <div className={`relative max-w-[82%] rounded-2xl px-3.5 py-2 shadow-sm sm:max-w-[70%] ${bubble} ${mine ? "rounded-br-md" : "rounded-bl-md"} ${pending ? "opacity-80" : ""}`}>
         {/* labels */}
+        {showSender && !mine && m.sender?.name && <p className="mb-0.5 text-xs font-semibold text-blue-700">{m.sender.name}</p>}
         {m.kind === "broadcast" && (
           <p className={`mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide ${mine ? "text-blue-100" : "text-blue-600"}`}>
             <Megaphone size={12} /> {t("messages.toAllDrivers", "To all drivers")}
@@ -126,7 +128,7 @@ export default function MessageBubble({ m, mine, pending, role, onPin, onDelete,
                 ) : null}
               </div>
             )}
-            {shown.text && m.kind !== "catch" && <p className="whitespace-pre-wrap break-words text-[15px] leading-snug">{shown.text}</p>}
+            {shown.text && m.kind !== "catch" && <p className={`whitespace-pre-wrap break-words leading-snug ${m.kind === "voice" ? "mt-1 text-sm italic" : "text-[15px]"}`}>{m.kind === "voice" ? `“${shown.text}”` : shown.text}</p>}
             {translatable && (shown.isTranslation || showOriginal) && (
               <button type="button" onClick={() => onToggleOriginal(m)} className={`mt-0.5 flex items-center gap-1 text-[11px] underline-offset-2 hover:underline ${sub}`}>
                 <Languages size={11} /> {shown.isTranslation ? t("messages.showOriginal", "Translated · Show original") : t("messages.showTranslation", "Show translation")}
@@ -142,8 +144,25 @@ export default function MessageBubble({ m, mine, pending, role, onPin, onDelete,
           {mine && <Ticks m={m} pending={pending} />}
         </div>
 
+        {/* reactions */}
+        {!deleted && m.reactions?.length > 0 && (
+          <div className={`-mb-4 mt-1 flex flex-wrap gap-1 ${mine ? "justify-end" : "justify-start"}`}>
+            {Object.entries(m.reactions.reduce((acc, r) => ({ ...acc, [r.emoji]: [...(acc[r.emoji] || []), String(r.user)] }), {})).map(([emoji, users]) => (
+              <button
+                key={emoji}
+                type="button"
+                onClick={() => onReact?.(m, emoji)}
+                aria-label={`${emoji} ${users.length}`}
+                className={`rounded-full border px-1.5 text-xs shadow-sm ${users.includes(myId) ? "border-blue-300 bg-blue-50" : "border-slate-200 bg-white"} text-slate-700`}
+              >
+                {emoji}{users.length > 1 ? ` ${users.length}` : ""}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* actions */}
-        {!pending && !deleted && m.boat && (
+        {!pending && !deleted && (
           <div className={`absolute top-1 ${mine ? "-left-8" : "-right-8"}`}>
             <button
               type="button"
@@ -154,10 +173,21 @@ export default function MessageBubble({ m, mine, pending, role, onPin, onDelete,
               <MoreVertical size={16} />
             </button>
             {menu && (
-              <div className={`absolute z-20 mt-1 w-40 overflow-hidden rounded-lg border border-slate-200 bg-white text-sm text-slate-700 shadow-lg ${mine ? "right-0" : "left-0"}`} onMouseLeave={() => setMenu(false)}>
-                <button type="button" className="flex w-full items-center gap-2 px-3 py-2 hover:bg-slate-50" onClick={() => { setMenu(false); onPin(m); }}>
-                  {m.pinned ? <PinOff size={14} /> : <Pin size={14} />} {m.pinned ? t("messages.unpin", "Unpin") : t("messages.pin", "Pin")}
-                </button>
+              <div className={`absolute z-20 mt-1 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white text-sm text-slate-700 shadow-lg ${mine ? "right-0" : "left-0"}`} onMouseLeave={() => setMenu(false)}>
+                {onReact && (
+                  <div className="flex justify-between border-b border-slate-100 px-2 py-1.5">
+                    {REACTIONS.map((e) => (
+                      <button key={e} type="button" onClick={() => { setMenu(false); onReact(m, e); }} className="rounded-full px-1 text-lg transition hover:scale-125" aria-label={`${t("messages.react", "React")} ${e}`}>
+                        {e}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {(m.boat || m.group) && (
+                  <button type="button" className="flex w-full items-center gap-2 px-3 py-2 hover:bg-slate-50" onClick={() => { setMenu(false); onPin(m); }}>
+                    {m.pinned ? <PinOff size={14} /> : <Pin size={14} />} {m.pinned ? t("messages.unpin", "Unpin") : t("messages.pin", "Pin")}
+                  </button>
+                )}
                 {translatable && (
                   <button type="button" className="flex w-full items-center gap-2 px-3 py-2 hover:bg-slate-50" onClick={() => { setMenu(false); onToggleOriginal(m); }}>
                     <Languages size={14} /> {shown.isTranslation ? t("messages.original", "Show original") : t("messages.translate", "Translate")}

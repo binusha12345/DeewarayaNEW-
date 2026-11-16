@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Loader2, Megaphone, MessageSquare, Search, ShieldAlert, X } from "lucide-react";
+import { Loader2, Megaphone, MessageSquare, Search, ShieldAlert, Users, X } from "lucide-react";
 import OwnerSidebar from "../../../components/OwnerSidebar";
 import DashboardNav from "../../../components/DashboardNav";
 import ChatPanel from "../../../components/messages/ChatPanel";
@@ -103,14 +103,14 @@ export default function OwnerMessages() {
                       className={`flex w-full items-center gap-3 border-b border-slate-50 px-4 py-3 text-left transition ${activeId === th.id ? "bg-blue-50" : "hover:bg-slate-50"}`}
                     >
                       <div className="relative shrink-0">
-                        <div className={`flex h-11 w-11 items-center justify-center rounded-full font-bold text-white ${th.type === "admin" ? "bg-indigo-500" : "bg-gradient-to-br from-blue-600 to-cyan-500"}`}>
-                          {th.type === "admin" ? <ShieldAlert size={18} /> : (th.counterpart?.name || th.boat?.boatName || "?").slice(0, 1).toUpperCase()}
+                        <div className={`flex h-11 w-11 items-center justify-center rounded-full font-bold text-white ${th.type === "admin" ? "bg-indigo-500" : th.type === "group" ? "bg-gradient-to-br from-emerald-500 to-teal-600" : "bg-gradient-to-br from-blue-600 to-cyan-500"}`}>
+                          {th.type === "admin" ? <ShieldAlert size={18} /> : th.type === "group" ? <Users size={18} /> : (th.counterpart?.name || th.boat?.boatName || "?").slice(0, 1).toUpperCase()}
                         </div>
                         {th.type === "boat" && th.counterpart && <span className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${th.counterpart.online ? "bg-emerald-500" : "bg-slate-300"}`} />}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="truncate font-semibold text-slate-800">{th.type === "admin" ? "Deewaraya Admin" : th.boat?.boatName}</p>
+                          <p className="truncate font-semibold text-slate-800">{th.type === "admin" ? "Deewaraya Admin" : th.type === "group" ? t("messages.groupAll", "All drivers") : th.boat?.boatName}</p>
                           <span className="shrink-0 text-[11px] text-slate-400">{shortTime(th.lastMessage?.createdAt)}</span>
                         </div>
                         <div className="flex items-center justify-between gap-2">

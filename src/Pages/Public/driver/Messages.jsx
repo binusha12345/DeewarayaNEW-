@@ -52,7 +52,7 @@ export default function DriverMessages() {
                     onClick={() => setActiveId(th.id)}
                     className={`relative rounded-lg px-3 py-1.5 text-sm font-semibold ${activeId === th.id ? "bg-white text-blue-700 shadow-sm" : "text-slate-600"}`}
                   >
-                    {th.type === "admin" ? t("messages.admin", "Admin") : th.boat?.boatName}
+                    {th.type === "admin" ? t("messages.admin", "Admin") : th.type === "group" ? t("messages.group", "Group") : th.boat?.boatName}
                     {th.unread > 0 && <span className="ml-1.5 rounded-full bg-red-500 px-1.5 text-[10px] text-white">{th.unread}</span>}
                   </button>
                 ))}

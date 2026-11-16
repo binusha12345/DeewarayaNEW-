@@ -2,14 +2,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { ArrowLeft, Loader2, Pin, Search, ShieldAlert, Siren, X } from "lucide-react";
+import { ArrowLeft, Clock, FileDown, FolderOpen, Loader2, MoreVertical, Pin, Search, ShieldAlert, Siren, Users, X } from "lucide-react";
 import MessageBubble from "./MessageBubble";
 import Composer from "./Composer";
 import { discardPending, errorText, getMessageSocket, messagesApi, pendingFor } from "../../services/messagesApi";
 import { needsTranslation, previewText, uiLang } from "./messageText";
+import FilesPanel from "./FilesPanel";
+import { openPrintableChat } from "./exportChat";
 
-const sameThread = (thread, m, myId) =>
-  thread.type === "admin" ? !m.boat && String(m.recipient) === myId : String(m.boat?._id || m.boat) === thread.id;
+const sameThread = (thread, m, myId) => {
+  if (thread.type === "admin") return !m.boat && !m.group && String(m.recipient) === myId;
+  if (thread.type === "group") return `group:${m.group?._id || m.group}` === thread.id;
+  return String(m.boat?._id || m.boat) === thread.id;
+};
 
 const dayLabel = (d, t) => {
   const x = new Date(d);
@@ -49,6 +54,15 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
   const listRef = useRef(null);
   const stick = useRef(true);
   const readOnly = thread.type === "admin";
+  const isGroup = thread.type === "group";
+  const [headerMenu, setHeaderMenu] = useState(false);
+  const [filesOpen, setFilesOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportRange, setExportRange] = useState({ from: "", to: "" });
+  const [exporting, setExporting] = useState(false);
+  const [scheduled, setScheduled] = useState([]);
+  const [showScheduled, setShowScheduled] = useState(false);
+  const [groupInfo, setGroupInfo] = useState(null);
 
   const scrollBottom = () => requestAnimationFrame(() => listRef.current && (listRef.current.scrollTop = listRef.current.scrollHeight));
 
@@ -62,6 +76,7 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
       const r = await messagesApi.messages(thread.id);
       setItems(r.data);
       setPinned(r.pinned || []);
+      setGroupInfo(r.info || null);
       setHasMore(r.hasMore);
       stick.current = true;
       scrollBottom();
@@ -83,6 +98,15 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
   useEffect(() => {
     messagesApi.fishPrices().then(setPrices).catch(() => {});
   }, []);
+
+  const loadScheduled = useCallback(() => {
+    if (thread.type === "admin") return;
+    messagesApi.scheduled(thread.id).then(setScheduled).catch(() => {});
+  }, [thread.id, thread.type]);
+  useEffect(() => {
+    loadScheduled();
+    setFilesOpen(false);
+  }, [loadScheduled]);
 
   // Language changed -> forget translations made for the other language.
   useEffect(() => {
@@ -119,6 +143,7 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
       if (!sameThread(thread, m, myId)) return;
       setItems((cur) => (cur.some((x) => x._id === m._id) ? cur : [...cur, m]));
       if (m.clientId) discardPending(m.clientId);
+      if (String(m.clientId || "").startsWith("sched-")) loadScheduled();
       const fromMe = String(m.sender?._id || "") === myId;
       if (!fromMe) {
         socket.emit("message:delivered", { ids: [m._id] });
@@ -146,7 +171,7 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
       socket.off("message:updated", onUpdated);
       socket.off("message:refresh", onRefresh);
     };
-  }, [thread, myId, markRead, load, onActivity]);
+  }, [thread, myId, markRead, load, onActivity, loadScheduled]);
 
   const loadOlder = async () => {
     if (!items.length) return;
@@ -196,6 +221,21 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
     }
   };
 
+  const react = (m, emoji) => act(() => messagesApi.react(m._id, emoji));
+
+  const runExport = async () => {
+    setExporting(true);
+    try {
+      const r = await messagesApi.exportThread(thread.id, { from: exportRange.from || undefined, to: exportRange.to || undefined });
+      if (!openPrintableChat({ ...r, from: exportRange.from, to: exportRange.to }, { t, lang })) toast.error(t("messages.allowPopups", "Allow pop-ups for this site to export"));
+      else setExportOpen(false);
+    } catch (e) {
+      toast.error(errorText(e));
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const toggleOriginal = (m) =>
     setOriginal((cur) => {
       const next = new Set(cur);
@@ -238,19 +278,40 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
           </button>
         )}
         <div className="relative">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ${readOnly ? "bg-indigo-500" : "bg-gradient-to-br from-blue-600 to-cyan-500"}`}>
-            {readOnly ? <ShieldAlert size={18} /> : (c?.name || "?").slice(0, 1).toUpperCase()}
+          <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ${readOnly ? "bg-indigo-500" : isGroup ? "bg-gradient-to-br from-emerald-500 to-teal-600" : "bg-gradient-to-br from-blue-600 to-cyan-500"}`}>
+            {readOnly ? <ShieldAlert size={18} /> : isGroup ? <Users size={18} /> : (c?.name || "?").slice(0, 1).toUpperCase()}
           </div>
-          {!readOnly && <span className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${c?.online ? "bg-emerald-500" : "bg-slate-300"}`} />}
+          {!readOnly && !isGroup && <span className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${c?.online ? "bg-emerald-500" : "bg-slate-300"}`} />}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-slate-800">{readOnly ? "Deewaraya Admin" : c?.name || t("messages.noDriver", "No driver assigned")}</p>
-          <p className="truncate text-xs text-slate-500">{readOnly ? t("messages.adminInfo", "Messages from the system admin") : `${thread.boat?.boatName || ""} · ${lastSeenText(c, t)}`}</p>
+          <p className="truncate font-semibold text-slate-800">
+            {readOnly ? "Deewaraya Admin" : isGroup ? (role === "owner" ? t("messages.groupAll", "All drivers") : t("messages.groupOf", "{{name}}'s group", { name: c?.ownerName || "" })) : c?.name || t("messages.noDriver", "No driver assigned")}
+          </p>
+          <p className="truncate text-xs text-slate-500">
+            {readOnly
+              ? t("messages.adminInfo", "Messages from the system admin")
+              : isGroup
+                ? groupInfo
+                  ? [groupInfo.owner?.name, ...(groupInfo.drivers || []).map((d) => d.name)].filter(Boolean).join(", ")
+                  : t("messages.groupHint", "Owner and all drivers")
+                : `${thread.boat?.boatName || ""} · ${lastSeenText(c, t)}`}
+          </p>
         </div>
-        <button type="button" onClick={() => { setSearchOpen((v) => !v); setResults(null); }} className={`rounded-full p-2 ${searchOpen ? "bg-blue-50 text-blue-600" : "text-slate-500 hover:bg-slate-100"}`} aria-label={t("messages.search", "Search messages")}>
-          <Search size={19} />
-        </button>
-        {role === "driver" && !readOnly && (
+        <div className="relative">
+          <button type="button" onClick={() => setHeaderMenu((v) => !v)} className={`rounded-full p-2 ${headerMenu ? "bg-blue-50 text-blue-600" : "text-slate-500 hover:bg-slate-100"}`} aria-label={t("messages.more", "More")} aria-expanded={headerMenu}>
+            <MoreVertical size={19} />
+          </button>
+          {headerMenu && (
+            <div className="absolute right-0 z-30 mt-1 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-sm text-slate-700 shadow-xl" onMouseLeave={() => setHeaderMenu(false)}>
+              <button type="button" onClick={() => { setHeaderMenu(false); setSearchOpen((v) => !v); setResults(null); setFilesOpen(false); }} className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50"><Search size={16} className="text-blue-600" /> {t("messages.search", "Search messages")}</button>
+              {thread.type === "boat" && (
+                <button type="button" onClick={() => { setHeaderMenu(false); setFilesOpen(true); setSearchOpen(false); }} className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50"><FolderOpen size={16} className="text-amber-600" /> {t("messages.files", "Files")}</button>
+              )}
+              <button type="button" onClick={() => { setHeaderMenu(false); setExportOpen(true); }} className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50"><FileDown size={16} className="text-emerald-600" /> {t("messages.exportPdf", "Export as PDF")}</button>
+            </div>
+          )}
+        </div>
+        {role === "driver" && thread.type === "boat" && (
           <button type="button" onClick={() => setSosOpen(true)} className="flex items-center gap-1 rounded-full bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-red-700" aria-label="SOS">
             <Siren size={15} /> SOS
           </button>
@@ -270,8 +331,36 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
         </form>
       )}
 
+      {/* Scheduled (only mine) */}
+      {scheduled.length > 0 && !filesOpen && (
+        <div className="border-b border-violet-200 bg-violet-50 px-4 py-2 text-sm text-violet-900">
+          <button type="button" onClick={() => setShowScheduled((v) => !v)} className="flex w-full items-center gap-2 font-medium">
+            <Clock size={15} /> {t("messages.scheduledCount", "{{count}} scheduled message(s)", { count: scheduled.length })}
+            <span className="ml-auto text-xs underline">{showScheduled ? t("messages.hide", "Hide") : t("messages.show", "Show")}</span>
+          </button>
+          {showScheduled && (
+            <ul className="mt-2 space-y-1">
+              {scheduled.map((s) => (
+                <li key={s._id} className="flex items-center gap-2 rounded-lg bg-white px-3 py-1.5">
+                  <span className="shrink-0 text-xs font-semibold text-violet-700">{new Date(s.scheduledFor).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                  <span className="min-w-0 flex-1 truncate">{s.text}</span>
+                  <button
+                    type="button"
+                    onClick={() => messagesApi.cancelScheduled(s._id).then(loadScheduled).catch((e) => toast.error(errorText(e)))}
+                    className="rounded-full p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                    aria-label={t("messages.cancel", "Cancel")}
+                  >
+                    <X size={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       {/* Pinned */}
-      {pinned.length > 0 && !results && (
+      {pinned.length > 0 && !results && !filesOpen && (
         <div className="flex items-start gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
           <Pin size={15} className="mt-0.5 shrink-0" />
           <div className="min-w-0 flex-1">
@@ -284,8 +373,11 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
         </div>
       )}
 
+      {filesOpen && <FilesPanel threadId={thread.id} myId={myId} isOwner={role === "owner"} onClose={() => setFilesOpen(false)} />}
+
       {/* Messages */}
       <div
+        hidden={filesOpen}
         ref={listRef}
         onScroll={(e) => {
           const el = e.currentTarget;
@@ -323,6 +415,9 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
                     onDelete={(x) => act(() => messagesApi.remove(x._id))}
                     onToggleOriginal={toggleOriginal}
                     onFinance={(x, price) => act(() => messagesApi.toFinance(x._id, price), t("messages.addedToFinance", "Added to daily finance"))}
+                    onReact={react}
+                    showSender={isGroup}
+                    myId={myId}
                   />
                 </div>
               );
@@ -332,12 +427,32 @@ export default function ChatPanel({ thread, role, me, onBack, onActivity }) {
         )}
       </div>
 
-      {readOnly ? (
+      {filesOpen ? null : readOnly ? (
         <p className="border-t border-slate-200 bg-white px-4 py-3 text-center text-xs text-slate-500">{t("messages.adminReadOnly", "Replies to the admin aren't available here. Use Contact for support.")}</p>
       ) : thread.counterpart ? (
-        <Composer threadId={thread.id} role={role} onSent={onSent} fishNames={prices.map((p) => String(p.name).split(" (")[0])} />
+        <Composer threadId={thread.id} role={role} onSent={onSent} onScheduled={loadScheduled} allowCatch={thread.type === "boat"} fishNames={prices.map((p) => String(p.name).split(" (")[0])} />
       ) : (
         <p className="border-t border-slate-200 bg-white px-4 py-3 text-center text-xs text-slate-500">{t("messages.assignDriverFirst", "Assign a driver to this boat to start chatting.")}</p>
+      )}
+
+      {/* Export */}
+      {exportOpen && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/60 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+            <h3 className="flex items-center gap-2 text-lg font-bold text-slate-800"><FileDown size={20} className="text-emerald-600" /> {t("messages.exportPdf", "Export as PDF")}</h3>
+            <p className="mt-1 text-sm text-slate-600">{t("messages.exportHint", "Choose dates, or leave empty for the whole chat. In the print window pick “Save as PDF”.")}</p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <label className="text-xs font-semibold text-slate-600">{t("messages.fromDate", "From")}<input type="date" value={exportRange.from} onChange={(e) => setExportRange({ ...exportRange, from: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm" /></label>
+              <label className="text-xs font-semibold text-slate-600">{t("messages.toDate", "To")}<input type="date" value={exportRange.to} onChange={(e) => setExportRange({ ...exportRange, to: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm" /></label>
+            </div>
+            <div className="mt-5 flex gap-2">
+              <button type="button" onClick={() => setExportOpen(false)} className="flex-1 rounded-xl bg-slate-100 py-2.5 font-semibold text-slate-700">{t("messages.cancel", "Cancel")}</button>
+              <button type="button" onClick={runExport} disabled={exporting} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 font-semibold text-white disabled:opacity-60">
+                {exporting && <Loader2 size={16} className="animate-spin" />} {t("messages.export", "Export")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* SOS confirm */}
