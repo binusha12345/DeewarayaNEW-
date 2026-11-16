@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import i18n from "../i18n/i18n";
 import { previewText, uiLang } from "../components/messages/messageText";
 import { flushOutbox, getMessageSocket, messagesApi, playMessageTone } from "../services/messagesApi";
+import { readCachedSettings } from "../services/userSettings";
 
 const preview = (m) => previewText(m, i18n.t.bind(i18n), uiLang(i18n));
 
@@ -27,9 +28,14 @@ export default function useMessageBadge(user) {
       if (fromMe) return;
       refresh();
       if (!onMessagesPage) {
-        playMessageTone();
-        const who = m.sender?.name || (m.senderRole === "admin" ? "Admin" : "Deewaraya");
-        toast(`${who}: ${preview(m).slice(0, 80)}`, { icon: m.kind === "sos" ? "🆘" : "💬" });
+        // Respect Settings → Messages; SOS always sounds and pops up.
+        const { messages: prefs } = readCachedSettings();
+        const sos = m.kind === "sos";
+        if (prefs.sound || sos) playMessageTone();
+        if (prefs.popups || sos) {
+          const who = m.sender?.name || (m.senderRole === "admin" ? "Admin" : "Deewaraya");
+          toast(`${who}: ${preview(m).slice(0, 80)}`, { icon: sos ? "🆘" : "💬" });
+        }
       }
     };
     socket?.on("message:new", onNew);
