@@ -19,6 +19,7 @@ import BoatOwnerDashboard from "./Pages/Public/owner/BoatOwnerDashboard";
 import BoatOwnerBoats from "./Pages/Public/owner/BoatOwnerBoats";
 import BoatOwnerBoatDetails from "./Pages/Public/owner/BoatOwnerBoatDetails";
 import OwnerTrips from "./Pages/Public/owner/OwnerTrips";
+import OwnerLiveTracking from "./Pages/Public/owner/OwnerLiveTracking";
 import AddNewBoat from "./Pages/Public/owner/AddNewBoat";
 import Maintenance from "./Pages/Public/owner/Maintenance";
 import MaintenanceEngine from "./Pages/Public/owner/MaintenanceEngine";
@@ -44,6 +45,7 @@ import Settings from "./Pages/Public/Settings";
 import SignalIndicator from "./Pages/Public/SignalIndicator";
 import Notifications from "./Pages/Public/owner/Notifications";
 import OwnerMessages from "./Pages/Public/owner/Messages";
+import DriverLiveLocationTracker from "./components/DriverLiveLocationTracker";
 
 // Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -67,6 +69,7 @@ import TourOverlay from './components/TourOverlay';
 function App() {
   return (
     <>
+      <DriverLiveLocationTracker />
       <Routes>
         {/* ============ PUBLIC ROUTES ============ */}
         <Route path="/" element={<HomePage />} />
@@ -117,6 +120,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["owner"]}>
               <OwnerTrips />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gps-tracking"
+          element={
+            <ProtectedRoute allowedRoles={["owner", "driver"]}>
+              <OwnerLiveTracking />
             </ProtectedRoute>
           }
         />
@@ -186,6 +197,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["driver"]}>
               <DriverTrips />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/navigation"
+          element={
+            <ProtectedRoute allowedRoles={["driver"]}>
+              <OwnerLiveTracking />
             </ProtectedRoute>
           }
         />

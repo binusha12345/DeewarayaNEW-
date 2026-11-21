@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css";
 import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import api from "../../services/api";
+import api, { API_ORIGIN } from "../../services/api";
 import {
   Loader2,
   MapPin,
@@ -71,6 +71,60 @@ const MapResizeFix = ({ center }) => {
   return null;
 };
 
+const AuthWeatherTileLayer = ({ layer }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    let active = true;
+    const token = localStorage.getItem("token");
+    const weatherTiles = L.tileLayer(
+      `${API_ORIGIN}/api/weather/tiles/${layer}/{z}/{x}/{y}.png`,
+      { opacity: 0.62, attribution: "&copy; OpenWeatherMap" }
+    );
+
+    weatherTiles.createTile = function createAuthenticatedTile(coords, done) {
+      const tile = document.createElement("img");
+      tile.alt = "";
+      tile.setAttribute("role", "presentation");
+      tile.onload = () => {
+        if (tile.dataset.objectUrl) URL.revokeObjectURL(tile.dataset.objectUrl);
+        done(null, tile);
+      };
+      tile.onerror = (error) => {
+        if (tile.dataset.objectUrl) URL.revokeObjectURL(tile.dataset.objectUrl);
+        done(error, tile);
+      };
+
+      fetch(this.getTileUrl(coords), {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Weather layer request failed (${response.status})`);
+          return response.blob();
+        })
+        .then((blob) => {
+          if (!active) return;
+          const objectUrl = URL.createObjectURL(blob);
+          tile.dataset.objectUrl = objectUrl;
+          tile.src = objectUrl;
+        })
+        .catch((error) => {
+          if (active) done(error, tile);
+        });
+
+      return tile;
+    };
+
+    weatherTiles.addTo(map);
+    return () => {
+      active = false;
+      map.removeLayer(weatherTiles);
+    };
+  }, [layer, map]);
+
+  return null;
+};
+
 const WeatherDashboard = () => {
   const { t } = useTranslation();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -83,7 +137,7 @@ const WeatherDashboard = () => {
   const [loadingBoats, setLoadingBoats] = useState(false);
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [error, setError] = useState("");
-  const [weatherLayer, setWeatherLayer] = useState("temp_new");
+  const [weatherLayer, setWeatherLayer] = useState("clouds_new");
   const [placeName, setPlaceName] = useState("Current Location");
 
   // Search states
@@ -106,9 +160,7 @@ const WeatherDashboard = () => {
         setLoadingBoats(true);
         setError("");
 
-        // Use /boats/all endpoint - returns ALL boats regardless of role
-        // Owner sees only his boats, Driver sees all boats
-        const endpoint = userRole === "driver" ? "/boats/all" : "/boats";
+        const endpoint = userRole === "driver" ? "/boats/assigned" : "/boats";
         const res = await api.get(endpoint);
         const allBoats = Array.isArray(res.data) ? res.data : [];
 
@@ -1103,7 +1155,7 @@ const WeatherDashboard = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2 text-slate-800 font-bold">
                       <MapPin size={20} className="text-blue-600" />
-                      <span className="text-lg">Live Location & Weather Map</span>
+                      <span className="text-lg">Weather Around Boat</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded-full">
@@ -1125,7 +1177,7 @@ const WeatherDashboard = () => {
                   </div>
 
                   <p className="text-sm text-slate-500 mb-4">
-                    Your exact GPS location with real-time weather overlay
+                    Current atmosphere and weather layers centered on the boat’s latest GPS position
                   </p>
 
                   {/* Layer selector */}
@@ -1167,6 +1219,7 @@ const WeatherDashboard = () => {
                       key={mapKey}
                       center={mapCenter}
                       zoom={14}
+                      maxZoom={18}
                       scrollWheelZoom={true}
                       className="absolute inset-0 w-full h-full z-0"
                       style={{ width: "100%", height: "100%" }}
@@ -1199,14 +1252,7 @@ const WeatherDashboard = () => {
                         />
                       )}
 
-                      {/* Weather overlay from OpenWeather */}
-                      {OPENWEATHER_KEY && (
-                        <TileLayer
-                          attribution="&copy; OpenWeatherMap"
-                          url={`https://tile.openweathermap.org/map/${weatherLayer}/{z}/{x}/{y}.png?appid=${OPENWEATHER_KEY}`}
-                          opacity={0.6}
-                        />
-                      )}
+                      <AuthWeatherTileLayer layer={weatherLayer} />
 
                       {/* Accuracy circle */}
                       <Circle
